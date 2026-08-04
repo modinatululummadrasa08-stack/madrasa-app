@@ -1,599 +1,274 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>মদিনাতুল উলূম মাদ্রাসা ম্যানেজমেন্ট</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
-  <style>
-    :root {
-      --primary-dark: #00332c;
-      --primary-main: #004d40;
-      --primary-light: #00796b;
-      --accent-gold: #ffb300;
-      --bg-color: #f4f7f6;
-      --surface-color: #ffffff;
-      --text-main: #2c3e50;
-      --danger-color: #e53935;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
-      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans Bengali', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; padding-bottom: 30px; }
-
-    header { 
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary-main)); 
-      color: white; 
-      text-align: center; 
-      padding: 18px 20px; 
-      font-size: 22px; 
-      font-weight: 700; 
-      box-shadow: var(--shadow-md); 
-    }
-
-    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
-
-    .online-tag { 
-      text-align: center; 
-      font-size: 13px; 
-      color: #2e7d32; 
-      background: #e8f5e9;
-      padding: 6px 16px;
-      border-radius: 20px;
-      display: inline-block;
-      margin: 0 auto 16px auto;
-      font-weight: 600;
-      box-shadow: var(--shadow-sm);
-    }
-    .status-wrapper { text-align: center; }
-
-    .banner { 
-      background: linear-gradient(145deg, #002d27, #005247); 
-      color: white; 
-      padding: 24px 20px; 
-      border-radius: 20px; 
-      margin-bottom: 24px; 
-      box-shadow: var(--shadow-lg);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
-    }
-
-    .btn-icon-edit {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      background: rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      z-index: 5;
-    }
-    .btn-icon-edit:hover { background: var(--accent-gold); color: #000; }
-
-    .banner-header { 
-      display: flex; 
-      align-items: center; 
-      gap: 16px; 
-      margin-bottom: 18px; 
-      padding-right: 30px; 
-    }
-    
-    .logo-box { 
-      width: 65px; 
-      height: 65px; 
-      background: #ffffff; 
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      font-size: 30px; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.25); 
-      flex-shrink: 0; 
-      cursor: pointer; 
-      overflow: hidden; 
-      border: 2px solid rgba(255,255,255,0.9);
-    }
-    .logo-box img { width: 100%; height: 100%; object-fit: cover; }
-
-    .madrasa-info { flex: 1; min-width: 0; }
-    
-    .madrasa-info h2 { 
-      font-size: 20px; 
-      font-weight: 700; 
-      color: #ffffff; 
-      line-height: 1.2;
-    }
-    
-    .madrasa-info .address { 
-      font-size: 13px; 
-      color: #b2dfdb; 
-      margin-top: 4px; 
-      font-weight: 500;
-    }
-
-    .meta-info { 
-      display: flex; 
-      justify-content: space-between; 
-      font-size: 13.5px; 
-      color: #e0f2f1; 
-      background: rgba(0, 0, 0, 0.2); 
-      padding: 10px 16px; 
-      border-radius: 10px; 
-      margin-bottom: 18px; 
-      font-weight: 500;
-      align-items: center;
-    }
-
-    .banner-stats { display: flex; gap: 14px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 14px; }
-    .stat-card { 
-      flex: 1; 
-      background: rgba(255, 255, 255, 0.08); 
-      padding: 12px 8px; 
-      border-radius: 12px; 
-      text-align: center; 
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .stat-card small { font-size: 12px; color: #b2dfdb; display: block; margin-bottom: 4px; }
-    .stat-card b { font-size: 18px; color: var(--accent-gold); font-weight: 700; }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .card { 
-      background: var(--surface-color); 
-      border-radius: 16px; 
-      padding: 24px 16px; 
-      text-align: center; 
-      box-shadow: var(--shadow-sm); 
-      cursor: pointer; 
-      transition: all 0.25s ease;
-      border: 1px solid rgba(0,0,0,0.03);
-    }
-    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-    .card-icon { 
-      font-size: 34px; 
-      margin-bottom: 10px; 
-      display: inline-block;
-      padding: 12px;
-      background: #f0f7f6;
-      border-radius: 50%;
-      width: 64px;
-      height: 64px;
-      line-height: 40px;
-    }
-    .card h3 { font-size: 16px; font-weight: 600; color: var(--text-main); }
-
-    .section { 
-      background: var(--surface-color); 
-      border-radius: 18px; 
-      padding: 24px; 
-      margin-bottom: 20px; 
-      display: none; 
-      box-shadow: var(--shadow-sm);
-    }
-    .section.active { display: block; }
-    .section h3 { margin-bottom: 18px; color: var(--primary-main); border-bottom: 2px solid #e0f2f1; padding-bottom: 8px; font-size: 18px; }
-
-    input, select { 
-      width: 100%; 
-      padding: 12px 14px; 
-      margin-top: 8px; 
-      margin-bottom: 14px; 
-      border: 1px solid #cfd8dc; 
-      border-radius: 10px; 
-      font-size: 14px; 
-      outline: none;
-      background-color: #fafafa;
-    }
-
-    button { 
-      background: var(--primary-main); 
-      color: white; 
-      border: none; 
-      padding: 12px;
-      font-weight: 600; 
-      font-size: 15px;
-      cursor: pointer; 
-      border-radius: 10px; 
-    }
-
-    .list-item { 
-      background: #fdfdfd; 
-      padding: 14px 16px; 
-      border-radius: 12px; 
-      margin-bottom: 10px; 
-      border-left: 5px solid var(--primary-main); 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn-back { background: #546e7a; margin-bottom: 14px; width: auto; padding: 8px 16px; font-size: 13px; }
-    .btn-delete { background: var(--danger-color); padding: 6px 12px; font-size: 12px; margin: 0; width: auto; border-radius: 6px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madrasa Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .sidebar-item:hover { background-color: #f0fdf4; color: #16a34a; }
+    </style>
 </head>
-<body>
+<body class="flex h-screen overflow-hidden">
 
-  <header>মাদ্রাসা ম্যানেজমেন্ট সিস্টেম</header>
+    <!-- বাম পাশের সাইডবার (Sidebar) -->
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between hidden md:flex">
+        <div>
+            <!-- লোগো ও মাদ্রাসার নাম -->
+            <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
+                <div class="bg-emerald-600 text-white p-2.5 rounded-xl shadow-md">
+                    <i class="fa-solid fa-mosque text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-gray-800 text-base">মাদরাকাতুল উলুম</h1>
+                    <p class="text-xs text-gray-500">মাদ্রাসা ম্যানেজমেন্ট সফটওয়্যার</p>
+                </div>
+            </div>
 
-  <div class="container">
-    <div class="status-wrapper">
-      <div class="online-tag" id="db-status">🟢 ফায়ারবেস ক্লাউড কানেক্টেড</div>
+            <!-- সাইডবার মেনু লিস্ট -->
+            <nav class="p-4 space-y-1 overflow-y-auto h-[calc(100vh-100px)] text-sm text-gray-600">
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-50 text-emerald-600 font-medium"><i class="fa-solid fa-chart-pie w-5"></i> ড্যাশবোর্ড</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-user-graduate w-5"></i> ছাত্র/ছাত্রী</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-chalkboard-user w-5"></i> শিক্ষক</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-hand-holding-dollar w-5"></i> মাসিক চাঁদাদাতা</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-hand-holding-heart w-5"></i> দাতা</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-coins w-5"></i> যাকাত ডাটা</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-store w-5"></i> বাজার</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-users-rectangle w-5"></i> কমিটির সদস্যগণ</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-calendar-check w-5"></i> হাজিরা</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-square-poll-vertical w-5"></i> রেজাল্ট</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-file-invoice-dollar w-5"></i> জমা/খরচ হিসাব সমূহ</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-receipt w-5"></i> ভাউচার</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-id-card w-5"></i> আইডি কার্ড</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-comment-sms w-5"></i> এস.এম.এস</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-building-columns w-5"></i> একাউন্ট</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-piggy-bank w-5"></i> ব্যাংক একাউন্ট</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-chart-line w-5"></i> রিপোর্ট</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-calendar-day w-5"></i> দৈনিক আয়-ব্যয়ের প্রতিবেদন</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg sidebar-item transition"><i class="fa-solid fa-calendar-days w-5"></i> বার্ষিক আয়-ব্যয়ের প্রতিবেদন</a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- ডান পাশের মূল কন্টেন্ট (Main Content) -->
+    <div class="flex-1 flex flex-col h-screen overflow-y-auto">
+        
+        <!-- টপ হেডার -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+            <div class="flex items-center gap-4">
+                <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium">SMS Balance: 0 ৳</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-600 text-white font-bold w-10 h-10 rounded-full flex items-center justify-center shadow">
+                    MO
+                </div>
+            </div>
+        </header>
+
+        <!-- মেইন ড্যাশবোর্ড কার্ডসমূহ -->
+        <main class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- কার্ড ১: ছাত্র/ছাত্রী যুক্ত -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">ছাত্র/ছাত্রী যুক্ত</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">নতুন শিক্ষার্থী নিবন্ধন</p>
+                            <span class="inline-block mt-2 bg-purple-50 text-purple-700 text-xs px-2 py-0.5 rounded font-semibold">২৬৫ মোট শিক্ষার্থী</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button class="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-plus text-xs"></i></button>
+                        <button class="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-list text-xs"></i></button>
+                    </div>
+                </div>
+
+                <!-- কার্ড ২: নতুন জমা যুক্ত -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">নতুন জমা যুক্ত</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">অর্থ জমা করুন</p>
+                            <div class="text-xs text-gray-600 mt-2 space-y-0.5">
+                                <p>অত্র: <span class="font-medium text-gray-800">৮০ ৳</span></p>
+                                <p>মাসিক: <span class="font-medium text-gray-800">৪০ ৳</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৩: নতুন খরচ যুক্ত -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-minus"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">নতুন খরচ যুক্ত</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">ব্যয় রেকর্ড করুন</p>
+                            <div class="text-xs text-gray-600 mt-2 space-y-0.5">
+                                <p>অত্র: <span class="font-medium text-gray-800">৮০ ৳</span></p>
+                                <p>মাসিক: <span class="font-medium text-gray-800">৪০ ৳</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৪: এস এম এস -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">এস এম এস</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">বার্তা প্রেরণ</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৫: একাউন্ট যুক্ত -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-landmark"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">একাউন্ট যুক্ত</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">নতুন হিসাব খুলুন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৬: একাউন্ট বিবরণ -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">একাউন্ট বিবরণ</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">হিসাব দেখুন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৭: হাজিরা -->
+                <div class="bg-white p-5 rounded-2xl border-2 border-emerald-500 shadow-sm flex items-center justify-between relative overflow-hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-cyan-100 text-cyan-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-check-to-slot"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">হাজিরা</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">উপস্থিতি নিন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow"><i class="fa-solid fa-plus text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৮: রেজাল্ট শীট -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-chart-area"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">রেজাল্ট শীট</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">ফলাফল দেখুন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ৯: আইডি কার্ড -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-id-badge"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">আইডি কার্ড</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">পরিচয়পত্র তৈরি করুন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ১০: শিক্ষক তৈরি -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-person-chalkboard"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">শিক্ষক তৈরি</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">নতুন শিক্ষক যোগ করুন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ১১: যাকাত গ্রহণ -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">যাকাত গ্রহণ</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">বাবতে জমা করুন</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+                <!-- কার্ড ১২: মাসিক চাঁদা গ্রহণ -->
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between hover:shadow-md transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-base">মাসিক চাঁদা গ্রহণ</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">মাসিক চাঁদা সংগ্রহ</p>
+                        </div>
+                    </div>
+                    <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-emerald-600 hover:text-white transition"><i class="fa-solid fa-arrow-right text-xs"></i></button>
+                </div>
+
+            </div>
+
+            <!-- নিচের চার্ট বা গ্রাফ সেকশন -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pb-6">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                    <h4 class="font-bold text-gray-700 text-sm mb-3">Patterned Donut Chart</h4>
+                    <div class="h-40 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 text-xs">চার্ট প্রিভিউ</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                    <h4 class="font-bold text-gray-700 text-sm mb-3">Basic Area Chart</h4>
+                    <div class="h-40 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 text-xs">গ্রাফ প্রিভিউ</div>
+                </div>
+            </div>
+        </main>
     </div>
-    
-    <div id="dashboard-view">
-      <div class="banner">
-        <button class="btn-icon-edit" onclick="editInfo()" title="তথ্য পরিবর্তন করুন">✏️</button>
 
-        <div class="banner-header">
-          <div class="logo-box" onclick="document.getElementById('logo-input').click()" title="লোগো পরিবর্তন করতে চাপুন">
-            <div id="logo-content">🕌</div>
-          </div>
-          <input type="file" id="logo-input" accept="image/*" style="display: none;" onchange="uploadLogo(event)">
-
-          <div class="madrasa-info">
-            <h2 id="m-name-text">মদিনাতুল উলূম মাদ্রাসা</h2>
-            <div class="address">📍 <span id="m-addr-text">হাজীগাঁও, পুকুরিয়া, বাঁশখালী, চট্টগ্রাম</span></div>
-          </div>
-        </div>
-
-        <div class="meta-info">
-          <span>📱 <span id="m-phone-text">০১৩১০-৫১৪২১৯</span></span>
-          <span>🏛️ <span id="m-est-text">স্থাপিত: ২০১৮ ইং</span></span>
-        </div>
-
-        <div class="banner-stats">
-          <div class="stat-card">
-            <small>মোট ছাত্র</small>
-            <b id="stat-students">0</b> জন
-          </div>
-          <div class="stat-card">
-            <small>মোট শিক্ষক</small>
-            <b id="stat-teachers">0</b> জন
-          </div>
-          <div class="stat-card">
-            <small>মোট আদায়</small>
-            ৳<b id="stat-fees">0</b>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="card" onclick="showSection('admission-view')">
-          <div class="card-icon">👤</div>
-          <h3>ছাত্র ভর্তি</h3>
-        </div>
-        <div class="card" onclick="showSection('list-view')">
-          <div class="card-icon">📋</div>
-          <h3>ছাত্র তালিকা</h3>
-        </div>
-        <div class="card" onclick="showSection('fee-view')">
-          <div class="card-icon">💵</div>
-          <h3>ফি আদায়</h3>
-        </div>
-        <div class="card" onclick="showSection('attendance-view')">
-          <div class="card-icon">📅</div>
-          <h3>হাজিরা</h3>
-        </div>
-        <div class="card" onclick="showSection('teacher-view')">
-          <div class="card-icon">🎓</div>
-          <h3>শিক্ষক তালিকা</h3>
-        </div>
-        <div class="card" onclick="showSection('notice-view')">
-          <div class="card-icon">📢</div>
-          <h3>নোটিশ বোর্ড</h3>
-        </div>
-      </div>
-    </div>
-
-    <div id="info-edit-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>মাদ্রাসার মূল তথ্য পরিবর্তন</h3>
-      <input type="text" id="edit-m-name" placeholder="মাদ্রাসার নাম">
-      <input type="text" id="edit-m-addr" placeholder="ঠিকানা">
-      <input type="text" id="edit-m-phone" placeholder="মোবাইল নম্বর">
-      <input type="text" id="edit-m-est" placeholder="স্থাপিত সাল">
-      <button onclick="saveInfo()">সংরক্ষণ করুন</button>
-    </div>
-
-    <div id="admission-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>নতুন ছাত্র ভর্তি</h3>
-      <input type="text" id="s-name" placeholder="ছাত্রের নাম">
-      <input type="text" id="s-class" placeholder="বিভাগ / শ্রেণি">
-      <input type="number" id="s-roll" placeholder="রোল নম্বর">
-      <input type="tel" id="s-phone" placeholder="অভিভাবকের মোবাইল">
-      <button onclick="addStudent()">ভর্তি সম্পন্ন করুন</button>
-    </div>
-
-    <div id="list-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>ছাত্র তালিকা</h3>
-      <div id="students-container"></div>
-    </div>
-
-    <div id="fee-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>ফি আদায় ও রেকর্ড</h3>
-      <select id="f-student"></select>
-      <select id="f-type"><option>মাসিক ফি</option><option>ভর্তি ফি</option><option>পরীক্ষার ফি</option></select>
-      <select id="f-month"><option>জানুয়ারি</option><option>ফেব্রুয়ারি</option><option>মার্চ</option><option>এপ্রিল</option><option>মে</option><option>জুন</option><option>জুলাই</option><option>আগস্ট</option><option>সেপ্টেম্বর</option><option>অক্টোবর</option><option>নভেম্বর</option><option>ডিসেম্বর</option></select>
-      <input type="number" id="f-amount" placeholder="টাকার পরিমাণ (৳)">
-      <button onclick="addFee()" style="background:var(--accent-gold); color:#000;">ফি জমা নিন</button>
-      <h4 style="margin-top:16px; margin-bottom:10px;">সাম্প্রতিক ফি রেকর্ডস:</h4>
-      <div id="fees-container"></div>
-    </div>
-
-    <div id="attendance-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>আজকের হাজিরা</h3>
-      <div id="attendance-container"></div>
-      <button onclick="alert('হাজিরা সেভ হয়েছে!')" style="background:#7b1fa2;">হাজিরা সেভ করুন</button>
-    </div>
-
-    <div id="teacher-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>শিক্ষকমণ্ডলী</h3>
-      <input type="text" id="t-name" placeholder="শিক্ষকের নাম">
-      <input type="text" id="t-designation" placeholder="পদবি/বিভাগ">
-      <input type="tel" id="t-phone" placeholder="মোবাইল নম্বর">
-      <button onclick="addTeacher()">নতুন শিক্ষক যুক্ত করুন</button>
-      <div id="teachers-container" style="margin-top:15px;"></div>
-    </div>
-
-    <div id="notice-view" class="section">
-      <button class="btn-back" onclick="showDashboard()">← ফিরে যান</button>
-      <h3>নোটিশ বোর্ড</h3>
-      <input type="text" id="n-title" placeholder="নোটিশের বিবরণ">
-      <input type="text" id="n-date" placeholder="তারিখ">
-      <button onclick="addNotice()" style="background:#e65100;">নতুন নোটিশ প্রকাশ করুন</button>
-      <div id="notices-container" style="margin-top:15px;"></div>
-    </div>
-
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCgXUGc_hFPNo0Sv8A-qWzzUUZT-995Oso",
-      authDomain: "madrasa-app-dea84.firebaseapp.com",
-      databaseURL: "https://madrasa-app-dea84-default-rtdb.firebaseio.com",
-      projectId: "madrasa-app-dea84",
-      storageBucket: "madrasa-app-dea84.firebasestorage.app",
-      messagingSenderId: "285507710978",
-      appId: "1:285507710978:web:0449f79b91844c153cf71b",
-      measurementId: "G-WWF67CFGVQ"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let students = [];
-    let fees = [];
-    let teachers = [];
-    let notices = [];
-    let madrasaInfo = {
-      name: "মদিনাতুল উলূম মাদ্রাসা",
-      addr: "হাজীগাঁও, পুকুরিয়া, বাঁশখালী, চট্টগ্রাম",
-      phone: "০১৩১০-৫১৪২১৯",
-      est: "স্থাপিত: ২০১৮ ইং"
-    };
-
-    db.ref('madrasaInfo').on('value', snapshot => {
-      if(snapshot.exists()) {
-        madrasaInfo = snapshot.val();
-        document.getElementById('m-name-text').innerText = madrasaInfo.name || '';
-        document.getElementById('m-addr-text').innerText = madrasaInfo.addr || '';
-        document.getElementById('m-phone-text').innerText = madrasaInfo.phone || '';
-        document.getElementById('m-est-text').innerText = madrasaInfo.est || '';
-      }
-    });
-
-    db.ref('logo').on('value', snapshot => {
-      if(snapshot.exists()) {
-        document.getElementById('logo-content').innerHTML = `<img src="${snapshot.val()}">`;
-      }
-    });
-
-    db.ref('students').on('value', snapshot => {
-      students = [];
-      snapshot.forEach(child => { students.push({ id: child.key, ...child.val() }); });
-      updateStats();
-    });
-
-    db.ref('teachers').on('value', snapshot => {
-      teachers = [];
-      snapshot.forEach(child => { teachers.push({ id: child.key, ...child.val() }); });
-      updateStats();
-    });
-
-    db.ref('fees').on('value', snapshot => {
-      fees = [];
-      snapshot.forEach(child => { fees.push({ id: child.key, ...child.val() }); });
-      updateStats();
-    });
-
-    db.ref('notices').on('value', snapshot => {
-      notices = [];
-      snapshot.forEach(child => { notices.push({ id: child.key, ...child.val() }); });
-    });
-
-    function editInfo() {
-      document.getElementById('edit-m-name').value = madrasaInfo.name;
-      document.getElementById('edit-m-addr').value = madrasaInfo.addr;
-      document.getElementById('edit-m-phone').value = madrasaInfo.phone;
-      document.getElementById('edit-m-est').value = madrasaInfo.est;
-      showSection('info-edit-view');
-    }
-
-    function saveInfo() {
-      const updatedInfo = {
-        name: document.getElementById('edit-m-name').value,
-        addr: document.getElementById('edit-m-addr').value,
-        phone: document.getElementById('edit-m-phone').value,
-        est: document.getElementById('edit-m-est').value
-      };
-      db.ref('madrasaInfo').set(updatedInfo)
-        .then(() => { alert('তথ্য ফায়ারবেসে সফলভাবে সংরক্ষিত হয়েছে!'); showDashboard(); });
-    }
-
-    function uploadLogo(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          db.ref('logo').set(e.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function updateStats() {
-      document.getElementById('stat-students').innerText = students.length;
-      document.getElementById('stat-teachers').innerText = teachers.length;
-      let total = fees.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-      document.getElementById('stat-fees').innerText = total;
-    }
-
-    function showSection(id) {
-      document.getElementById('dashboard-view').style.display = 'none';
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-
-      if(id === 'list-view') renderStudents();
-      if(id === 'fee-view') renderFeeForm();
-      if(id === 'teacher-view') renderTeachers();
-      if(id === 'notice-view') renderNotices();
-      if(id === 'attendance-view') renderAttendance();
-    }
-
-    function showDashboard() {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById('dashboard-view').style.display = 'block';
-      updateStats();
-    }
-
-    function addStudent() {
-      let name = document.getElementById('s-name').value;
-      let cls = document.getElementById('s-class').value;
-      let roll = document.getElementById('s-roll').value;
-      let phone = document.getElementById('s-phone').value;
-
-      if(!name || !cls) return alert('নাম ও বিভাগ দিন');
-      db.ref('students').push({ studentName: name, cls, roll, phone })
-        .then(() => {
-          alert('ছাত্র ভর্তি সম্পন্ন হয়েছে!');
-          document.getElementById('s-name').value = '';
-          document.getElementById('s-class').value = '';
-          showDashboard();
-        });
-    }
-
-    function renderStudents() {
-      let container = document.getElementById('students-container');
-      container.innerHTML = students.map(s => `<div class="list-item"><div><b>${s.studentName}</b> (রোল: ${s.roll || 'N/A'})<br><small>${s.cls} | 📱 ${s.phone || 'N/A'}</small></div></div>`).join('');
-    }
-
-    function renderFeeForm() {
-      let select = document.getElementById('f-student');
-      select.innerHTML = students.map(s => `<option value="${s.studentName}">${s.studentName} (${s.cls})</option>`).join('');
-      renderFees();
-    }
-
-    function addFee() {
-      let studentName = document.getElementById('f-student').value;
-      let feeType = document.getElementById('f-type').value;
-      let month = document.getElementById('f-month').value;
-      let amount = document.getElementById('f-amount').value;
-
-      if(!studentName || !amount) return alert('টাকার পরিমাণ দিন');
-      db.ref('fees').push({ studentName, feeType, month, amount, date: new Date().toLocaleDateString('bn-BD') })
-        .then(() => {
-          alert('ফি জমা হয়েছে!');
-          document.getElementById('f-amount').value = '';
-          renderFees();
-        });
-    }
-
-    function renderFees() {
-      let container = document.getElementById('fees-container');
-      container.innerHTML = fees.map(f => `<div class="list-item"><div><b>${f.studentName}</b><br><small>${f.feeType} (${f.month}) | ${f.date}</small></div><b style="color:#2e7d32;">৳${f.amount}</b></div>`).join('');
-    }
-
-    function renderAttendance() {
-      let container = document.getElementById('attendance-container');
-      container.innerHTML = students.map(s => `<div class="list-item"><span><b>${s.studentName}</b> (${s.cls})</span><label><input type="checkbox" checked style="width:auto;"> উপস্থিত</label></div>`).join('');
-    }
-
-    function addTeacher() {
-      let name = document.getElementById('t-name').value;
-      let des = document.getElementById('t-designation').value;
-      let phone = document.getElementById('t-phone').value;
-
-      if(!name) return alert('শিক্ষকের নাম দিন');
-      db.ref('teachers').push({ name, des, phone })
-        .then(() => {
-          document.getElementById('t-name').value = '';
-          document.getElementById('t-designation').value = '';
-          document.getElementById('t-phone').value = '';
-          renderTeachers();
-        });
-    }
-
-    function deleteTeacher(id) {
-      db.ref('teachers/' + id).remove().then(() => renderTeachers());
-    }
-
-    function renderTeachers() {
-      let container = document.getElementById('teachers-container');
-      container.innerHTML = teachers.map(t => `
-        <div class="list-item">
-          <div><b>${t.name}</b><br><small>${t.des} | 📱 ${t.phone}</small></div>
-          <button class="btn-delete" onclick="deleteTeacher('${t.id}')">ডিলিট</button>
-        </div>
-      `).join('');
-    }
-
-    function addNotice() {
-      let title = document.getElementById('n-title').value;
-      let date = document.getElementById('n-date').value || new Date().toLocaleDateString('bn-BD');
-
-      if(!title) return alert('নোটিশের বিবরণ দিন');
-      db.ref('notices').push({ title, date })
-        .then(() => {
-          document.getElementById('n-title').value = '';
-          document.getElementById('n-date').value = '';
-          renderNotices();
-        });
-    }
-
-    function deleteNotice(id) {
-      db.ref('notices/' + id).remove().then(() => renderNotices());
-    }
-
-    function renderNotices() {
-      let container = document.getElementById('notices-container');
-      container.innerHTML = notices.map(n => `
-        <div class="list-item" style="border-left-color:#e65100;">
-          <div><b>${n.title}</b><br><small>তারিখ: ${n.date}</small></div>
-          <button class="btn-delete" onclick="deleteNotice('${n.id}')">ডিলিট</button>
-        </div>
-      `).join('');
-    }
-  </script>
 </body>
-                                                  </html>
+                      </html>

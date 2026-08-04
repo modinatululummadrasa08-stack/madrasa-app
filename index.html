@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs (Compat Version for Firestore Compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .sidebar-item:hover { background-color: #f0fdf4; color: #16a34a; }
@@ -198,18 +203,18 @@
             <div id="section-students" class="content-section hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-user-plus text-emerald-600"></i> নতুন ছাত্র/ছাত্রী নিবন্ধন ফর্ম</h2>
-                    <form onsubmit="handleFormSubmit(event, 'শিক্ষার্থী সফলভাবে নিবন্ধিত হয়েছে!')" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onsubmit="saveStudentData(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">শিক্ষার্থীর নাম</label>
-                            <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="পূর্ণ নাম লিখুন">
+                            <input type="text" id="std-name" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="পূর্ণ নাম লিখুন">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">পিতার নাম</label>
-                            <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="পিতার নাম লিখুন">
+                            <input type="text" id="std-father" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="পিতার নাম লিখুন">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">জামাত / শ্রেণি</label>
-                            <select class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
+                            <select id="std-class" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
                                 <option>নাদিয়ারা বিভাগ</option>
                                 <option>হিফজ বিভাগ</option>
                                 <option>কিতাব বিভাগ</option>
@@ -217,7 +222,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">অভিভাবকের মোবাইল নম্বর</label>
-                            <input type="tel" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="০১XXXXXXXXX">
+                            <input type="tel" id="std-phone" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="০১XXXXXXXXX">
                         </div>
                         <div class="md:col-span-2">
                             <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">তথ্য সংরক্ষণ করুন</button>
@@ -230,18 +235,18 @@
             <div id="section-teachers" class="content-section hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-chalkboard-user text-emerald-600"></i> শিক্ষক নিবন্ধন ও প্যানেল</h2>
-                    <form onsubmit="handleFormSubmit(event, 'শিক্ষকের তথ্য সফলভাবে সংরক্ষিত হয়েছে!')" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onsubmit="saveTeacherData(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">শিক্ষকের নাম</label>
-                            <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="নাম লিখুন">
+                            <input type="text" id="tch-name" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="নাম লিখুন">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">পদবি / দায়িত্ব</label>
-                            <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="যেমন: মুহতামিম / শিক্ষক">
+                            <input type="text" id="tch-role" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="যেমন: মুহতামিম / শিক্ষক">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">মোবাইল নম্বর</label>
-                            <input type="tel" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="০১XXXXXXXXX">
+                            <input type="tel" id="tch-phone" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="০১XXXXXXXXX">
                         </div>
                         <div class="md:col-span-2">
                             <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">শিক্ষক যোগ করুন</button>
@@ -254,10 +259,10 @@
             <div id="section-income" class="content-section hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-hand-holding-dollar text-emerald-600"></i> নতুন জমা বা চাঁদা এন্ট্রি</h2>
-                    <form onsubmit="handleFormSubmit(event, 'জমা হিসাব সফলভাবে এন্ট্রি হয়েছে!')" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onsubmit="saveIncomeData(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">খাতের নাম</label>
-                            <select class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
+                            <select id="inc-cat" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
                                 <option>ছাত্রের মাসিক বেতন</option>
                                 <option>ভর্তি ফি</option>
                                 <option>সাধারণ অনুদান / চাঁদা</option>
@@ -265,7 +270,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">পরিমাণ (টাকা)</label>
-                            <input type="number" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="টাকা">
+                            <input type="number" id="inc-amount" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="টাকা">
                         </div>
                         <div class="md:col-span-2">
                             <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">জমা নিশ্চিত করুন</button>
@@ -278,14 +283,14 @@
             <div id="section-expense" class="content-section hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fa-solid fa-wallet text-emerald-600"></i> নতুন খরচ এন্ট্রি</h2>
-                    <form onsubmit="handleFormSubmit(event, 'খরচের হিসাব সফলভাবে সংরক্ষিত হয়েছে!')" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onsubmit="saveExpenseData(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">খরচের বিবরণ</label>
-                            <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="যেমন: বিদ্যুৎ বিল, বাজার খরচ">
+                            <input type="text" id="exp-desc" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="যেমন: বিদ্যুৎ বিল, বাজার খরচ">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">টাকার পরিমাণ</label>
-                            <input type="number" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="টাকা">
+                            <input type="number" id="exp-amount" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="টাকা">
                         </div>
                         <div class="md:col-span-2">
                             <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">খরচ সংরক্ষণ করুন</button>
@@ -298,14 +303,14 @@
             <div id="section-zakat" class="content-section hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                     <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-sack-dollar text-emerald-600"></i> যাকাত ফান্ড পরিচালনা প্যানেল</h2>
-                    <form onsubmit="handleFormSubmit(event, 'যাকাত ফান্ডের তথ্য সংরক্ষণ করা হয়েছে!')" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onsubmit="saveZakatData(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">দাতার নাম / বিবরণ</label>
-                            <input type="text" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="নাম লিখুন">
+                            <input type="text" id="zak-name" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="নাম লিখুন">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">পরিমাণ (টাকা)</label>
-                            <input type="number" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="টাকা">
+                            <input type="number" id="zak-amount" required class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500" placeholder="টাকা">
                         </div>
                         <div class="md:col-span-2">
                             <button type="submit" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">যাকাত ফান্ডে যোগ করুন</button>
@@ -321,7 +326,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">শ্রেণি নির্বাচন করুন</label>
-                            <select class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
+                            <select id="att-class" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
                                 <option>নাদিয়ারা বিভাগ</option>
                                 <option>হিফজ বিভাগ</option>
                                 <option>কিতাব বিভাগ</option>
@@ -329,10 +334,10 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">তারিখ</label>
-                            <input type="date" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
+                            <input type="date" id="att-date" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
                         </div>
                         <div class="flex items-end">
-                            <button onclick="alert('হাজিরা তালিকা লোড হয়েছে!')" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">হাজিরা নিন</button>
+                            <button onclick="saveAttendance(event)" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition">হাজিরা সংরক্ষণ</button>
                         </div>
                     </div>
                 </div>
@@ -401,7 +406,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">ব্যানার লোগো (ছবি সিলেক্ট করুন)</label>
                     <input type="file" id="input-logo-file" accept="image/*" class="w-full border border-gray-300 rounded-lg p-2 text-xs file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
-                    <p class="text-[10px] text-gray-500 mt-1">পরামর্শ: স্কয়ার সাইজের (যেমন: ২০০x২০০ পিক্সেল) লোগো ব্যবহার করলে সবচেয়ে সুন্দর দেখাবে।</p>
+                    <p class="text-[10px] text-gray-500 mt-1">পরামর্শ: স্কয়ার সাইজের লোগো ব্যবহার করলে সবচেয়ে সুন্দর দেখাবে।</p>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">মাদ্রাসার নাম</label>
@@ -463,7 +468,7 @@
 
                 <!-- এডভান্সড অপশনসমূহ -->
                 <div class="space-y-2">
-                    <div onclick="alert('সিস্টেমের সকল ডেটা ব্যাকআপ ফাইল ডাউনলোড শুরু হয়েছে!')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 flex items-center justify-between cursor-pointer transition">
+                    <div onclick="alert('সিস্টেমের সমস্ত ডেটা ব্যাকআপ ফাইল ডাউনলোড শুরু হয়েছে!')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 flex items-center justify-between cursor-pointer transition">
                         <div class="flex items-center gap-3">
                             <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-database text-sm"></i></div>
                             <div>
@@ -515,8 +520,23 @@
         </div>
     </div>
 
-    <!-- ⚙️ জাভাস্ক্রিপ্ট লজিক -->
+    <!-- ⚙️ জাভাস্ক্রিপ্ট ও ফায়ারবেস লজিক -->
     <script>
+        // 🔹 ফায়ারবেস কনফিগারেশন (আপনার দেওয়া আসল কনফিগারেশন)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBOHwF3PriNh6bTgK56uk6Lg_1kfakHn8g",
+            authDomain: "madrasa-management-app-c68da.firebaseapp.com",
+            projectId: "madrasa-management-app-c68da",
+            storageBucket: "madrasa-management-app-c68da.firebasestorage.app",
+            messagingSenderId: "352012911839",
+            appId: "1:352012911839:web:ca1e4312bb63e08b07956a",
+            measurementId: "G-LRNH83N7JD"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         function switchTab(tabId) {
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(sec => sec.classList.add('hidden'));
@@ -539,6 +559,136 @@
             event.preventDefault();
             alert(message);
             event.target.reset();
+        }
+
+        // 🔹 ফায়ারবেসে ছাত্রের তথ্য সেভ করার ফাংশন
+        function saveStudentData(e) {
+            e.preventDefault();
+            const name = document.getElementById('std-name').value;
+            const father = document.getElementById('std-father').value;
+            const className = document.getElementById('std-class').value;
+            const phone = document.getElementById('std-phone').value;
+
+            db.collection("students").add({
+                name: name,
+                father: father,
+                className: className,
+                phone: phone,
+                createdAt: new Date()
+            })
+            .then(() => {
+                alert("শিক্ষার্থী সফলভাবে ফায়ারবেসে নিবন্ধিত হয়েছে!");
+                e.target.reset();
+            })
+            .catch((error) => {
+                alert("ত্রুটি ঘটেছে: " + error.message);
+            });
+        }
+
+        // 🔹 ফায়ারবেসে শিক্ষকের তথ্য সেভ করার ফাংশন
+        function saveTeacherData(e) {
+            e.preventDefault();
+            const name = document.getElementById('tch-name').value;
+            const role = document.getElementById('tch-role').value;
+            const phone = document.getElementById('tch-phone').value;
+
+            db.collection("teachers").add({
+                name: name,
+                role: role,
+                phone: phone,
+                createdAt: new Date()
+            })
+            .then(() => {
+                alert("শিক্ষকের তথ্য সফলভাবে ফায়ারবেসে সংরক্ষিত হয়েছে!");
+                e.target.reset();
+            })
+            .catch((error) => {
+                alert("ত্রুটি ঘটেছে: " + error.message);
+            });
+        }
+
+        // 🔹 ফায়ারবেসে জমা (Income) সেভ করার ফাংশন
+        function saveIncomeData(e) {
+            e.preventDefault();
+            const category = document.getElementById('inc-cat').value;
+            const amount = document.getElementById('inc-amount').value;
+
+            db.collection("incomes").add({
+                category: category,
+                amount: Number(amount),
+                createdAt: new Date()
+            })
+            .then(() => {
+                alert("জমা হিসাব সফলভাবে ফায়ারবেসে এন্ট্রি হয়েছে!");
+                e.target.reset();
+            })
+            .catch((error) => {
+                alert("ত্রুটি ঘটেছে: " + error.message);
+            });
+        }
+
+        // 🔹 ফায়ারবেসে খরচ (Expense) সেভ করার ফাংশন
+        function saveExpenseData(e) {
+            e.preventDefault();
+            const description = document.getElementById('exp-desc').value;
+            const amount = document.getElementById('exp-amount').value;
+
+            db.collection("expenses").add({
+                description: description,
+                amount: Number(amount),
+                createdAt: new Date()
+            })
+            .then(() => {
+                alert("খরচের হিসাব সফলভাবে ফায়ারবেসে সংরক্ষিত হয়েছে!");
+                e.target.reset();
+            })
+            .catch((error) => {
+                alert("ত্রুটি ঘটেছে: " + error.message);
+            });
+        }
+
+        // 🔹 ফায়ারবেসে যাকাত ফান্ড সেভ করার ফাংশন
+        function saveZakatData(e) {
+            e.preventDefault();
+            const name = document.getElementById('zak-name').value;
+            const amount = document.getElementById('zak-amount').value;
+
+            db.collection("zakat").add({
+                name: name,
+                amount: Number(amount),
+                createdAt: new Date()
+            })
+            .then(() => {
+                alert("যাকাত ফান্ডের তথ্য ফায়ারবেসে সংরক্ষণ করা হয়েছে!");
+                e.target.reset();
+            })
+            .catch((error) => {
+                alert("ত্রুটি ঘটেছে: " + error.message);
+            });
+        }
+
+        // 🔹 ফায়ারবেসে হাজিরা (Attendance) সেভ করার ফাংশন
+        function saveAttendance(e) {
+            e.preventDefault();
+            const className = document.getElementById('att-class').value;
+            const date = document.getElementById('att-date').value;
+
+            if(!date) {
+                alert("দয়া করে তারিখ সিলেক্ট করুন!");
+                return;
+            }
+
+            db.collection("attendance").add({
+                className: className,
+                date: date,
+                createdAt: new Date()
+            })
+            .then(() => {
+                alert("হাজিরা সফলভাবে ফায়ারবেসে সংরক্ষিত হয়েছে!");
+            })
+            .catch((error) => {
+                alert("ত্রুটি ঘটেছে: " + error.message);
+            });
         }
 
         function openBannerModal() {

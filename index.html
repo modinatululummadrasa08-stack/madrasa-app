@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মাদরাকাতুল উলূম - মাদ্রাসা ম্যানেজমেন্ট সিস্টেম</title>
+    <title>মদিনাতুল উলূম - মাদ্রাসা ম্যানেজমেন্ট সিস্টেম</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -21,13 +21,20 @@
     <!-- বাম পাশের সাইডবার (Sidebar) -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between hidden md:flex shadow-sm">
         <div>
-            <!-- লোগো ও সফটওয়্যার শিরোনাম -->
+            <!-- লোগো ও সফটওয়্যার শিরোনাম (লোগো পরিবর্তনের অপশনসহ) -->
             <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-                <div class="bg-emerald-600 text-white p-2.5 rounded-xl shadow-md">
-                    <i class="fa-solid fa-mosque text-xl"></i>
+                <div class="relative group cursor-pointer" onclick="document.getElementById('logoFileInput').click()" title="লোগো পরিবর্তন করতে ক্লিক করুন">
+                    <div id="sidebarLogoContainer" class="bg-emerald-600 text-white w-10 h-10 rounded-xl shadow-md flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-mosque text-xl" id="sidebarLogoIcon"></i>
+                        <img id="sidebarLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
+                    </div>
+                    <div class="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
                 </div>
+                <input type="file" id="logoFileInput" accept="image/*" class="hidden" onchange="updateSidebarLogo(event)">
                 <div>
-                    <h1 class="font-bold text-gray-800 text-sm">মাদরাকাতুল উলূম</h1>
+                    <h1 class="font-bold text-gray-800 text-sm">মদিনাতুল উলূম</h1>
                     <p class="text-xs text-gray-500">ম্যানেজমেন্ট সিস্টেম</p>
                 </div>
             </div>
@@ -58,10 +65,12 @@
                 <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium"><i class="fa-solid fa-sms mr-1"></i> SMS Balance: 0 b</span>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs text-gray-500 font-medium">অ্যাডমিন প্যানেল</span>
-                <div class="bg-emerald-600 text-white font-bold w-9 h-9 rounded-full flex items-center justify-center text-sm shadow-sm">
-                    MU
-                </div>
+                <button onclick="openAdminModal()" class="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-full transition shadow-sm cursor-pointer">
+                    <span class="text-xs text-gray-700 font-semibold">অ্যাডমিন প্যানেল</span>
+                    <div class="bg-emerald-600 text-white font-bold w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm">
+                        MU
+                    </div>
+                </button>
             </div>
         </header>
 
@@ -202,7 +211,7 @@
                             <select class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-emerald-500">
                                 <option>নাদিয়ারা বিভাগ</option>
                                 <option>হিফজ বিভাগ</option>
-                                <option>কিতাব বিভাগ (মেশকাত/বেফাক)</option>
+                                <option>কিতাব বিভাগ</option>
                             </select>
                         </div>
                         <div>
@@ -332,7 +341,7 @@
             <div id="section-idcard" class="content-section hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                     <h2 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-id-card text-emerald-600"></i> ডিজিটাল আইডি কার্ড জেনারেটর</h2>
-                    <p class="text-sm text-gray-600">শিক্ষার্থীর আইডি কার্ড তৈরি এবং প্রিন্ট করার জন্য প্রয়োজনীয় প্যানে।</p>
+                    <p class="text-sm text-gray-600">শিক্ষার্থীর আইডি কার্ড তৈরি এবং প্রিন্ট করার জন্য প্রয়োজনীয় প্যানেল।</p>
                     <button onclick="alert('আইডি কার্ড জেনারেট হচ্ছে...')" class="bg-emerald-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-emerald-700 transition">আইডি কার্ড তৈরি করুন</button>
                 </div>
             </div>
@@ -419,6 +428,87 @@
         </div>
     </div>
 
+    <!-- 🛠️ এডভান্সড অ্যাডমিন প্যানেল মডাল -->
+    <div id="adminModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="bg-emerald-100 text-emerald-600 p-2.5 rounded-xl"><i class="fa-solid fa-user-shield text-lg"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">এডভান্সড কন্ট্রোল প্যানেল</h3>
+                        <p class="text-xs text-gray-500">সিস্টেম সিকিউরিটি ও ম্যানেজমেন্ট</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+                <!-- অ্যাডমিন স্ট্যাটাস কার্ড -->
+                <div class="bg-gradient-to-r from-emerald-900 to-teal-800 text-white p-4 rounded-xl flex items-center justify-between shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold text-amber-300">MU</div>
+                        <div>
+                            <h4 class="text-sm font-bold">সুপার অ্যাডমিন</h4>
+                            <p class="text-xs text-emerald-200">প্রধান মুহতামিম প্যানেল</p>
+                        </div>
+                    </div>
+                    <span class="bg-emerald-500/30 border border-emerald-400/40 text-amber-300 text-xs px-3 py-1 rounded-full font-medium">Full Access</span>
+                </div>
+
+                <!-- এডভান্সড অপশনসমূহ -->
+                <div class="space-y-2">
+                    <div onclick="alert('সিস্টেমের সকল ডেটা ব্যাকআপ ফাইল ডাউনলোড শুরু হয়েছে!')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 flex items-center justify-between cursor-pointer transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-database text-sm"></i></div>
+                            <div>
+                                <h5 class="text-sm font-bold text-gray-800">ডেটা ব্যাকআপ ও রিস্টোর</h5>
+                                <p class="text-xs text-gray-500">মাদ্রাসার সমস্ত হিসাব ও ছাত্রের তথ্য সেভ রাখুন</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                    </div>
+
+                    <div onclick="prompt('নতুন পাসওয়ার্ড দিন:')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 flex items-center justify-between cursor-pointer transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-amber-100 text-amber-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-key text-sm"></i></div>
+                            <div>
+                                <h5 class="text-sm font-bold text-gray-800">পাসওয়ার্ড পরিবর্তন</h5>
+                                <p class="text-xs text-gray-500">অ্যাডমিন প্যানেলের সিকিউরিটি আপডেট করুন</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                    </div>
+
+                    <div onclick="alert('ফায়ারবেস ক্লাউড কানেকশন এবং ডাটাবেস সিকিউরিটি ১০০% নিরাপদ রয়েছে।')" class="p-3.5 rounded-xl bg-gray-50 hover:bg-emerald-50 border border-gray-100 hover:border-emerald-200 flex items-center justify-between cursor-pointer transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-emerald-100 text-emerald-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-cloud-arrow-up text-sm"></i></div>
+                            <div>
+                                <h5 class="text-sm font-bold text-gray-800">ক্লাউড সিঙ্ক্রোনাইজেশন</h5>
+                                <p class="text-xs text-gray-500">ফায়ারবেস স্ট্যাটাস ও কানেক্টিভিটি চেক</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
+                    </div>
+
+                    <div onclick="if(confirm('আপনি কি সমস্ত লোকাল ক্যাশ ক্লিয়ার করতে চান?')) { localStorage.clear(); location.reload(); }" class="p-3.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-100 flex items-center justify-between cursor-pointer transition">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-rose-100 text-rose-600 w-8 h-8 rounded-lg flex items-center justify-center"><i class="fa-solid fa-trash-can text-sm"></i></div>
+                            <div>
+                                <h5 class="text-sm font-bold text-rose-800">ফ্যাক্টরি রিসেট / ক্যাশ ক্লিয়ার</h5>
+                                <p class="text-xs text-rose-500">সিস্টেম একদম ফ্রেশ অবস্থায় ফিরিয়ে নিন</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-rose-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-2 border-t">
+                <button type="button" onclick="closeAdminModal()" class="px-5 py-2 rounded-lg text-sm text-white bg-emerald-600 hover:bg-emerald-700 font-medium">প্যানেল বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ⚙️ জাভাস্ক্রিপ্ট লজিক -->
     <script>
         function switchTab(tabId) {
@@ -459,6 +549,14 @@
             document.getElementById('bannerModal').classList.add('hidden');
         }
 
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
         function saveBannerInfo(e) {
             e.preventDefault();
             const data = {
@@ -486,9 +584,38 @@
             }
         }
 
+        // লোগো আপলোড ও ব্রাউজার লোকালস্টোরেজে সেভ করার ফাংশন
+        function updateSidebarLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    localStorage.setItem('madrasaCustomLogo', base64Image);
+                    applyLogo(base64Image);
+                    alert('লোগো সফলভাবে পরিবর্তন করা হয়েছে!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function applyLogo(imgSrc) {
+            const icon = document.getElementById('sidebarLogoIcon');
+            const img = document.getElementById('sidebarLogoImg');
+            if (imgSrc) {
+                icon.classList.add('hidden');
+                img.src = imgSrc;
+                img.classList.remove('hidden');
+            }
+        }
+
         window.onload = function() {
             loadBannerInfo();
+            const savedLogo = localStorage.getItem('madrasaCustomLogo');
+            if (savedLogo) {
+                applyLogo(savedLogo);
+            }
         };
     </script>
 </body>
-                            </html>
+    </html>

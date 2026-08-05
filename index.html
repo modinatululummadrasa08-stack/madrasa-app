@@ -2764,6 +2764,16 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 const auth = firebase.auth();
+console.log("Firebase Auth Ready");
+
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        console.log("Login:", user.email);
+    } else {
+        console.log("Not Logged In");
+    }
+});
+
 
 
 /* =====================================================

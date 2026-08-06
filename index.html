@@ -4197,6 +4197,17 @@ window.onload=function(){
 
 };
 
+    auth.onAuthStateChanged(function(user){
+
+    if(user){
+        console.log("✅ Firebase Auth Ready");
+        console.log("Logged in:", user.email);
+    }else{
+        console.log("⚠️ Not Logged In");
+    }
+
+});
+    
 </script>
 
 </body>

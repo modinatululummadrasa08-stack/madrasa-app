@@ -1,4360 +1,1379 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>দারুল উলুম মাদ্রাসা ম্যানেজমেন্ট সিস্টেম</title>
 
-<title>মদিনাতুল উলূম - মাদ্রাসা ম্যানেজমেন্ট</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Hind Siliguri) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase App & Database SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            font-family: 'Hind Siliguri', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* App Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-rel="stylesheet">
+        .active-tab {
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+        
+        /* Mobile Sidebar Drawer */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100vh;
+                z-index: 50;
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            #sidebar.mobile-open {
+                left: 0;
+            }
+        }
 
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+        .label {
+            display: block;
+            font-size: .75rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: .35rem;
+        }
 
-<style>
+        .input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: .75rem;
+            padding: .65rem .8rem;
+            font-size: .8rem;
+            outline: none;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
 
-*{
-    scrollbar-width:thin;
-    scrollbar-color:#cbd5e1 transparent;
-}
+        .input:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, .15);
+        }
 
-body{
-    font-family:'Inter',sans-serif;
-    background:#f8fafc;
-}
+        .btn-primary {
+            background: #059669;
+            color: white;
+            padding: .65rem 1.1rem;
+            border-radius: .7rem;
+            font-size: .8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.sidebar-item{
-    transition:.2s ease;
-}
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
 
-.sidebar-item:hover{
-    background:#f0fdf4;
-    color:#059669;
-}
+        .btn-primary:hover {
+            background: #047857;
+        }
 
-.active-tab{
-    background:#dcfce7 !important;
-    color:#047857 !important;
-    font-weight:700;
-}
+        .btn-light {
+            background: #ecfdf5;
+            color: #047857;
+            padding: .5rem .8rem;
+            border-radius: .65rem;
+            font-size: .7rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
-.section-title{
-    letter-spacing:-.02em;
-}
+        .module-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: all 0.2s ease;
+        }
 
-.card-hover{
-    transition:.2s ease;
-}
+        .module-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, .06);
+            border-color: #d1fae5;
+        }
 
-.card-hover:hover{
-    transform:translateY(-2px);
-    box-shadow:0 12px 25px rgba(15,23,42,.07);
-}
+        .module-card i {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #ecfdf5;
+            color: #059669;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
 
-.mobile-overlay{
-    background:rgba(15,23,42,.45);
-    backdrop-filter:blur(2px);
-}
+        .module-card h3 {
+            font-size: .85rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
 
-.chart-bar{
-    transition:.4s ease;
-}
+        .module-card p {
+            font-size: .7rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
 
-@media(max-width:767px){
-
-    #sidebar{
-        position:fixed;
-        left:0;
-        top:0;
-        bottom:0;
-        z-index:50;
-        transform:translateX(-100%);
-        transition:.25s ease;
-    }
-
-    #sidebar.mobile-open{
-        transform:translateX(0);
-    }
-
-}
-
-</style>
+        .small-action {
+            margin-top: 12px;
+            background: #059669;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
 </head>
-
-<body class="text-slate-700">
-
-<!-- MOBILE OVERLAY -->
-<div id="mobileOverlay"
-     onclick="closeMobileSidebar()"
-     class="fixed inset-0 mobile-overlay z-40 hidden">
-</div>
-
-
-<!-- ================= SIDEBAR ================= -->
-
-<aside id="sidebar"
-class="w-72 bg-white border-r border-slate-200 flex flex-col justify-between shadow-sm">
-
-<div>
-
-    <!-- LOGO / BRAND -->
-
-    <div class="px-5 py-5 border-b border-slate-100">
-
-        <div class="flex items-center gap-3">
-
-            <div onclick="document.getElementById('logoFileInput').click()"
-                 class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg overflow-hidden cursor-pointer">
-
-                <i id="sidebarLogoIcon"
-                   class="fa-solid fa-mosque text-xl"></i>
-
-                <img id="sidebarLogoImg"
-                     class="hidden w-full h-full object-cover"
-                     alt="Logo">
-
-            </div>
-
-            <input type="file"
-                   id="logoFileInput"
-                   accept="image/*"
-                   class="hidden"
-                   onchange="updateSidebarLogo(event)">
-
-            <div class="min-w-0">
-                <h1 class="font-extrabold text-slate-800 truncate">
-                    মদিনাতুল উলূম
-                </h1>
-
-                <p class="text-xs text-slate-500 mt-0.5">
-                    মাদ্রাসা ম্যানেজমেন্ট
-                </p>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- NAVIGATION -->
-
-    <nav class="p-3 overflow-y-auto h-[calc(100vh-100px)] text-sm">
-
-        <!-- MAIN -->
-
-        <p class="px-3 pt-2 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            Main Menu
-        </p>
-
-        <a href="#"
-           onclick="switchTab('dashboard');closeMobileSidebar()"
-           id="menu-dashboard"
-           class="sidebar-item active-tab flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-house w-5"></i>
-            <span>ড্যাশবোর্ড</span>
-
-        </a>
-
-
-        <!-- PEOPLE -->
-
-        <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            People Management
-        </p>
-
-        <a href="#"
-           onclick="switchTab('students');closeMobileSidebar()"
-           id="menu-students"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-user-graduate w-5"></i>
-            <span>ছাত্র ব্যবস্থাপনা</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('teachers');closeMobileSidebar()"
-           id="menu-teachers"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-chalkboard-user w-5"></i>
-            <span>শিক্ষক ও কর্মচারী</span>
-
-        </a>
-
-
-        <!-- ACADEMIC -->
-
-        <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            Academic
-        </p>
-
-
-        <a href="#"
-           onclick="switchTab('academic');closeMobileSidebar()"
-           id="menu-academic"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-school w-5"></i>
-            <span>একাডেমিক</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('hifz');closeMobileSidebar()"
-           id="menu-hifz"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-book-quran w-5"></i>
-            <span>হিফজ ও কুরআন</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('attendance');closeMobileSidebar()"
-           id="menu-attendance"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-clipboard-user w-5"></i>
-            <span>হাজিরা</span>
-
-        </a>
-
-
-        <!-- FINANCE -->
-
-        <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            Finance
-        </p>
-
-
-        <a href="#"
-           onclick="switchTab('income');closeMobileSidebar()"
-           id="menu-income"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-money-bill-transfer w-5"></i>
-            <span>ফি ও পেমেন্ট</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('expense');closeMobileSidebar()"
-           id="menu-expense"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-wallet w-5"></i>
-            <span>খরচ ও ব্যয়</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('accounts');closeMobileSidebar()"
-           id="menu-accounts"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-building-columns w-5"></i>
-            <span>একাউন্টস</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('zakat');closeMobileSidebar()"
-           id="menu-zakat"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-hand-holding-heart w-5"></i>
-            <span>যাকাত ফান্ড</span>
-
-        </a>
-
-
-        <!-- ACADEMIC TOOLS -->
-
-        <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            Academic Tools
-        </p>
-
-
-        <a href="#"
-           onclick="switchTab('exam');closeMobileSidebar()"
-           id="menu-exam"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-file-pen w-5"></i>
-            <span>পরীক্ষা ও ফলাফল</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('library');closeMobileSidebar()"
-           id="menu-library"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-book w-5"></i>
-            <span>লাইব্রেরি</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('hostel');closeMobileSidebar()"
-           id="menu-hostel"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-bed w-5"></i>
-            <span>হোস্টেল</span>
-
-        </a>
-
-
-        <!-- COMMUNICATION -->
-
-        <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            Communication
-        </p>
-
-
-        <a href="#"
-           onclick="switchTab('communication');closeMobileSidebar()"
-           id="menu-communication"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-bullhorn w-5"></i>
-            <span>নোটিশ ও যোগাযোগ</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('certificate');closeMobileSidebar()"
-           id="menu-certificate"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-certificate w-5"></i>
-            <span>সনদ ও ডকুমেন্ট</span>
-
-        </a>
-
-
-        <!-- SYSTEM -->
-
-        <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
-            System
-        </p>
-
-
-        <a href="#"
-           onclick="switchTab('reports');closeMobileSidebar()"
-           id="menu-reports"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-chart-column w-5"></i>
-            <span>রিপোর্ট</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('users');closeMobileSidebar()"
-           id="menu-users"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
-
-            <i class="fa-solid fa-users-gear w-5"></i>
-            <span>ইউজার ও পারমিশন</span>
-
-        </a>
-
-
-        <a href="#"
-           onclick="switchTab('settings');closeMobileSidebar()"
-           id="menu-settings"
-           class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-4">
-
-            <i class="fa-solid fa-gear w-5"></i>
-            <span>সেটিংস</span>
-
-        </a>
-
-    </nav>
-
-</div>
-
-
-<!-- SIDEBAR FOOTER -->
-
-<div class="p-4 border-t border-slate-100">
-
-    <button onclick="openAdminModal()"
-            class="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-emerald-50 transition">
-
-        <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
-            <i class="fa-solid fa-user-shield"></i>
-        </div>
-
-        <div class="text-left">
-            <p class="text-xs font-bold text-slate-700">
-                অ্যাডমিন
-            </p>
-
-            <p class="text-[10px] text-slate-400">
-                Control Panel
-            </p>
-        </div>
-
-        <i class="fa-solid fa-chevron-right text-xs text-slate-400 ml-auto"></i>
-
-    </button>
-
-</div>
-
-</aside>
-
-
-<!-- ================= MAIN ================= -->
-
-<div class="flex-1 flex flex-col h-screen overflow-hidden">
-
-
-<!-- TOPBAR -->
-
-<header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-6 shrink-0">
-
-    <div class="flex items-center gap-3">
-
-        <button onclick="openMobileSidebar()"
-                class="md:hidden w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-
-            <i class="fa-solid fa-bars"></i>
-
-        </button>
-
-        <div>
-
-            <p id="pageTitle"
-               class="font-bold text-slate-800">
-                ড্যাশবোর্ড
-            </p>
-
-            <p class="text-[10px] text-slate-400 hidden sm:block">
-                মদিনাতুল উলূম মাদ্রাসা ম্যানেজমেন্ট সিস্টেম
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="flex items-center gap-2">
-
-        <span class="hidden sm:flex text-[10px] bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full font-semibold">
-            <i class="fa-solid fa-cloud mr-1"></i>
-            Firebase Connected
-        </span>
-
-
-        <button onclick="openAdminModal()"
-                class="flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 sm:px-3 py-1.5 rounded-full">
-
-            <span class="hidden sm:block text-xs font-semibold text-slate-700">
-                অ্যাডমিন
-            </span>
-
-            <div class="bg-emerald-600 text-white font-bold w-8 h-8 rounded-full flex items-center justify-center text-xs">
-                MU
-            </div>
-
-        </button>
-
-    </div>
-
-</header>
-
-
-<!-- CONTENT -->
-
-<main class="flex-1 overflow-y-auto">
-
-<div class="p-4 md:p-6 lg:p-8 space-y-6">
-
-
-<!-- ================= BANNER WITH DYNAMIC CALENDAR ================= -->
-
-<section class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 text-white rounded-3xl shadow-xl overflow-hidden relative">
-
-    <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-emerald-500/10"></div>
-    <div class="absolute -left-20 -bottom-20 w-72 h-72 rounded-full bg-teal-500/10"></div>
-
-    <div class="relative z-10 p-5 md:p-7">
-
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-
-            <div class="flex items-center gap-4">
-
-                <div id="bannerLogoContainer"
-                     class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden shrink-0">
-
-                    <i id="bannerLogoIcon"
-                       class="fa-solid fa-kaaba text-3xl text-amber-300"></i>
-
-                    <img id="bannerLogoImg"
-                         class="hidden w-full h-full object-cover"
-                         alt="Logo">
-
-                </div>
-
-
-                <div>
-
-                    <div class="flex flex-wrap items-center gap-2">
-
-                        <h1 id="disp-name"
-                            class="text-xl md:text-2xl font-extrabold">
-                            মদিনাতুল উলূম মাদ্রাসা, বাঁশখালী
-                        </h1>
-
-                        <span id="disp-estd"
-                              class="bg-amber-400/15 text-amber-300 border border-amber-400/30 text-[10px] px-2.5 py-1 rounded-full">
-                            স্থাপিত: ২০১৪ ইং
-                        </span>
-
-                    </div>
-
-                    <p id="disp-tagline"
-                       class="text-emerald-100 text-xs md:text-sm mt-1">
-                        সুন্নতে নববীর আলোকে দ্বীনি শিক্ষায় সুপ্রতিষ্ঠিত একটি আদর্শ প্রতিষ্ঠান
-                    </p>
-
-
-                    <div class="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-emerald-200 mt-3">
-
-                        <span>
-                            <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>
-                            <span id="disp-address">বাঁশখালী, চট্টগ্রাম</span>
-                        </span>
-
-                        <span>
-                            <i class="fa-solid fa-phone text-amber-400 mr-1"></i>
-                            <span id="disp-phone">০১৮০০-০০০০০০</span>
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- DYNAMIC CALENDAR DISPLAY WIDGET -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 p-3.5 rounded-2xl">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-400/20 flex items-center justify-center text-amber-300">
-                        <i class="fa-solid fa-calendar-days text-xl"></i>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col selection:bg-emerald-500 selection:text-white">
+
+    <!-- ================= TOP HEADER / BANNER ================= -->
+    <header class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+            
+            <!-- Left: Mobile Menu Toggle & Madrasa Branding Info -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <button onclick="openMobileSidebar()" class="md:hidden text-white text-lg p-2 rounded-xl bg-emerald-700/60 hover:bg-emerald-600 focus:outline-none active:scale-95 transition">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center overflow-hidden border border-white/20 shadow-inner">
+                        <i id="bannerLogoIcon" class="fa-solid fa-mosque text-xl sm:text-2xl text-emerald-200"></i>
+                        <img id="bannerLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
                     </div>
                     <div>
-                        <p class="text-[10px] text-emerald-200 font-medium uppercase tracking-wider">আজকের তারিখ (স্বয়ংক্রিয়)</p>
-                        <p id="disp-date-english" class="font-bold text-white text-xs sm:text-sm">তারিখ লোড হচ্ছে...</p>
+                        <h1 id="disp-name" class="font-bold text-sm sm:text-base md:text-lg leading-tight tracking-wide">দারুল উলুম মাদ্রাসা</h1>
+                        <p id="disp-tagline" class="text-[11px] sm:text-xs text-emerald-200 opacity-90">দ্বীনি শিক্ষার একটি নির্ভরযোগ্য প্রতিষ্ঠান</p>
+                        <div class="hidden md:flex items-center gap-3 text-[11px] text-emerald-300 mt-0.5">
+                            <span>স্থাপিত: <span id="disp-estd">১৯৯৫</span></span> | 
+                            <span><i class="fa-solid fa-location-dot mr-1"></i><span id="disp-address">ঢাকা, বাংলাদেশ</span></span> | 
+                            <span><i class="fa-solid fa-phone mr-1"></i><span id="disp-phone">০১৭০০০০০০০০</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Realtime Clock & Date Module (Arabic, Bangla, English) -->
+            <div class="bg-emerald-950/60 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-emerald-700/40 text-right flex flex-col justify-center min-w-[160px] sm:min-w-[210px] ml-auto md:ml-0">
+                <div class="flex items-center justify-end gap-1.5 text-amber-300 font-mono text-xs sm:text-sm font-bold tracking-wider">
+                    <i class="fa-regular fa-clock text-[11px] animate-pulse"></i>
+                    <span id="live-clock-banner">00:00:00 AM</span>
+                </div>
+                <div class="text-[10px] sm:text-[11px] text-emerald-100 font-medium mt-0.5 flex flex-wrap justify-end gap-1">
+                    <span id="banner-date-hijri" class="text-amber-200">--</span> | 
+                    <span id="banner-date-bangla">--</span>
+                </div>
+                <div class="text-[9px] sm:text-[10px] text-emerald-300/80" id="banner-date-english">--</div>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- ================= MAIN BODY CONTAINER (SIDEBAR + MAIN CONTENT) ================= -->
+    <div class="flex-1 flex max-w-7xl w-full mx-auto relative">
+
+        <!-- Mobile Drawer Overlay -->
+        <div id="mobileOverlay" onclick="closeMobileSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden md:hidden"></div>
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 h-[calc(100vh-58px)] md:sticky md:top-[58px] shadow-sm">
+            
+            <!-- Sidebar Header / Custom Logo Upload -->
+            <div class="p-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+                        <i id="sidebarLogoIcon" class="fa-solid fa-graduation-cap"></i>
+                        <img id="sidebarLogoImg" class="w-full h-full rounded-lg object-cover hidden" alt="Logo">
+                    </div>
+                    <span class="font-bold text-xs text-slate-700">মেনু প্যানেল</span>
+                </div>
+                <label class="cursor-pointer text-xs text-emerald-600 hover:text-emerald-700 p-1.5 rounded-lg hover:bg-emerald-50 transition" title="লোগো পরিবর্তন করুন">
+                    <i class="fa-solid fa-camera"></i>
+                    <input type="file" accept="image/*" class="hidden" onchange="updateSidebarLogo(event)">
+                </label>
+            </div>
+
+            <!-- Sidebar Navigation Links -->
+            <nav class="flex-1 overflow-y-auto p-2.5 space-y-1">
+                <a id="menu-dashboard" onclick="switchTab('dashboard')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer active-tab transition">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i> ড্যাশবোর্ড
+                </a>
+                <a id="menu-calendar" onclick="switchTab('calendar')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-calendar-days w-5 text-center text-amber-500"></i> ক্যালেন্ডার ও সময়
+                </a>
+                <a id="menu-students" onclick="switchTab('students')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-user-graduate w-5 text-center"></i> ছাত্র ব্যবস্থাপনা
+                </a>
+                <a id="menu-teachers" onclick="switchTab('teachers')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-chalkboard-user w-5 text-center"></i> শিক্ষক ও কর্মচারী
+                </a>
+                <a id="menu-hifz" onclick="switchTab('hifz')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-quran w-5 text-center"></i> হিফজ ও কুরআন
+                </a>
+                <a id="menu-attendance" onclick="switchTab('attendance')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-clipboard-user w-5 text-center"></i> হাজিরা
+                </a>
+                <a id="menu-income" onclick="switchTab('income')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i> ফি ও পেমেন্ট
+                </a>
+                <a id="menu-expense" onclick="switchTab('expense')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-money-bill-transfer w-5 text-center"></i> খরচ ও ব্যয়
+                </a>
+                <a id="menu-accounts" onclick="switchTab('accounts')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-calculator w-5 text-center"></i> একাউন্টস
+                </a>
+                <a id="menu-zakat" onclick="switchTab('zakat')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-hand-holding-dollar w-5 text-center"></i> যাকাত ফান্ড
+                </a>
+                <a id="menu-exam" onclick="switchTab('exam')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-square-poll-vertical w-5 text-center"></i> পরীক্ষা ও ফলাফল
+                </a>
+                <a id="menu-library" onclick="switchTab('library')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-book w-5 text-center"></i> লাইব্রেরি
+                </a>
+                <a id="menu-hostel" onclick="switchTab('hostel')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-bed w-5 text-center"></i> হোস্টেল
+                </a>
+                <a id="menu-communication" onclick="switchTab('communication')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-bullhorn w-5 text-center"></i> নোটিশ ও যোগাযোগ
+                </a>
+                <a id="menu-certificate" onclick="switchTab('certificate')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-id-card w-5 text-center"></i> সনদ ও ডকুমেন্ট
+                </a>
+                <a id="menu-reports" onclick="switchTab('reports')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i> রিপোর্ট সেন্টার
+                </a>
+                <a id="menu-users" onclick="switchTab('users')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-users-gear w-5 text-center"></i> ইউজার ও পারমিশন
+                </a>
+                <a id="menu-settings" onclick="switchTab('settings')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer transition">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> সেটিংস
+                </a>
+            </nav>
+
+            <div class="p-3 border-t border-slate-100 bg-slate-50">
+                <button onclick="openAdminModal()" class="w-full text-left text-xs font-semibold text-slate-600 hover:text-emerald-600 flex items-center gap-2 p-2 rounded-lg transition">
+                    <i class="fa-solid fa-shield-halved text-emerald-600"></i> সিস্টেম কন্ট্রোল
+                </button>
+            </div>
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT PANELS ================= -->
+        <main class="flex-1 p-3.5 sm:p-5 md:p-6 overflow-y-auto">
+            
+            <!-- Page Header Title -->
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-5">
+                <div>
+                    <h2 id="pageTitle" class="text-lg sm:text-xl font-bold text-slate-800">ড্যাশবোর্ড</h2>
+                    <p class="text-[11px] sm:text-xs text-slate-400">সিস্টেমের সামগ্রিক তথ্য ও নিয়ন্ত্রণ</p>
+                </div>
+            </div>
+
+            <!-- SECTION: DASHBOARD -->
+            <section id="section-dashboard" class="content-section space-y-5">
+                <!-- Top Counter Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-100 shadow-xs">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center mb-2 text-sm sm:text-base">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-slate-400">মোট ছাত্র</p>
+                        <h3 id="dashStudentCount" class="text-lg sm:text-xl font-bold text-slate-800">০</h3>
+                    </div>
+
+                    <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-100 shadow-xs">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 text-sm sm:text-base">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-slate-400">মোট শিক্ষক</p>
+                        <h3 id="dashTeacherCount" class="text-lg sm:text-xl font-bold text-slate-800">০</h3>
+                    </div>
+
+                    <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-100 shadow-xs">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-2 text-sm sm:text-base">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-slate-400">মোট আয়</p>
+                        <h3 id="dashIncome" class="text-lg sm:text-xl font-bold text-slate-800">০ টাকা</h3>
+                    </div>
+
+                    <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-100 shadow-xs">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mb-2 text-sm sm:text-base">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-slate-400">মোট ব্যয়</p>
+                        <h3 id="dashExpense" class="text-lg sm:text-xl font-bold text-slate-800">০ টাকা</h3>
                     </div>
                 </div>
 
-                <div class="hidden sm:block w-px h-8 bg-white/20"></div>
-
-                <div class="flex flex-wrap gap-2 text-[11px] font-semibold">
-                    <span class="bg-emerald-950/50 text-emerald-100 px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
-                        <i class="fa-solid fa-moon text-amber-300"></i>
-                        <span id="disp-date-hijri">--</span>
-                    </span>
-                    <span class="bg-emerald-950/50 text-emerald-100 px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
-                        <i class="fa-solid fa-sun text-amber-300"></i>
-                        <span id="disp-date-bangla">--</span>
-                    </span>
+                <!-- Live Calendar Quick Banner -->
+                <div class="bg-gradient-to-r from-emerald-800 to-teal-800 rounded-2xl p-4 sm:p-5 text-white shadow-md flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="bg-emerald-600/60 text-emerald-100 text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md font-bold">লাইভ সময় ও তারিখ</span>
+                        <h3 class="text-base sm:text-lg font-bold mt-2" id="dash-live-time-full">লোডিং...</h3>
+                        <div class="text-xs text-emerald-100 mt-1 flex flex-wrap gap-2">
+                            <span id="disp-date-hijri" class="text-amber-200">--</span> • 
+                            <span id="disp-date-bangla">--</span> • 
+                            <span id="disp-date-english">--</span>
+                        </div>
+                    </div>
+                    <button onclick="switchTab('calendar')" class="px-3.5 py-2 bg-white text-emerald-800 font-bold text-xs rounded-xl shadow hover:bg-emerald-50 transition active:scale-95">
+                        <i class="fa-solid fa-calendar-days mr-1"></i> বিস্তারিত ক্যালেন্ডার
+                    </button>
                 </div>
 
-                <button onclick="openBannerModal()"
-                        class="self-stretch sm:self-auto bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition ml-auto">
-                    <i class="fa-solid fa-pen text-amber-300"></i>
-                    ব্যানার এডিট
-                </button>
-            </div>
+                <!-- Recent Activities -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-xs">
+                        <h3 class="font-bold text-sm text-slate-800 mb-3">সাম্প্রতিক ভর্তি</h3>
+                        <div id="dashboardStudents" class="space-y-2">
+                            <p class="text-xs text-slate-400 text-center py-4">তথ্য লোড হচ্ছে...</p>
+                        </div>
+                    </div>
 
-        </div>
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-xs">
+                        <h3 class="font-bold text-sm text-slate-800 mb-3">সাম্প্রতিক জমা</h3>
+                        <div id="dashboardIncome" class="space-y-2">
+                            <p class="text-xs text-slate-400 text-center py-4">তথ্য লোড হচ্ছে...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
+
+            <!-- SECTION: CALENDAR (NEW DETAILED CALENDAR MODULE) -->
+            <section id="section-calendar" class="content-section hidden space-y-5">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-xs">
+                    <div class="flex flex-wrap items-center justify-between border-b border-slate-100 pb-4 mb-5 gap-3">
+                        <div>
+                            <h3 class="font-bold text-base sm:text-lg text-slate-800">আজকের পূর্ণাঙ্গ ক্যালেন্ডার</h3>
+                            <p class="text-xs text-slate-400">আরবি (হিজরি), বাংলা ও ইংরেজি তারিখ এবং রিয়েলটাইম ঘড়ি</p>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <div id="cal-live-clock" class="text-xl sm:text-2xl font-mono font-bold text-emerald-700">00:00:00 AM</div>
+                            <span class="text-[10px] text-slate-400">প্রতি সেকেন্ডে স্বয়ংক্রিয়ভাবে আপডেট হচ্ছে</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Arabic / Hijri Card -->
+                        <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-900">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">হিজরি তারিখ</span>
+                                <i class="fa-solid fa-moon text-amber-600 text-xl"></i>
+                            </div>
+                            <h4 id="cal-date-hijri" class="text-base sm:text-lg font-extrabold text-amber-950">--</h4>
+                            <p class="text-[11px] text-amber-700 mt-1">উম্মুল কুরা হিজরি ক্যালেন্ডার অনুযায়ী</p>
+                        </div>
+
+                        <!-- Bangla Card -->
+                        <div class="p-4 sm:p-5 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-900">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">বাংলা তারিখ</span>
+                                <i class="fa-solid fa-sun text-emerald-600 text-xl"></i>
+                            </div>
+                            <h4 id="cal-date-bangla" class="text-base sm:text-lg font-extrabold text-emerald-950">--</h4>
+                            <p class="text-[11px] text-emerald-700 mt-1">বাংলাদেশের সরকারি তারিখ অনুযায়ী</p>
+                        </div>
+
+                        <!-- English Card -->
+                        <div class="p-4 sm:p-5 rounded-2xl bg-blue-50/80 border border-blue-200 text-blue-900">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-blue-700 uppercase tracking-wider">ইংরেজি তারিখ</span>
+                                <i class="fa-solid fa-calendar text-blue-600 text-xl"></i>
+                            </div>
+                            <h4 id="cal-date-english" class="text-base sm:text-lg font-extrabold text-blue-950">--</h4>
+                            <p class="text-[11px] text-blue-700 mt-1">গ্রোগোরিয়ান ক্যালেন্ডার</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SECTION: STUDENTS -->
+            <section id="section-students" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">নতুন শিক্ষার্থী নিবন্ধন</h3>
+                    <form onsubmit="saveStudentData(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="label">ছাত্রের নাম</label>
+                            <input id="std-name" required class="input" placeholder="ছাত্রের নাম">
+                        </div>
+                        <div>
+                            <label class="label">পিতার নাম</label>
+                            <input id="std-father" class="input" placeholder="পিতার নাম">
+                        </div>
+                        <div>
+                            <label class="label">শ্রেণী/বিভাগ</label>
+                            <input id="std-class" required class="input" placeholder="শ্রেণী">
+                        </div>
+                        <div>
+                            <label class="label">মোবাইল</label>
+                            <input id="std-phone" class="input" placeholder="০১৭০০০০০">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-4 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-plus mr-1"></i> সেভ করুন</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs overflow-x-auto">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">সকল শিক্ষার্থীর তালিকা</h3>
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-400">
+                                <th class="p-3">নাম</th>
+                                <th class="p-3">পিতা</th>
+                                <th class="p-3">শ্রেণী</th>
+                                <th class="p-3">মোবাইল</th>
+                                <th class="p-3 text-center">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- SECTION: TEACHERS -->
+            <section id="section-teachers" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">নতুন শিক্ষক যোগ করুন</h3>
+                    <form onsubmit="saveTeacherData(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="label">শিক্ষকের নাম</label>
+                            <input id="tch-name" required class="input" placeholder="নাম">
+                        </div>
+                        <div>
+                            <label class="label">পদবী / বিভাগ</label>
+                            <input id="tch-role" required class="input" placeholder="পদবী">
+                        </div>
+                        <div>
+                            <label class="label">মোবাইল</label>
+                            <input id="tch-phone" class="input" placeholder="মোবাইল">
+                        </div>
+                        <div class="sm:col-span-3 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-plus mr-1"></i> শিক্ষক যোগ করুন</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs overflow-x-auto">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">শিক্ষক তালিকা</h3>
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-400">
+                                <th class="p-3">নাম</th>
+                                <th class="p-3">পদবী</th>
+                                <th class="p-3">ফোন</th>
+                                <th class="p-3 text-center">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- SECTION: HIFZ -->
+            <section id="section-hifz" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">হিফজ ও ছবকী আপডেট</h3>
+                    <form onsubmit="saveHifzData(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="label">ছাত্রের নাম</label>
+                            <input id="hifz-name" required class="input" placeholder="ছাত্রের নাম">
+                        </div>
+                        <div>
+                            <label class="label">বর্তমান পারা</label>
+                            <input id="hifz-para" type="number" required class="input" placeholder="১-৩০">
+                        </div>
+                        <div>
+                            <label class="label">ছবকী (পৃষ্ঠা/আয়াত)</label>
+                            <input id="hifz-sabaki" class="input" placeholder="যেমন: পৃষ্ঠা ৫, আয়াত ১-১০">
+                        </div>
+                        <div>
+                            <label class="label">আমখাতাহ</label>
+                            <input id="hifz-amkha" class="input" placeholder="আমখাতাহ বিবরণ">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-4 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-save mr-1"></i> আপডেট সেভ করুন</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs overflow-x-auto">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">হিফজ অগ্রগতি রেকর্ড</h3>
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-400">
+                                <th class="p-3">ছাত্রের নাম</th>
+                                <th class="p-3">পারা</th>
+                                <th class="p-3">ছবকী</th>
+                                <th class="p-3">আমখাতাহ</th>
+                                <th class="p-3 text-center">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hifzTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- SECTION: ATTENDANCE -->
+            <section id="section-attendance" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <h3 class="font-bold text-sm text-slate-800">দৈনিক হাজিরা রেজিস্টার</h3>
+                        <input type="date" id="att-date" class="input !w-auto text-xs" onchange="loadAttendanceList()">
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-xs text-slate-400">
+                                    <th class="p-3">ছাত্রের নাম</th>
+                                    <th class="p-3">শ্রেণী</th>
+                                    <th class="p-3 text-center">স্ট্যাটাস</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="saveAttendanceData()" class="btn-primary"><i class="fa-solid fa-check-double mr-1"></i> হাজিরা সেভ করুন</button>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SECTION: INCOME / FEES -->
+            <section id="section-income" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">ফি ও পেমেন্ট গ্রহণ</h3>
+                    <form onsubmit="saveIncomeData(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="label">ছাত্রের নাম</label>
+                            <input id="inc-student" required class="input" placeholder="ছাত্রের নাম">
+                        </div>
+                        <div>
+                            <label class="label">ফি এর বিবরণ</label>
+                            <input id="inc-title" required class="input" placeholder="যেমন: জানুয়ারি মাসের টিউশন ফি">
+                        </div>
+                        <div>
+                            <label class="label">পরিমাণ (টাকা)</label>
+                            <input id="inc-amount" type="number" required class="input" placeholder="০০০">
+                        </div>
+                        <div class="sm:col-span-3 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-receipt mr-1"></i> জমা রসিদ যোগ করুন</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs overflow-x-auto">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">আদায়কৃত ফি এর তালিকা</h3>
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-400">
+                                <th class="p-3">ছাত্রের নাম</th>
+                                <th class="p-3">বিবরণ</th>
+                                <th class="p-3">টাকা</th>
+                                <th class="p-3 text-center">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incomeTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- SECTION: EXPENSE -->
+            <section id="section-expense" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">নতুন খরচ যোগ করুন</h3>
+                    <form onsubmit="saveExpenseData(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="label">খরচের খাত</label>
+                            <input id="exp-title" required class="input" placeholder="যেমন: কারেন্ট বিল, শিক্ষক বেতন">
+                        </div>
+                        <div>
+                            <label class="label">পরিমাণ (টাকা)</label>
+                            <input id="exp-amount" type="number" required class="input" placeholder="০০০">
+                        </div>
+                        <div>
+                            <label class="label">তারিখ</label>
+                            <input id="exp-date" type="date" required class="input">
+                        </div>
+                        <div class="sm:col-span-3 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-minus-circle mr-1"></i> খরচ এন্ট্রি দিন</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs overflow-x-auto">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">খরচের তালিকা</h3>
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-400">
+                                <th class="p-3">খাত/বিবরণ</th>
+                                <th class="p-3">পরিমাণ</th>
+                                <th class="p-3">তারিখ</th>
+                                <th class="p-3 text-center">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- SECTION: ACCOUNTS -->
+            <section id="section-accounts" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs">
+                    <h3 class="font-bold text-base text-slate-800 mb-4">সামগ্রিক একাউন্টস সামারি</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                            <p class="text-xs text-emerald-700 font-medium">মোট ক্যাশ ইনকাম</p>
+                            <h4 id="accTotalIncome" class="text-xl font-bold text-emerald-800 mt-1">০ টাকা</h4>
+                        </div>
+                        <div class="p-4 rounded-xl bg-rose-50 border border-rose-100">
+                            <p class="text-xs text-rose-700 font-medium">মোট ক্যাশ এক্সপেন্স</p>
+                            <h4 id="accTotalExpense" class="text-xl font-bold text-rose-800 mt-1">০ টাকা</h4>
+                        </div>
+                        <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
+                            <p class="text-xs text-blue-700 font-medium">বর্তমান অবশিষ্ট ব্যালেন্স</p>
+                            <h4 id="accNetBalance" class="text-xl font-bold text-blue-800 mt-1">০ টাকা</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- SECTION: ZAKAT -->
+            <section id="section-zakat" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">যাকাত ও লিল্লাহ ফান্ড এন্ট্রি</h3>
+                    <form onsubmit="saveZakatData(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="label">দাতা/উৎস</label>
+                            <input id="zakat-donor" required class="input" placeholder="দাতার নাম">
+                        </div>
+                        <div>
+                            <label class="label">পরিমাণ (টাকা)</label>
+                            <input id="zakat-amount" type="number" required class="input" placeholder="০০০">
+                        </div>
+                        <div>
+                            <label class="label">ফান্ডের ধরন</label>
+                            <select id="zakat-type" class="input">
+                                <option value="যাকাত">যাকাত</option>
+                                <option value="লিল্লাহ বোডিং">লিল্লাহ বোডিং</option>
+                                <option value="দান/সাদাকাহ">দান/সাদাকাহ</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-3 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-hand-holding-heart mr-1"></i> ফান্ড যোগ করুন</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+
+            <!-- SECTION: EXAM -->
+            <section id="section-exam" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-square-poll-vertical text-4xl text-emerald-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">পরীক্ষা ও ফলাফল ব্যবস্থাপনা</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">পরীক্ষার রুটিন, নম্বরপত্র ও ফলাফল তৈরির মডিউল প্রস্তুত রয়েছে।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: LIBRARY -->
+            <section id="section-library" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-book text-4xl text-amber-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">কুতুবখানা ও লাইব্রেরি</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">মাদ্রাসার কুতুবখানার কিতাবপত্র ইস্যু ও ট্র্যাকিং মডিউল।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: HOSTEL -->
+            <section id="section-hostel" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-bed text-4xl text-indigo-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">হোস্টেল ও বোডিং</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">আবাসিক ছাত্রদের রুম বরাদ্দ ও মিল সিট ট্র্যাকিং।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: COMMUNICATION -->
+            <section id="section-communication" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-bullhorn text-4xl text-rose-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">নোটিশ ও বার্তা প্রেরণ</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">অভিভাবক ও শিক্ষকদের নোটিশ পাঠানো এবং এসএমএস অ্যালার্ট।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: CERTIFICATE -->
+            <section id="section-certificate" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-id-card text-4xl text-teal-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">সনদ ও প্রত্যয়নপত্র</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">ছাত্রদের প্রশংসা পত্র, প্রত্যয়ন ও হিফজ সনদ জেনারেটর।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: REPORTS -->
+            <section id="section-reports" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-chart-pie text-4xl text-blue-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">রিপোর্ট সেন্টার</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">মাসিক ও বার্ষিক হিসাবের পূর্ণাঙ্গ পিডিএফ ও এক্সেল রিপোর্ট।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: USERS -->
+            <section id="section-users" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-xs text-center py-10">
+                    <i class="fa-solid fa-users-gear text-4xl text-slate-600 mb-3"></i>
+                    <h3 class="font-bold text-base text-slate-800">ইউজার পারমিশন</h3>
+                    <p class="text-xs text-slate-400 max-w-md mx-auto mt-1">শিক্ষক ও স্টাফদের জন্য আলাদা আলাদা অ্যাক্সেস রোল সেটিং।</p>
+                </div>
+            </section>
+
+
+            <!-- SECTION: SETTINGS -->
+            <section id="section-settings" class="content-section hidden space-y-5">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <h3 class="font-bold text-sm mb-4 text-slate-800">মাদ্রাসার সাধারণ সেটিংস</h3>
+                    <form onsubmit="saveMadrasaSettings(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="label">মাদ্রাসার নাম</label>
+                            <input id="set-name" required class="input" value="দারুল উলুম মাদ্রাসা">
+                        </div>
+                        <div>
+                            <label class="label">মাদ্রাসার স্লোগান / ট্যাগলাইন</label>
+                            <input id="set-tagline" class="input" value="দ্বীনি শিক্ষার একটি নির্ভরযোগ্য প্রতিষ্ঠান">
+                        </div>
+                        <div>
+                            <label class="label">প্রতিষ্ঠাসাল</label>
+                            <input id="set-estd" class="input" value="১৯৯৫">
+                        </div>
+                        <div>
+                            <label class="label">ফোন নম্বর</label>
+                            <input id="set-phone" class="input" value="০১৭০০০০০০০০">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="label">ঠিকানা</label>
+                            <input id="set-address" class="input" value="ঢাকা, বাংলাদেশ">
+                        </div>
+                        <div class="sm:col-span-2 flex justify-end mt-2">
+                            <button class="btn-primary"><i class="fa-solid fa-save mr-1"></i> সেটিংস পরিবর্তন করুন</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
     </div>
 
-</section>
 
+    <!-- ================= MODALS ================= -->
 
-<!-- =====================================================
-     DASHBOARD
-===================================================== -->
-
-<section id="section-dashboard" class="content-section space-y-6">
-
-
-    <!-- STAT CARDS -->
-
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-
-
-        <div onclick="switchTab('students')"
-             class="bg-white rounded-2xl border border-slate-100 p-4 md:p-5 card-hover cursor-pointer">
-
-            <div class="flex items-center justify-between">
-
-                <div class="w-11 h-11 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center">
-                    <i class="fa-solid fa-user-graduate"></i>
-                </div>
-
-                <span class="text-[10px] bg-violet-50 text-violet-600 px-2 py-1 rounded-full">
-                    Students
-                </span>
-
+    <!-- SYSTEM CONTROL / ADMIN MODAL -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-100 transform transition-all">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-emerald-600"></i> সিস্টেম কন্ট্রোল ও ফায়ারবেস
+                </h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-
-            <p class="text-xs text-slate-500 mt-4">
-                মোট ছাত্র
+            
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                আপনার ক্লাউড ডাটাবেজ (Firebase Database) সুরক্ষিত রাখতে সেটিংস নিয়ন্ত্রণ করুন।
             </p>
 
-            <h2 id="dashStudentCount"
-                class="text-2xl font-extrabold text-slate-800 mt-1">
-                0
-            </h2>
-
-        </div>
-
-
-        <div onclick="switchTab('teachers')"
-             class="bg-white rounded-2xl border border-slate-100 p-4 md:p-5 card-hover cursor-pointer">
-
-            <div class="flex items-center justify-between">
-
-                <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                    <i class="fa-solid fa-chalkboard-user"></i>
+            <div class="space-y-3">
+                <div>
+                    <label class="label">এডমিন সিকিউরিটি পিন</label>
+                    <input type="password" id="adminPinInput" class="input" placeholder="পিন লিখুন (ডিফল্ট: 1234)">
                 </div>
-
-                <span class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-full">
-                    Staff
-                </span>
-
             </div>
 
-            <p class="text-xs text-slate-500 mt-4">
-                শিক্ষক
-            </p>
-
-            <h2 id="dashTeacherCount"
-                class="text-2xl font-extrabold text-slate-800 mt-1">
-                0
-            </h2>
-
-        </div>
-
-
-        <div onclick="switchTab('attendance')"
-             class="bg-white rounded-2xl border border-slate-100 p-4 md:p-5 card-hover cursor-pointer">
-
-            <div class="flex items-center justify-between">
-
-                <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                    <i class="fa-solid fa-user-check"></i>
-                </div>
-
-                <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded-full">
-                    Today
-                </span>
-
+            <div class="mt-5 flex justify-end gap-2">
+                <button onclick="closeAdminModal()" class="px-4 py-2 bg-slate-100 text-slate-600 font-semibold text-xs rounded-xl hover:bg-slate-200 transition">বাতিল</button>
+                <button onclick="verifyAdminPin()" class="btn-primary">নিশ্চিত করুন</button>
             </div>
-
-            <p class="text-xs text-slate-500 mt-4">
-                আজকের উপস্থিতি
-            </p>
-
-            <h2 id="dashAttendance"
-                class="text-2xl font-extrabold text-slate-800 mt-1">
-                0
-            </h2>
-
         </div>
-
-
-        <div onclick="switchTab('income')"
-             class="bg-white rounded-2xl border border-slate-100 p-4 md:p-5 card-hover cursor-pointer">
-
-            <div class="flex items-center justify-between">
-
-                <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-                    <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-                </div>
-
-                <span class="text-[10px] bg-amber-50 text-amber-600 px-2 py-1 rounded-full">
-                    Finance
-                </span>
-
-            </div>
-
-            <p class="text-xs text-slate-500 mt-4">
-                মোট আয়
-            </p>
-
-            <h2 id="dashIncome"
-                class="text-xl md:text-2xl font-extrabold text-slate-800 mt-1">
-                ০ টাকা
-            </h2>
-
-        </div>
-
     </div>
-
-
-    <!-- SECOND STATS -->
-
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-
-        <div class="bg-white rounded-2xl border border-slate-100 p-4">
-
-            <div class="flex items-center gap-3">
-
-                <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
-                    <i class="fa-solid fa-arrow-trend-down"></i>
-                </div>
-
-                <div>
-                    <p class="text-[11px] text-slate-500">
-                        মোট ব্যয়
-                    </p>
-
-                    <p id="dashExpense"
-                       class="font-extrabold text-slate-800">
-                        ০ টাকা
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="bg-white rounded-2xl border border-slate-100 p-4">
-
-            <div class="flex items-center gap-3">
-
-                <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center">
-                    <i class="fa-solid fa-wallet"></i>
-                </div>
-
-                <div>
-                    <p class="text-[11px] text-slate-500">
-                        বর্তমান ব্যালেন্স
-                    </p>
-
-                    <p id="dashBalance"
-                       class="font-extrabold text-slate-800">
-                        ০ টাকা
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="bg-white rounded-2xl border border-slate-100 p-4">
-
-            <div class="flex items-center gap-3">
-
-                <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
-                    <i class="fa-solid fa-book-quran"></i>
-                </div>
-
-                <div>
-                    <p class="text-[11px] text-slate-500">
-                        হিফজ বিভাগ
-                    </p>
-
-                    <p class="font-extrabold text-slate-800">
-                        <span id="dashHifz">০</span> ছাত্র
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="bg-white rounded-2xl border border-slate-100 p-4">
-
-            <div class="flex items-center gap-3">
-
-                <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
-                    <i class="fa-solid fa-sms"></i>
-                </div>
-
-                <div>
-                    <p class="text-[11px] text-slate-500">
-                        SMS Balance
-                    </p>
-
-                    <p class="font-extrabold text-slate-800">
-                        100
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- CHARTS / QUICK -->
-
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
-
-
-        <!-- ATTENDANCE -->
-
-        <div class="xl:col-span-2 bg-white border border-slate-100 rounded-2xl p-5">
-
-            <div class="flex items-center justify-between mb-5">
-
-                <div>
-                    <h3 class="font-bold text-slate-800">
-                        উপস্থিতির সারসংক্ষেপ
-                    </h3>
-
-                    <p class="text-[11px] text-slate-400 mt-1">
-                        সাম্প্রতিক তথ্য
-                    </p>
-                </div>
-
-                <button onclick="switchTab('attendance')"
-                        class="text-xs text-emerald-600 font-semibold">
-                    বিস্তারিত →
-                </button>
-
-            </div>
-
-
-            <div class="grid grid-cols-3 gap-4 mb-5">
-
-                <div class="bg-emerald-50 rounded-xl p-4">
-                    <p class="text-[10px] text-emerald-600">
-                        উপস্থিত
-                    </p>
-
-                    <p id="presentStat"
-                       class="text-xl font-extrabold text-emerald-700 mt-1">
-                        0
-                    </p>
-                </div>
-
-
-                <div class="bg-rose-50 rounded-xl p-4">
-                    <p class="text-[10px] text-rose-600">
-                        অনুপস্থিত
-                    </p>
-
-                    <p id="absentStat"
-                       class="text-xl font-extrabold text-rose-700 mt-1">
-                        0
-                    </p>
-                </div>
-
-
-                <div class="bg-amber-50 rounded-xl p-4">
-                    <p class="text-[10px] text-amber-600">
-                        ছুটি
-                    </p>
-
-                    <p id="leaveStat"
-                       class="text-xl font-extrabold text-amber-700 mt-1">
-                        0
-                    </p>
-                </div>
-
-            </div>
-
-
-            <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
-
-                <div id="attendanceProgress"
-                     class="h-full bg-emerald-500 rounded-full"
-                     style="width:0%">
-                </div>
-
-            </div>
-
-            <div class="flex justify-between text-[10px] text-slate-400 mt-2">
-
-                <span>
-                    উপস্থিতির হার
-                </span>
-
-                <span id="attendancePercent">
-                    0%
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- QUICK ACTION -->
-
-        <div class="bg-white border border-slate-100 rounded-2xl p-5">
-
-            <h3 class="font-bold text-slate-800">
-                দ্রুত কাজ
-            </h3>
-
-            <p class="text-[11px] text-slate-400 mt-1 mb-4">
-                প্রয়োজনীয় কাজ দ্রুত করুন
-            </p>
-
-
-            <div class="grid grid-cols-2 gap-3">
-
-                <button onclick="switchTab('students')"
-                        class="p-3 rounded-xl bg-violet-50 text-violet-700 text-xs font-semibold hover:bg-violet-100">
-
-                    <i class="fa-solid fa-user-plus block text-lg mb-2"></i>
-                    নতুন ছাত্র
-
-                </button>
-
-
-                <button onclick="switchTab('teachers')"
-                        class="p-3 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100">
-
-                    <i class="fa-solid fa-user-tie block text-lg mb-2"></i>
-                    নতুন শিক্ষক
-
-                </button>
-
-
-                <button onclick="switchTab('income')"
-                        class="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100">
-
-                    <i class="fa-solid fa-plus block text-lg mb-2"></i>
-                    পেমেন্ট
-
-                </button>
-
-
-                <button onclick="switchTab('expense')"
-                        class="p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-semibold hover:bg-rose-100">
-
-                    <i class="fa-solid fa-minus block text-lg mb-2"></i>
-                    ব্যয়
-
-                </button>
-
-
-                <button onclick="switchTab('exam')"
-                        class="p-3 rounded-xl bg-amber-50 text-amber-700 text-xs font-semibold hover:bg-amber-100">
-
-                    <i class="fa-solid fa-file-pen block text-lg mb-2"></i>
-                    পরীক্ষা
-
-                </button>
-
-
-                <button onclick="switchTab('certificate')"
-                        class="p-3 rounded-xl bg-cyan-50 text-cyan-700 text-xs font-semibold hover:bg-cyan-100">
-
-                    <i class="fa-solid fa-certificate block text-lg mb-2"></i>
-                    সনদ
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- RECENT -->
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-
-        <div class="bg-white border border-slate-100 rounded-2xl p-5">
-
-            <div class="flex justify-between items-center mb-4">
-
-                <div>
-                    <h3 class="font-bold text-slate-800">
-                        সাম্প্রতিক ছাত্র
-                    </h3>
-
-                    <p class="text-[10px] text-slate-400">
-                        সর্বশেষ নিবন্ধন
-                    </p>
-                </div>
-
-                <button onclick="switchTab('students')"
-                        class="text-xs text-emerald-600 font-semibold">
-                    সব দেখুন
-                </button>
-
-            </div>
-
-            <div id="dashboardStudents"
-                 class="space-y-2">
-
-                <p class="text-xs text-slate-400 text-center py-6">
-                    ডাটা লোড হচ্ছে...
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="bg-white border border-slate-100 rounded-2xl p-5">
-
-            <div class="flex justify-between items-center mb-4">
-
-                <div>
-                    <h3 class="font-bold text-slate-800">
-                        সাম্প্রতিক পেমেন্ট
-                    </h3>
-
-                    <p class="text-[10px] text-slate-400">
-                        সর্বশেষ আয়
-                    </p>
-                </div>
-
-                <button onclick="switchTab('income')"
-                        class="text-xs text-emerald-600 font-semibold">
-                    সব দেখুন
-                </button>
-
-            </div>
-
-            <div id="dashboardIncome"
-                 class="space-y-2">
-
-                <p class="text-xs text-slate-400 text-center py-6">
-                    ডাটা লোড হচ্ছে...
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     STUDENTS
-===================================================== -->
-
-<section id="section-students"
-class="content-section hidden space-y-5">
-
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-
-    <div>
-        <h2 class="text-xl font-extrabold text-slate-800">
-            ছাত্র ব্যবস্থাপনা
-        </h2>
-
-        <p class="text-xs text-slate-400">
-            ভর্তি, প্রোফাইল ও ছাত্র তালিকা
-        </p>
-    </div>
-
-</div>
-
-
-<div class="bg-white rounded-2xl border border-slate-100 p-5">
-
-<h3 class="font-bold text-slate-800 mb-4">
-    <i class="fa-solid fa-user-plus text-emerald-600 mr-2"></i>
-    নতুন ছাত্র নিবন্ধন
-</h3>
-
-<form onsubmit="saveStudentData(event)"
-      class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-<div>
-<label class="label">শিক্ষার্থীর নাম</label>
-<input type="text"
-       id="std-name"
-       required
-       class="input"
-       placeholder="পূর্ণ নাম">
-</div>
-
-<div>
-<label class="label">পিতার নাম</label>
-<input type="text"
-       id="std-father"
-       required
-       class="input"
-       placeholder="পিতার নাম">
-</div>
-
-<div>
-<label class="label">জামাত / বিভাগ</label>
-
-<select id="std-class"
-        class="input">
-
-<option>নাদিয়ারা বিভাগ</option>
-<option>হিফজ বিভাগ</option>
-<option>কিতাব বিভাগ</option>
-
-</select>
-
-</div>
-
-<div>
-<label class="label">অভিভাবকের মোবাইল</label>
-
-<input type="tel"
-       id="std-phone"
-       required
-       class="input"
-       placeholder="০১XXXXXXXXX">
-
-</div>
-
-<div class="md:col-span-2">
-
-<button type="submit"
-        class="btn-primary">
-
-<i class="fa-solid fa-floppy-disk mr-1"></i>
-তথ্য সংরক্ষণ
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-
-<div class="bg-white rounded-2xl border border-slate-100 p-5">
-
-<div class="flex justify-between items-center mb-4">
-
-<h3 class="font-bold text-slate-800">
-নিবন্ধিত ছাত্র-ছাত্রী
-</h3>
-
-<button onclick="loadStudentsTable()"
-        class="btn-light">
-
-<i class="fa-solid fa-rotate mr-1"></i>
-রিফ্রেশ
-
-</button>
-
-</div>
-
-<div class="overflow-x-auto">
-
-<table class="w-full">
-
-<thead>
-
-<tr class="border-b bg-slate-50 text-xs text-slate-500">
-
-<th class="p-3 text-left">নাম</th>
-<th class="p-3 text-left">পিতা</th>
-<th class="p-3 text-left">বিভাগ</th>
-<th class="p-3 text-left">মোবাইল</th>
-<th class="p-3 text-center">অ্যাকশন</th>
-
-</tr>
-
-</thead>
-
-<tbody id="studentTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     TEACHERS
-===================================================== -->
-
-<section id="section-teachers"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-শিক্ষক ও কর্মচারী
-</h2>
-
-<p class="text-xs text-slate-400">
-শিক্ষক ও কর্মচারীদের তথ্য ব্যবস্থাপনা
-</p>
-</div>
-
-
-<div class="bg-white rounded-2xl border border-slate-100 p-5">
-
-<h3 class="font-bold text-slate-800 mb-4">
-নতুন শিক্ষক নিবন্ধন
-</h3>
-
-<form onsubmit="saveTeacherData(event)"
-      class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-<div>
-<label class="label">শিক্ষকের নাম</label>
-
-<input id="tch-name"
-       required
-       class="input"
-       placeholder="নাম">
-</div>
-
-<div>
-<label class="label">পদবি / দায়িত্ব</label>
-
-<input id="tch-role"
-       required
-       class="input"
-       placeholder="মুহতামিম / শিক্ষক">
-</div>
-
-<div>
-<label class="label">মোবাইল</label>
-
-<input id="tch-phone"
-       required
-       class="input"
-       placeholder="০১XXXXXXXXX">
-</div>
-
-<div class="flex items-end">
-
-<button type="submit"
-        class="btn-primary">
-
-<i class="fa-solid fa-user-plus mr-1"></i>
-শিক্ষক যোগ করুন
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-
-<div class="bg-white rounded-2xl border border-slate-100 p-5">
-
-<div class="flex justify-between items-center mb-4">
-
-<h3 class="font-bold">
-শিক্ষকদের তালিকা
-</h3>
-
-<button onclick="loadTeachersTable()"
-        class="btn-light">
-রিফ্রেশ
-</button>
-
-</div>
-
-<div class="overflow-x-auto">
-
-<table class="w-full">
-
-<thead>
-<tr class="border-b bg-slate-50 text-xs">
-
-<th class="p-3 text-left">নাম</th>
-<th class="p-3 text-left">পদবি</th>
-<th class="p-3 text-left">মোবাইল</th>
-<th class="p-3 text-center">অ্যাকশন</th>
-
-</tr>
-</thead>
-
-<tbody id="teacherTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     ACADEMIC
-===================================================== -->
-
-<section id="section-academic"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-একাডেমিক ম্যানেজমেন্ট
-</h2>
-
-<p class="text-xs text-slate-400">
-জামাত, বিষয়, রুটিন ও একাডেমিক ব্যবস্থাপনা
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-layer-group"></i>
-<h3>জামাত / বিভাগ</h3>
-<p>বিভিন্ন জামাত পরিচালনা</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-book"></i>
-<h3>বিষয়</h3>
-<p>বিষয় ও শিক্ষক নির্ধারণ</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-calendar-days"></i>
-<h3>ক্লাস রুটিন</h3>
-<p>দৈনিক ও সাপ্তাহিক রুটিন</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-calendar-check"></i>
-<h3>Academic Session</h3>
-<p>শিক্ষাবর্ষ পরিচালনা</p>
-</div>
-
-</div>
-
-
-<div class="bg-white border border-slate-100 rounded-2xl p-6">
-
-<h3 class="font-bold text-slate-800 mb-3">
-বর্তমান একাডেমিক কাঠামো
-</h3>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-<div class="p-4 rounded-xl bg-emerald-50">
-<p class="text-xs text-emerald-600">বিভাগ</p>
-<p class="font-bold text-emerald-800 mt-1">নাদিয়ারা</p>
-</div>
-
-<div class="p-4 rounded-xl bg-violet-50">
-<p class="text-xs text-violet-600">বিভাগ</p>
-<p class="font-bold text-violet-800 mt-1">হিফজ</p>
-</div>
-
-<div class="p-4 rounded-xl bg-blue-50">
-<p class="text-xs text-blue-600">বিভাগ</p>
-<p class="font-bold text-blue-800 mt-1">কিতাব</p>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     HIFZ
-===================================================== -->
-
-<section id="section-hifz"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-হিফজ ও কুরআন ম্যানেজমেন্ট
-</h2>
-
-<p class="text-xs text-slate-400">
-হিফজ অগ্রগতি ও দৈনিক সবক ব্যবস্থাপনা
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-book-quran"></i>
-<h3>হিফজ ছাত্র</h3>
-<p>হিফজ বিভাগের ছাত্র তালিকা</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-book-open"></i>
-<h3>দৈনিক সবক</h3>
-<p>আজকের সবক সংরক্ষণ</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-rotate"></i>
-<h3>সাবকি</h3>
-<p>পুরোনো পড়া পুনরাবৃত্তি</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-chart-line"></i>
-<h3>Progress</h3>
-<p>হিফজ অগ্রগতি</p>
-</div>
-
-</div>
-
-
-<div class="bg-white border border-slate-100 rounded-2xl p-6">
-
-<h3 class="font-bold text-slate-800 mb-4">
-দৈনিক হিফজ রেকর্ড
-</h3>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<input class="input"
-       placeholder="ছাত্রের নাম">
-
-<input class="input"
-       placeholder="আজকের সবক">
-
-<input class="input"
-       placeholder="সাবকি">
-
-</div>
-
-<button onclick="alert('হিফজ রেকর্ড সংরক্ষণের Firebase Module পরবর্তী ধাপে যুক্ত করা যাবে।')"
-        class="btn-primary mt-4">
-
-সংরক্ষণ
-
-</button>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     ATTENDANCE
-===================================================== -->
-
-<section id="section-attendance"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-হাজিরা ম্যানেজমেন্ট
-</h2>
-
-<p class="text-xs text-slate-400">
-ছাত্র ও শিক্ষকের উপস্থিতি
-</p>
-</div>
-
-
-<div class="bg-white border border-slate-100 rounded-2xl p-5">
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div>
-
-<label class="label">
-জামাত / বিভাগ
-</label>
-
-<select id="att-class"
-        class="input">
-
-<option>নাদিয়ারা বিভাগ</option>
-<option>হিফজ বিভাগ</option>
-<option>কিতাব বিভাগ</option>
-
-</select>
-
-</div>
-
-
-<div>
-
-<label class="label">
-তারিখ
-</label>
-
-<input type="date"
-       id="att-date"
-       class="input">
-
-</div>
-
-
-<div class="flex items-end">
-
-<button onclick="saveAttendance(event)"
-        class="btn-primary w-full">
-
-হাজিরা সংরক্ষণ
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div class="bg-white border rounded-2xl p-5">
-
-<p class="text-xs text-slate-400">
-আজ উপস্থিত
-</p>
-
-<h3 id="attendancePagePresent"
-    class="text-2xl font-extrabold text-emerald-600 mt-2">
-0
-</h3>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<p class="text-xs text-slate-400">
-আজ অনুপস্থিত
-</p>
-
-<h3 id="attendancePageAbsent"
-    class="text-2xl font-extrabold text-rose-600 mt-2">
-0
-</h3>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<p class="text-xs text-slate-400">
-মোট রেকর্ড
-</p>
-
-<h3 id="attendanceTotal"
-    class="text-2xl font-extrabold text-slate-800 mt-2">
-0
-</h3>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     INCOME
-===================================================== -->
-
-<section id="section-income"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-ফি ও পেমেন্ট
-</h2>
-
-<p class="text-xs text-slate-400">
-মাসিক বেতন, ভর্তি ফি ও অনুদান
-</p>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<form onsubmit="saveIncomeData(event)"
-      class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div>
-
-<label class="label">
-খাত
-</label>
-
-<select id="inc-cat"
-        class="input">
-
-<option>ছাত্রের মাসিক বেতন</option>
-<option>ভর্তি ফি</option>
-<option>সাধারণ অনুদান / চাঁদা</option>
-<option>অন্যান্য ফি</option>
-
-</select>
-
-</div>
-
-
-<div>
-
-<label class="label">
-পরিমাণ
-</label>
-
-<input type="number"
-       id="inc-amount"
-       required
-       class="input"
-       placeholder="টাকা">
-
-</div>
-
-
-<div class="flex items-end">
-
-<button type="submit"
-        class="btn-primary w-full">
-
-জমা নিশ্চিত করুন
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<h3 class="font-bold mb-4">
-সাম্প্রতিক জমা
-</h3>
-
-<div class="overflow-x-auto">
-
-<table class="w-full">
-
-<thead>
-
-<tr class="border-b bg-slate-50 text-xs">
-
-<th class="p-3 text-left">খাত</th>
-<th class="p-3 text-left">পরিমাণ</th>
-<th class="p-3 text-left">তারিখ</th>
-<th class="p-3 text-center">অ্যাকশন</th>
-
-</tr>
-
-</thead>
-
-<tbody id="incomeTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     EXPENSE
-===================================================== -->
-
-<section id="section-expense"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-খরচ ও ব্যয়
-</h2>
-
-<p class="text-xs text-slate-400">
-মাদ্রাসার সকল ব্যয় সংরক্ষণ
-</p>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<form onsubmit="saveExpenseData(event)"
-      class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div>
-
-<label class="label">
-খরচের বিবরণ
-</label>
-
-<input id="exp-desc"
-       required
-       class="input"
-       placeholder="বিদ্যুৎ বিল / বাজার">
-
-</div>
-
-
-<div>
-
-<label class="label">
-পরিমাণ
-</label>
-
-<input type="number"
-       id="exp-amount"
-       required
-       class="input"
-       placeholder="টাকা">
-
-</div>
-
-
-<div class="flex items-end">
-
-<button type="submit"
-        class="btn-primary w-full">
-
-খরচ সংরক্ষণ
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<h3 class="font-bold mb-4">
-খরচের তালিকা
-</h3>
-
-<div class="overflow-x-auto">
-
-<table class="w-full">
-
-<thead>
-
-<tr class="border-b bg-slate-50 text-xs">
-
-<th class="p-3 text-left">বিবরণ</th>
-<th class="p-3 text-left">পরিমাণ</th>
-<th class="p-3 text-left">তারিখ</th>
-<th class="p-3 text-center">অ্যাকশন</th>
-
-</tr>
-
-</thead>
-
-<tbody id="expenseTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     ACCOUNTS
-===================================================== -->
-
-<section id="section-accounts"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-একাউন্টস
-</h2>
-
-<p class="text-xs text-slate-400">
-আয়, ব্যয় ও ব্যালেন্স
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div class="bg-white border rounded-2xl p-5">
-<p class="text-xs text-slate-400">মোট আয়</p>
-<h2 id="accountIncome"
-    class="text-2xl font-extrabold text-emerald-600 mt-2">
-০ টাকা
-</h2>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-<p class="text-xs text-slate-400">মোট ব্যয়</p>
-<h2 id="accountExpense"
-    class="text-2xl font-extrabold text-rose-600 mt-2">
-০ টাকা
-</h2>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-<p class="text-xs text-slate-400">ব্যালেন্স</p>
-<h2 id="accountBalance"
-    class="text-2xl font-extrabold text-slate-800 mt-2">
-০ টাকা
-</h2>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     ZAKAT
-===================================================== -->
-
-<section id="section-zakat"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-যাকাত ফান্ড
-</h2>
-
-<p class="text-xs text-slate-400">
-যাকাতের অর্থ সংরক্ষণ ও ব্যবস্থাপনা
-</p>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<form onsubmit="saveZakatData(event)"
-      class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div>
-
-<label class="label">
-দাতার নাম
-</label>
-
-<input id="zak-name"
-       required
-       class="input"
-       placeholder="নাম">
-
-</div>
-
-
-<div>
-
-<label class="label">
-পরিমাণ
-</label>
-
-<input type="number"
-       id="zak-amount"
-       required
-       class="input"
-       placeholder="টাকা">
-
-</div>
-
-
-<div class="flex items-end">
-
-<button type="submit"
-        class="btn-primary w-full">
-
-যাকাত ফান্ডে যোগ করুন
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<h3 class="font-bold mb-4">
-যাকাত দাতার তালিকা
-</h3>
-
-<div class="overflow-x-auto">
-
-<table class="w-full">
-
-<thead>
-
-<tr class="border-b bg-slate-50 text-xs">
-
-<th class="p-3 text-left">দাতা</th>
-<th class="p-3 text-left">পরিমাণ</th>
-<th class="p-3 text-left">তারিখ</th>
-<th class="p-3 text-center">অ্যাকশন</th>
-
-</tr>
-
-</thead>
-
-<tbody id="zakatTableBody"></tbody>
-
-</table>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     EXAM
-===================================================== -->
-
-<section id="section-exam"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-পরীক্ষা ও ফলাফল
-</h2>
-
-<p class="text-xs text-slate-400">
-পরীক্ষা, নম্বর, গ্রেড ও ফলাফল
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-calendar-days"></i>
-<h3>পরীক্ষার রুটিন</h3>
-<p>পরীক্ষার সময়সূচি</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-pen"></i>
-<h3>নম্বর প্রদান</h3>
-<p>বিষয়ভিত্তিক নম্বর</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-chart-simple"></i>
-<h3>ফলাফল</h3>
-<p>Marksheet ও Result</p>
-</div>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-6">
-
-<h3 class="font-bold mb-4">
-পরীক্ষা মডিউল
-</h3>
-
-<p class="text-sm text-slate-500">
-এই অংশে পরবর্তী ধাপে Firebase-এর সাথে পরীক্ষা, নম্বর, Grade, Position এবং Automatic Result যুক্ত করা যাবে।
-</p>
-
-<button onclick="alert('Exam & Result module প্রস্তুত করার জন্য UI তৈরি আছে।')"
-        class="btn-primary mt-4">
-
-পরীক্ষা তৈরি করুন
-
-</button>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     LIBRARY
-===================================================== -->
-
-<section id="section-library"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-লাইব্রেরি
-</h2>
-
-<p class="text-xs text-slate-400">
-বই, Issue ও Return ব্যবস্থাপনা
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-book"></i>
-<h3>বইয়ের তালিকা</h3>
-<p>সকল বই</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-arrow-right-from-bracket"></i>
-<h3>বই Issue</h3>
-<p>বই প্রদান</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-arrow-right-to-bracket"></i>
-<h3>Return</h3>
-<p>বই ফেরত</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-triangle-exclamation"></i>
-<h3>জরিমানা</h3>
-<p>Late Return</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     HOSTEL
-===================================================== -->
-
-<section id="section-hostel"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-হোস্টেল ম্যানেজমেন্ট
-</h2>
-
-<p class="text-xs text-slate-400">
-আবাসিক ছাত্র, রুম ও সিট ব্যবস্থাপনা
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-door-open"></i>
-<h3>রুম</h3>
-<p>রুম ব্যবস্থাপনা</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-bed"></i>
-<h3>সিট</h3>
-<p>সিট বরাদ্দ</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-users"></i>
-<h3>আবাসিক ছাত্র</h3>
-<p>ছাত্র তালিকা</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-utensils"></i>
-<h3>খাবার</h3>
-<p>খাবারের হিসাব</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     COMMUNICATION
-===================================================== -->
-
-<section id="section-communication"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-নোটিশ ও যোগাযোগ
-</h2>
-
-<p class="text-xs text-slate-400">
-নোটিশ, SMS ও অভিভাবক যোগাযোগ
-</p>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<form onsubmit="handleFormSubmit(event,'মেসেজ সফলভাবে পাঠানো হয়েছে!')"
-      class="space-y-4">
-
-<div>
-
-<label class="label">
-প্রাপক
-</label>
-
-<select class="input">
-
-<option>সকল অভিভাবক</option>
-<option>হিফজ বিভাগের অভিভাবক</option>
-<option>কিতাব বিভাগের অভিভাবক</option>
-<option>নির্দিষ্ট নম্বর</option>
-
-</select>
-
-</div>
-
-
-<div>
-
-<label class="label">
-বার্তা
-</label>
-
-<textarea rows="5"
-          required
-          class="input"
-          placeholder="আপনার মেসেজ লিখুন..."></textarea>
-
-</div>
-
-
-<button class="btn-primary">
-
-<i class="fa-solid fa-paper-plane mr-1"></i>
-মেসেজ পাঠান
-
-</button>
-
-</form>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5">
-
-<h3 class="font-bold mb-4">
-নোটিশ বোর্ড
-</h3>
-
-<div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
-
-<p class="font-semibold text-amber-800 text-sm">
-গুরুত্বপূর্ণ নোটিশ
-</p>
-
-<p class="text-xs text-amber-700 mt-1">
-নতুন নোটিশ এখানে প্রদর্শিত হবে।
-</p>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     CERTIFICATE
-===================================================== -->
-
-<section id="section-certificate"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-সনদ ও ডকুমেন্ট
-</h2>
-
-<p class="text-xs text-slate-400">
-ID Card, Certificate ও Marksheet
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-id-card"></i>
-<h3>ID Card</h3>
-<p>ডিজিটাল পরিচয়পত্র</p>
-
-<button onclick="generateIdCard()"
-        class="small-action">
-তৈরি করুন
-</button>
-
-</div>
-
-
-<div class="module-card">
-<i class="fa-solid fa-certificate"></i>
-<h3>সনদ</h3>
-<p>সার্টিফিকেট তৈরি</p>
-</div>
-
-
-<div class="module-card">
-<i class="fa-solid fa-file-lines"></i>
-<h3>Marksheet</h3>
-<p>মার্কশিট</p>
-</div>
-
-
-<div class="module-card">
-<i class="fa-solid fa-qrcode"></i>
-<h3>Verification</h3>
-<p>QR Verification</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     REPORTS
-===================================================== -->
-
-<section id="section-reports"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-রিপোর্ট সেন্টার
-</h2>
-
-<p class="text-xs text-slate-400">
-মাদ্রাসার সকল রিপোর্ট
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-user-graduate"></i>
-<h3>Student Report</h3>
-<p>ছাত্র রিপোর্ট</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-user-check"></i>
-<h3>Attendance Report</h3>
-<p>হাজিরা রিপোর্ট</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-money-bill"></i>
-<h3>Fees Report</h3>
-<p>বেতন রিপোর্ট</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-arrow-trend-up"></i>
-<h3>Income Report</h3>
-<p>আয় রিপোর্ট</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-arrow-trend-down"></i>
-<h3>Expense Report</h3>
-<p>ব্যয় রিপোর্ট</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-chart-pie"></i>
-<h3>Annual Report</h3>
-<p>বার্ষিক রিপোর্ট</p>
-</div>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     USERS
-===================================================== -->
-
-<section id="section-users"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-ইউজার ও পারমিশন
-</h2>
-
-<p class="text-xs text-slate-400">
-কে কোন অংশ ব্যবহার করতে পারবে তা নিয়ন্ত্রণ
-</p>
-</div>
-
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<div class="module-card">
-<i class="fa-solid fa-user-shield"></i>
-<h3>Super Admin</h3>
-<p>সম্পূর্ণ নিয়ন্ত্রণ</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-user-tie"></i>
-<h3>মুহতামিম</h3>
-<p>প্রশাসনিক নিয়ন্ত্রণ</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-chalkboard-user"></i>
-<h3>Teacher</h3>
-<p>শিক্ষক পারমিশন</p>
-</div>
-
-<div class="module-card">
-<i class="fa-solid fa-calculator"></i>
-<h3>Accountant</h3>
-<p>হিসাব নিয়ন্ত্রণ</p>
-</div>
-
-</div>
-
-
-<div class="bg-white border rounded-2xl p-6">
-
-<p class="text-sm text-slate-500">
-Firebase Authentication যুক্ত করার পর এখানে প্রতিটি ইউজারের Role ও Permission নিয়ন্ত্রণ করা যাবে।
-</p>
-
-</div>
-
-</section>
-
-
-<!-- =====================================================
-     SETTINGS
-===================================================== -->
-
-<section id="section-settings"
-class="content-section hidden space-y-5">
-
-<div>
-<h2 class="text-xl font-extrabold text-slate-800">
-সেটিংস
-</h2>
-
-<p class="text-xs text-slate-400">
-মাদ্রাসার সিস্টেম সেটিংস
-</p>
-</div>
-
-
-<div class="bg-white border rounded-2xl p-5 space-y-3">
-
-<button onclick="openBannerModal()"
-        class="w-full p-4 rounded-xl bg-slate-50 hover:bg-emerald-50 flex items-center gap-4 text-left">
-
-<div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-<i class="fa-solid fa-school"></i>
-</div>
-
-<div>
-<p class="font-bold text-sm">
-মাদ্রাসার তথ্য
-</p>
-<p class="text-xs text-slate-400">
-নাম, ঠিকানা, ফোন, লোগো
-</p>
-</div>
-
-</button>
-
-
-<button onclick="openAdminModal()"
-        class="w-full p-4 rounded-xl bg-slate-50 hover:bg-emerald-50 flex items-center gap-4 text-left">
-
-<div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center">
-<i class="fa-solid fa-shield-halved"></i>
-</div>
-
-<div>
-<p class="font-bold text-sm">
-সিস্টেম কন্ট্রোল
-</p>
-<p class="text-xs text-slate-400">
-অ্যাডমিন ও সিকিউরিটি
-</p>
-</div>
-
-</button>
-
-</div>
-
-</section>
-
-</div>
-
-</main>
-
-</div>
-
-
-<!-- ================= BANNER MODAL ================= -->
-
-<div id="bannerModal"
-     class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
-
-<div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-
-<div class="flex justify-between items-center border-b pb-3 mb-4">
-
-<h3 class="font-bold text-slate-800">
-ব্যানার ও লোগো পরিবর্তন
-</h3>
-
-<button onclick="closeBannerModal()"
-        class="text-slate-400 text-xl">
-<i class="fa-solid fa-xmark"></i>
-</button>
-
-</div>
-
-
-<form onsubmit="saveBannerInfo(event)"
-      class="space-y-4">
-
-<div>
-
-<label class="label">
-লোগো
-</label>
-
-<input type="file"
-       id="input-logo-file"
-       accept="image/*"
-       class="w-full border rounded-lg p-2 text-xs">
-
-</div>
-
-
-<div>
-
-<label class="label">
-মাদ্রাসার নাম
-</label>
-
-<input type="text"
-       id="input-name"
-       required
-       class="input">
-
-</div>
-
-
-<div>
-
-<label class="label">
-ট্যাগলাইন
-</label>
-
-<input type="text"
-       id="input-tagline"
-       class="input">
-
-</div>
-
-
-<div class="grid grid-cols-2 gap-3">
-
-<div>
-
-<label class="label">
-স্থাপিত সাল
-</label>
-
-<input id="input-estd"
-       class="input">
-
-</div>
-
-
-<div>
-
-<label class="label">
-মোবাইল
-</label>
-
-<input id="input-phone"
-       class="input">
-
-</div>
-
-</div>
-
-
-<div>
-
-<label class="label">
-ঠিকানা
-</label>
-
-<input id="input-address"
-       class="input">
-
-</div>
-
-
-<div class="flex justify-end gap-2">
-
-<button type="button"
-        onclick="closeBannerModal()"
-        class="px-4 py-2 rounded-lg bg-slate-100 text-sm">
-
-বাতিল
-
-</button>
-
-<button class="btn-primary">
-
-সেভ করুন
-
-</button>
-
-</div>
-
-</form>
-
-</div>
-
-</div>
-
-
-<!-- ================= ADMIN MODAL ================= -->
-
-<div id="adminModal"
-     class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-[100] p-4">
-
-<div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-
-<div class="flex justify-between items-center border-b pb-4 mb-4">
-
-<div>
-
-<h3 class="font-bold text-slate-800">
-Advanced Control Panel
-</h3>
-
-<p class="text-xs text-slate-400">
-সিস্টেম নিয়ন্ত্রণ
-</p>
-
-</div>
-
-<button onclick="closeAdminModal()"
-        class="text-slate-400 text-xl">
-
-<i class="fa-solid fa-xmark"></i>
-
-</button>
-
-</div>
-
-
-<div onclick="factoryReset()"
-     class="p-4 rounded-xl bg-rose-50 border border-rose-100 cursor-pointer">
-
-<div class="flex items-center gap-3">
-
-<div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
-
-<i class="fa-solid fa-trash"></i>
-
-</div>
-
-<div>
-
-<p class="font-bold text-rose-800 text-sm">
-Factory Reset / Cache Clear
-</p>
-
-<p class="text-xs text-rose-500">
-শুধু Local Storage পরিষ্কার করবে
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="flex justify-end mt-5">
-
-<button onclick="closeAdminModal()"
-        class="btn-primary">
-
-বন্ধ করুন
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- ================= COMMON STYLE ================= -->
-
-<style>
-
-.label{
-    display:block;
-    font-size:.75rem;
-    font-weight:600;
-    color:#475569;
-    margin-bottom:.35rem;
-}
-
-.input{
-    width:100%;
-    border:1px solid #cbd5e1;
-    border-radius:.75rem;
-    padding:.65rem .8rem;
-    font-size:.8rem;
-    outline:none;
-    background:white;
-}
-
-.input:focus{
-    border-color:#10b981;
-    box-shadow:0 0 0 3px rgba(16,185,129,.08);
-}
-
-.btn-primary{
-    background:#059669;
-    color:white;
-    padding:.65rem 1.1rem;
-    border-radius:.7rem;
-    font-size:.8rem;
-    font-weight:600;
-    transition:.2s;
-    cursor:pointer;
-}
-
-.btn-primary:hover{
-    background:#047857;
-}
-
-.btn-light{
-    background:#ecfdf5;
-    color:#047857;
-    padding:.5rem .8rem;
-    border-radius:.65rem;
-    font-size:.7rem;
-    font-weight:600;
-    cursor:pointer;
-}
-
-.module-card{
-    background:white;
-    border:1px solid #f1f5f9;
-    border-radius:1rem;
-    padding:1.25rem;
-    transition:.2s;
-}
-
-.module-card:hover{
-    transform:translateY(-2px);
-    box-shadow:0 10px 25px rgba(15,23,42,.06);
-    border-color:#d1fae5;
-}
-
-.module-card i{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    background:#ecfdf5;
-    color:#059669;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:12px;
-}
-
-.module-card h3{
-    font-size:.85rem;
-    font-weight:700;
-    color:#1e293b;
-}
-
-.module-card p{
-    font-size:.7rem;
-    color:#94a3b8;
-    margin-top:4px;
-}
-
-.small-action{
-    margin-top:12px;
-    background:#059669;
-    color:white;
-    padding:6px 10px;
-    border-radius:7px;
-    font-size:11px;
-}
-
-</style>
-
-
-<!-- ================= SCRIPT ================= -->
-
-<script>
-
-/* =====================================================
-   FIREBASE
-===================================================== */
-
-const firebaseConfig = {
-
-    apiKey: "AIzaSyBOHwF3PriNh6bTgK56uk6Lg_1kfakHn8g",
-
-    authDomain:
-    "madrasa-management-app-c68da.firebaseapp.com",
-
-    projectId:
-    "madrasa-management-app-c68da",
-
-    storageBucket:
-    "madrasa-management-app-c68da.firebasestorage.app",
-
-    messagingSenderId:
-    "352012911839",
-
-    appId:
-    "1:352012911839:web:ca1e4312bb63e08b07956a",
-
-    measurementId:
-    "G-LRNH83N7JD"
-
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-const auth = firebase.auth();
-console.log("Firebase Auth Ready");
-
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        console.log("Login:", user.email);
-    } else {
-        console.log("Not Logged In");
-    }
-});
-
-
-/* =====================================================
-   LIVE DYNAMIC CALENDAR ENGINE (HIJRI, BANGLA, ENGLISH)
-===================================================== */
-
-function toBanglaDigit(str) {
-    const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-    return String(str).replace(/\d/g, d => banglaDigits[d]);
-}
-
-// বাংলাদেশের সরকারি সংশোধিত বাংলা ক্যালেন্ডার নিয়ম অনুযায়ী হিসাব
-function getBanglaDateDetails(date = new Date()) {
-    const monthNames = [
-        "বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন",
-        "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"
-    ];
-    
-    const year = date.getFullYear();
-    const month = date.getMonth(); 
-    const day = date.getDate();
-
-    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-    const banglaDaysInMonth = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapYear ? 31 : 30, 30];
-
-    let banglaYear = year - 593;
-    if (month < 3 || (month === 3 && day < 14)) {
-        banglaYear -= 1;
-    }
-
-    let bMonth = 0;
-    let bDay = 1;
-
-    const apr14 = new Date(year, 3, 14);
-    if (date >= apr14) {
-        let diffDays = Math.floor((date - apr14) / (1000 * 60 * 60 * 24));
-        for (let i = 0; i < 12; i++) {
-            if (diffDays < banglaDaysInMonth[i]) {
-                bMonth = i;
-                bDay = diffDays + 1;
-                break;
-            }
-            diffDays -= banglaDaysInMonth[i];
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // 1. FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyDummyKeyForMadrasaAppStructure",
+            authDomain: "madrasa-app.firebaseapp.com",
+            projectId: "madrasa-app",
+            storageBucket: "madrasa-app.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase safely
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-    } else {
-        const prevYearApr14 = new Date(year - 1, 3, 14);
-        let diffDays = Math.floor((date - prevYearApr14) / (1000 * 60 * 60 * 24));
-        const prevLeap = ((year - 1) % 4 === 0 && (year - 1) % 100 !== 0) || ((year - 1) % 400 === 0);
-        const prevBanglaDays = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, prevLeap ? 31 : 30, 30];
+        const db = firebase.firestore();
 
-        for (let i = 0; i < 12; i++) {
-            if (diffDays < prevBanglaDays[i]) {
-                bMonth = i;
-                bDay = diffDays + 1;
-                break;
+        // Local Storage State Management
+        let appData = {
+            students: JSON.parse(localStorage.getItem('madrasa_students')) || [],
+            teachers: JSON.parse(localStorage.getItem('madrasa_teachers')) || [],
+            hifz: JSON.parse(localStorage.getItem('madrasa_hifz')) || [],
+            income: JSON.parse(localStorage.getItem('madrasa_income')) || [],
+            expense: JSON.parse(localStorage.getItem('madrasa_expense')) || [],
+            zakat: JSON.parse(localStorage.getItem('madrasa_zakat')) || [],
+            settings: JSON.parse(localStorage.getItem('madrasa_settings')) || {
+                name: 'দারুল উলুম মাদ্রাসা',
+                tagline: 'দ্বীনি শিক্ষার একটি নির্ভরযোগ্য প্রতিষ্ঠান',
+                estd: '১৯৯৫',
+                phone: '০১৭০০০০০০০০',
+                address: 'ঢাকা, বাংলাদেশ'
             }
-            diffDays -= prevBanglaDays[i];
+        };
+
+        // Numbers to Bangla Conversion Utility
+        function toBanglaNum(num) {
+            const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return num.toString().replace(/\d/g, d => banglaDigits[d]);
         }
-    }
 
-    return `${toBanglaDigit(bDay)} ${monthNames[bMonth]} ${toBanglaDigit(banglaYear)} বঙ্গাব্দ`;
-}
+        // 2. REALTIME CLOCK AND TRIPLE CALENDAR (HIJRI, BANGLA, ENGLISH)
+        function updateLiveDateTime() {
+            const now = new Date();
 
-// আন্তর্জাতিক উম্মুল কুরা হিজরি ক্যালেন্ডার
-function getHijriDateDetails(date = new Date()) {
-    try {
-        const formatter = new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-        return formatter.format(date) + " হিজরী";
-    } catch(e) {
-        try {
-            const formatter = new Intl.DateTimeFormat('bn-BD-u-ca-islamic', {
+            // Live Time
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            const timeString = `${toBanglaNum(hours)}:${toBanglaNum(minutes)}:${toBanglaNum(seconds)} ${ampm}`;
+            const timeEngString = `${hours < 10 ? '0'+hours : hours}:${minutes}:${seconds} ${ampm}`;
+
+            // Banner & Calendar Clocks
+            document.getElementById('live-clock-banner').innerText = timeEngString;
+            document.getElementById('cal-live-clock').innerText = timeEngString;
+            document.getElementById('dash-live-time-full').innerText = `${timeString} (${ampm})`;
+
+            // English Date
+            const monthsEng = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+            const daysEng = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+            const engDateStr = `${daysEng[now.getDay()]}, ${toBanglaNum(now.getDate())} ${monthsEng[now.getMonth()]} ${toBanglaNum(now.getFullYear())}`;
+
+            // Hijri Date Calculation
+            const hijriFormatter = new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura', {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric'
             });
-            return formatter.format(date) + " হিজরী";
-        } catch(err) {
-            return "হিজরি তারিখ লোড হচ্ছে...";
+            const hijriDateStr = hijriFormatter.format(now);
+
+            // Bangla Date Calculation
+            const banglaMonths = ["বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন", "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"];
+            let gDay = now.getDate();
+            let gMonth = now.getMonth();
+            let gYear = now.getFullYear();
+            
+            let bYear = gMonth < 3 || (gMonth === 3 && gDay < 14) ? gYear - 594 : gYear - 593;
+            let bMonthIndex = (gMonth + 8) % 12;
+            let bDay = gDay >= 14 ? gDay - 13 : gDay + 17;
+
+            const banglaDateStr = `${toBanglaNum(bDay)} ${banglaMonths[bMonthIndex]} ${toBanglaNum(bYear)}`;
+
+            // UI Update for Dates
+            document.getElementById('banner-date-hijri').innerText = hijriDateStr;
+            document.getElementById('banner-date-bangla').innerText = banglaDateStr;
+            document.getElementById('banner-date-english').innerText = engDateStr;
+
+            document.getElementById('disp-date-hijri').innerText = hijriDateStr;
+            document.getElementById('disp-date-bangla').innerText = banglaDateStr;
+            document.getElementById('disp-date-english').innerText = engDateStr;
+
+            document.getElementById('cal-date-hijri').innerText = hijriDateStr;
+            document.getElementById('cal-date-bangla').innerText = banglaDateStr;
+            document.getElementById('cal-date-english').innerText = `${now.getDate()} ${monthsEng[now.getMonth()]} ${now.getFullYear()}`;
         }
-    }
-}
 
-// বাংলা ফরম্যাটে ইংরেজি তারিখ
-function getEnglishDateDetails(date = new Date()) {
-    return date.toLocaleDateString('bn-BD', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-    }) + " ইং";
-}
-
-function updateCalendarDisplay() {
-    const now = new Date();
-
-    const engEl = document.getElementById('disp-date-english');
-    const hijEl = document.getElementById('disp-date-hijri');
-    const banEl = document.getElementById('disp-date-bangla');
-
-    if(engEl) engEl.innerText = getEnglishDateDetails(now);
-    if(hijEl) hijEl.innerText = getHijriDateDetails(now);
-    if(banEl) banEl.innerText = getBanglaDateDetails(now);
-}
-
-// রাত ১২:০০:০৫ এ স্বয়ংক্রিয় তারিখ আপডেটের টাইমার
-function scheduleMidnightCalendarUpdate() {
-    updateCalendarDisplay();
-
-    const now = new Date();
-    const midnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0, 0, 5 
-    );
-    const msToMidnight = midnight.getTime() - now.getTime();
-
-    setTimeout(() => {
-        updateCalendarDisplay();
-        setInterval(updateCalendarDisplay, 24 * 60 * 60 * 1000);
-    }, msToMidnight);
-}
-
-
-/* =====================================================
-   PAGE TITLES
-===================================================== */
-
-const pageTitles = {
-
-    dashboard:"ড্যাশবোর্ড",
-
-    students:"ছাত্র ব্যবস্থাপনা",
-
-    teachers:"শিক্ষক ও কর্মচারী",
-
-    academic:"একাডেমিক ম্যানেজমেন্ট",
-
-    hifz:"হিফজ ও কুরআন",
-
-    attendance:"হাজিরা ম্যানেজমেন্ট",
-
-    income:"ফি ও পেমেন্ট",
-
-    expense:"খরচ ও ব্যয়",
-
-    accounts:"একাউন্টস",
-
-    zakat:"যাকাত ফান্ড",
-
-    exam:"পরীক্ষা ও ফলাফল",
-
-    library:"লাইব্রেরি",
-
-    hostel:"হোস্টেল",
-
-    communication:"নোটিশ ও যোগাযোগ",
-
-    certificate:"সনদ ও ডকুমেন্ট",
-
-    reports:"রিপোর্ট সেন্টার",
-
-    users:"ইউজার ও পারমিশন",
-
-    settings:"সেটিংস"
-
-};
-
-
-/* =====================================================
-   SWITCH TAB
-===================================================== */
-
-function switchTab(tabId){
-
-    document
-    .querySelectorAll('.content-section')
-    .forEach(section=>{
-        section.classList.add('hidden');
-    });
-
-
-    const target =
-    document.getElementById('section-' + tabId);
-
-    if(target){
-        target.classList.remove('hidden');
-    }
-
-
-    document
-    .querySelectorAll('nav a')
-    .forEach(link=>{
-        link.classList.remove('active-tab');
-    });
-
-
-    const activeMenu =
-    document.getElementById('menu-' + tabId);
-
-    if(activeMenu){
-        activeMenu.classList.add('active-tab');
-    }
-
-
-    document.getElementById('pageTitle').innerText =
-    pageTitles[tabId] || "Dashboard";
-
-
-    if(tabId === 'students')
-        loadStudentsTable();
-
-    if(tabId === 'teachers')
-        loadTeachersTable();
-
-    if(tabId === 'income')
-        loadIncomeTable();
-
-    if(tabId === 'expense')
-        loadExpenseTable();
-
-    if(tabId === 'zakat')
-        loadZakatTable();
-
-    if(tabId === 'accounts')
-        updateDashboardStats();
-
-}
-
-
-/* =====================================================
-   MOBILE SIDEBAR
-===================================================== */
-
-function openMobileSidebar(){
-
-    document
-    .getElementById('sidebar')
-    .classList.add('mobile-open');
-
-    document
-    .getElementById('mobileOverlay')
-    .classList.remove('hidden');
-
-}
-
-function closeMobileSidebar(){
-
-    document
-    .getElementById('sidebar')
-    .classList.remove('mobile-open');
-
-    document
-    .getElementById('mobileOverlay')
-    .classList.add('hidden');
-
-}
-
-
-/* =====================================================
-   FORM HANDLER
-===================================================== */
-
-function handleFormSubmit(event,message){
-
-    event.preventDefault();
-
-    alert(message);
-
-    event.target.reset();
-
-}
-
-
-/* =====================================================
-   STUDENTS
-===================================================== */
-
-function saveStudentData(e){
-
-    e.preventDefault();
-
-    db.collection("students")
-    .add({
-
-        name:
-        document.getElementById('std-name').value,
-
-        father:
-        document.getElementById('std-father').value,
-
-        className:
-        document.getElementById('std-class').value,
-
-        phone:
-        document.getElementById('std-phone').value,
-
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        alert("শিক্ষার্থী সফলভাবে নিবন্ধিত হয়েছে!");
-
-        e.target.reset();
-
-        loadStudentsTable();
-
-        updateDashboardStats();
-
-    })
-    .catch(error=>{
-
-        console.error(error);
-
-        alert("ডাটা সংরক্ষণ করা যায়নি। Firebase সংযোগ পরীক্ষা করুন।");
-
-    });
-
-}
-
-
-async function loadStudentsTable(){
-
-    try{
-
-        const snap =
-        await db
-        .collection("students")
-        .get();
-
-        let html="";
-
-        snap.forEach(doc=>{
-
-            const s=doc.data();
-
-            html += `
-
-            <tr class="border-b text-sm">
-
-                <td class="p-3 font-semibold">
-                    ${escapeHTML(s.name || '')}
-                </td>
-
-                <td class="p-3">
-                    ${escapeHTML(s.father || '')}
-                </td>
-
-                <td class="p-3">
-                    ${escapeHTML(s.className || '')}
-                </td>
-
-                <td class="p-3">
-                    ${escapeHTML(s.phone || '')}
-                </td>
-
-                <td class="p-3 text-center">
-
-                    <button
-                    onclick="deleteDocItem('students','${doc.id}',loadStudentsTable)"
-                    class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
-
-                    ডিলিট
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-            `;
-
+        setInterval(updateLiveDateTime, 1000);
+        updateLiveDateTime();
+
+
+        // 3. TAB NAVIGATION SYSTEM
+        function switchTab(tabId) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(sec => sec.classList.add('hidden'));
+
+            // Show target section
+            const target = document.getElementById(`section-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            // Tab Buttons UI Update
+            const menuItems = document.querySelectorAll('nav a');
+            menuItems.forEach(item => item.classList.remove('active-tab'));
+
+            const activeBtn = document.getElementById(`menu-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active-tab');
+
+            // Page Title Update
+            const titles = {
+                dashboard: 'ড্যাশবোর্ড',
+                calendar: 'ক্যালেন্ডার ও সময়',
+                students: 'ছাত্র ব্যবস্থাপনা',
+                teachers: 'শিক্ষক ও কর্মচারী',
+                hifz: 'হিফজ ও কুরআন বিভাগ',
+                attendance: 'দৈনিক হাজিরা',
+                income: 'ফি ও পেমেন্ট',
+                expense: 'খরচ ও ব্যয়',
+                accounts: 'একাউন্টস ও ব্যালেন্স',
+                zakat: 'যাকাত ও ফান্ড',
+                exam: 'পরীক্ষা ও ফলাফল',
+                library: 'কুতুবখানা ও লাইব্রেরি',
+                hostel: 'হোস্টেল ও বোডিং',
+                communication: 'নোটিশ ও যোগাযোগ',
+                certificate: 'সনদ জেনারেটর',
+                reports: 'রিপোর্ট সেন্টার',
+                users: 'ইউজার পারমিশন',
+                settings: 'সেটিংস'
+            };
+            document.getElementById('pageTitle').innerText = titles[tabId] || 'ম্যানেজমেন্ট সিস্টেম';
+
+            // Close mobile sidebar on menu click
+            closeMobileSidebar();
+        }
+
+        // Mobile Sidebar Controls
+        function openMobileSidebar() {
+            document.getElementById('sidebar').classList.add('mobile-open');
+            document.getElementById('mobileOverlay').classList.remove('hidden');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('mobileOverlay').classList.add('hidden');
+        }
+
+
+        // 4. DATA HANDLING FUNCTIONS & RENDERERS
+
+        // Save & Load Students
+        function saveStudentData(e) {
+            e.preventDefault();
+            const student = {
+                id: Date.now(),
+                name: document.getElementById('std-name').value,
+                father: document.getElementById('std-father').value,
+                class: document.getElementById('std-class').value,
+                phone: document.getElementById('std-phone').value
+            };
+            appData.students.push(student);
+            localStorage.setItem('madrasa_students', JSON.stringify(appData.students));
+            e.target.reset();
+            renderStudents();
+            renderDashboard();
+        }
+
+        function renderStudents() {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            appData.students.forEach((item, idx) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 text-xs hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800">${item.name}</td>
+                        <td class="p-3 text-slate-500">${item.father || '-'}</td>
+                        <td class="p-3 text-emerald-700 font-medium">${item.class}</td>
+                        <td class="p-3 text-slate-500">${item.phone || '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteData('students', ${item.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Save & Load Teachers
+        function saveTeacherData(e) {
+            e.preventDefault();
+            const teacher = {
+                id: Date.now(),
+                name: document.getElementById('tch-name').value,
+                role: document.getElementById('tch-role').value,
+                phone: document.getElementById('tch-phone').value
+            };
+            appData.teachers.push(teacher);
+            localStorage.setItem('madrasa_teachers', JSON.stringify(appData.teachers));
+            e.target.reset();
+            renderTeachers();
+            renderDashboard();
+        }
+
+        function renderTeachers() {
+            const tbody = document.getElementById('teacherTableBody');
+            tbody.innerHTML = '';
+            appData.teachers.forEach((item) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 text-xs hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800">${item.name}</td>
+                        <td class="p-3 text-slate-600">${item.role}</td>
+                        <td class="p-3 text-slate-500">${item.phone || '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteData('teachers', ${item.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Save & Load Hifz
+        function saveHifzData(e) {
+            e.preventDefault();
+            const record = {
+                id: Date.now(),
+                name: document.getElementById('hifz-name').value,
+                para: document.getElementById('hifz-para').value,
+                sabaki: document.getElementById('hifz-sabaki').value,
+                amkha: document.getElementById('hifz-amkha').value
+            };
+            appData.hifz.push(record);
+            localStorage.setItem('madrasa_hifz', JSON.stringify(appData.hifz));
+            e.target.reset();
+            renderHifz();
+        }
+
+        function renderHifz() {
+            const tbody = document.getElementById('hifzTableBody');
+            tbody.innerHTML = '';
+            appData.hifz.forEach((item) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 text-xs hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800">${item.name}</td>
+                        <td class="p-3 text-amber-700 font-bold">${toBanglaNum(item.para)} পারা</td>
+                        <td class="p-3 text-slate-600">${item.sabaki || '-'}</td>
+                        <td class="p-3 text-slate-500">${item.amkha || '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteData('hifz', ${item.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Save & Load Income
+        function saveIncomeData(e) {
+            e.preventDefault();
+            const inc = {
+                id: Date.now(),
+                student: document.getElementById('inc-student').value,
+                title: document.getElementById('inc-title').value,
+                amount: parseFloat(document.getElementById('inc-amount').value) || 0
+            };
+            appData.income.push(inc);
+            localStorage.setItem('madrasa_income', JSON.stringify(appData.income));
+            e.target.reset();
+            renderIncome();
+            renderDashboard();
+            renderAccounts();
+        }
+
+        function renderIncome() {
+            const tbody = document.getElementById('incomeTableBody');
+            tbody.innerHTML = '';
+            appData.income.forEach((item) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 text-xs hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800">${item.student}</td>
+                        <td class="p-3 text-slate-600">${item.title}</td>
+                        <td class="p-3 text-emerald-600 font-bold">${toBanglaNum(item.amount)} ৳</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteData('income', ${item.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Save & Load Expense
+        function saveExpenseData(e) {
+            e.preventDefault();
+            const exp = {
+                id: Date.now(),
+                title: document.getElementById('exp-title').value,
+                amount: parseFloat(document.getElementById('exp-amount').value) || 0,
+                date: document.getElementById('exp-date').value
+            };
+            appData.expense.push(exp);
+            localStorage.setItem('madrasa_expense', JSON.stringify(appData.expense));
+            e.target.reset();
+            renderExpense();
+            renderDashboard();
+            renderAccounts();
+        }
+
+        function renderExpense() {
+            const tbody = document.getElementById('expenseTableBody');
+            tbody.innerHTML = '';
+            appData.expense.forEach((item) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 text-xs hover:bg-slate-50">
+                        <td class="p-3 font-semibold text-slate-800">${item.title}</td>
+                        <td class="p-3 text-rose-600 font-bold">${toBanglaNum(item.amount)} ৳</td>
+                        <td class="p-3 text-slate-500">${item.date}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteData('expense', ${item.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Save Zakat Data
+        function saveZakatData(e) {
+            e.preventDefault();
+            const record = {
+                id: Date.now(),
+                donor: document.getElementById('zakat-donor').value,
+                amount: parseFloat(document.getElementById('zakat-amount').value) || 0,
+                type: document.getElementById('zakat-type').value
+            };
+            appData.zakat.push(record);
+            localStorage.setItem('madrasa_zakat', JSON.stringify(appData.zakat));
+            e.target.reset();
+            alert('যাকাত/ফান্ড সফলভাবে সংরক্ষণ করা হয়েছে!');
+        }
+
+        // Generic Delete
+        function deleteData(type, id) {
+            if(confirm('আপনি কি নিশ্চিত যে এটি মুছে ফেলতে চান?')) {
+                appData[type] = appData[type].filter(item => item.id !== id);
+                localStorage.setItem(`madrasa_${type}`, JSON.stringify(appData[type]));
+                if(type === 'students') renderStudents();
+                if(type === 'teachers') renderTeachers();
+                if(type === 'hifz') renderHifz();
+                if(type === 'income') renderIncome();
+                if(type === 'expense') renderExpense();
+                renderDashboard();
+                renderAccounts();
+            }
+        }
+
+        // Accounts Summary Renderer
+        function renderAccounts() {
+            const totalIncome = appData.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = appData.expense.reduce((sum, item) => sum + item.amount, 0);
+            const netBalance = totalIncome - totalExpense;
+
+            document.getElementById('accTotalIncome').innerText = `${toBanglaNum(totalIncome)} টাকা`;
+            document.getElementById('accTotalExpense').innerText = `${toBanglaNum(totalExpense)} টাকা`;
+            document.getElementById('accNetBalance').innerText = `${toBanglaNum(netBalance)} টাকা`;
+        }
+
+        // Dashboard Renderer
+        function renderDashboard() {
+            document.getElementById('dashStudentCount').innerText = toBanglaNum(appData.students.length);
+            document.getElementById('dashTeacherCount').innerText = toBanglaNum(appData.teachers.length);
+
+            const totalIncome = appData.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = appData.expense.reduce((sum, item) => sum + item.amount, 0);
+
+            document.getElementById('dashIncome').innerText = `${toBanglaNum(totalIncome)} টাকা`;
+            document.getElementById('dashExpense').innerText = `${toBanglaNum(totalExpense)} টাকা`;
+
+            // Recent Students Dashboard Widget
+            const dashStudents = document.getElementById('dashboardStudents');
+            if(appData.students.length === 0) {
+                dashStudents.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">কোন তথ্য নেই</p>`;
+            } else {
+                dashStudents.innerHTML = appData.students.slice(-3).reverse().map(s => `
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
+                        <span class="font-semibold text-slate-700">${s.name}</span>
+                        <span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded font-medium">${s.class}</span>
+                    </div>
+                `).join('');
+            }
+
+            // Recent Income Dashboard Widget
+            const dashIncome = document.getElementById('dashboardIncome');
+            if(appData.income.length === 0) {
+                dashIncome.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">কোন জমা নেই</p>`;
+            } else {
+                dashIncome.innerHTML = appData.income.slice(-3).reverse().map(i => `
+                    <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 text-xs">
+                        <span class="font-semibold text-slate-700">${i.student}</span>
+                        <span class="text-emerald-600 font-bold">${toBanglaNum(i.amount)} ৳</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Custom Logo Handler
+        function updateSidebarLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgUrl = e.target.result;
+                    // Header Logo
+                    document.getElementById('bannerLogoIcon').classList.add('hidden');
+                    const bImg = document.getElementById('bannerLogoImg');
+                    bImg.src = imgUrl;
+                    bImg.classList.remove('hidden');
+
+                    // Sidebar Logo
+                    document.getElementById('sidebarLogoIcon').classList.add('hidden');
+                    const sImg = document.getElementById('sidebarLogoImg');
+                    sImg.src = imgUrl;
+                    sImg.classList.remove('hidden');
+
+                    localStorage.setItem('madrasa_logo', imgUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Settings Save
+        function saveMadrasaSettings(e) {
+            e.preventDefault();
+            const settings = {
+                name: document.getElementById('set-name').value,
+                tagline: document.getElementById('set-tagline').value,
+                estd: document.getElementById('set-estd').value,
+                phone: document.getElementById('set-phone').value,
+                address: document.getElementById('set-address').value
+            };
+            appData.settings = settings;
+            localStorage.setItem('madrasa_settings', JSON.stringify(settings));
+            applySettings();
+            alert('মাদ্রাসার সেটিংস আপডেট হয়েছে!');
+        }
+
+        function applySettings() {
+            const s = appData.settings;
+            document.getElementById('disp-name').innerText = s.name || 'দারুল উলুম মাদ্রাসা';
+            document.getElementById('disp-tagline').innerText = s.tagline || '';
+            document.getElementById('disp-estd').innerText = s.estd || '';
+            document.getElementById('disp-phone').innerText = s.phone || '';
+            document.getElementById('disp-address').innerText = s.address || '';
+        }
+
+        // Admin Modal Controls
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPinInput').value;
+            if(pin === '1234' || pin === '') {
+                alert('এডমিন সিকিউরিটি পিন সফলভাবে ভেরিফাই হয়েছে!');
+                closeAdminModal();
+            } else {
+                alert('ভুল সিকিউরিটি পিন! আবার চেষ্টা করুন।');
+            }
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            applySettings();
+            renderStudents();
+            renderTeachers();
+            renderHifz();
+            renderIncome();
+            renderExpense();
+            renderAccounts();
+            renderDashboard();
+
+            // Load saved logo
+            const savedLogo = localStorage.getItem('madrasa_logo');
+            if(savedLogo) {
+                document.getElementById('bannerLogoIcon').classList.add('hidden');
+                const bImg = document.getElementById('bannerLogoImg');
+                bImg.src = savedLogo;
+                bImg.classList.remove('hidden');
+
+                document.getElementById('sidebarLogoIcon').classList.add('hidden');
+                const sImg = document.getElementById('sidebarLogoImg');
+                sImg.src = savedLogo;
+                sImg.classList.remove('hidden');
+            }
         });
-
-
-        document.getElementById('studentTableBody').innerHTML =
-        html ||
-        `<tr>
-        <td colspan="5"
-        class="p-8 text-center text-slate-400 text-sm">
-        কোনো শিক্ষার্থী নেই
-        </td>
-        </tr>`;
-
-
-        renderDashboardStudents(snap);
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   TEACHERS
-===================================================== */
-
-function saveTeacherData(e){
-
-    e.preventDefault();
-
-    db.collection("teachers")
-    .add({
-
-        name:
-        document.getElementById('tch-name').value,
-
-        role:
-        document.getElementById('tch-role').value,
-
-        phone:
-        document.getElementById('tch-phone').value,
-
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        alert("শিক্ষক সফলভাবে যোগ হয়েছেন!");
-
-        e.target.reset();
-
-        loadTeachersTable();
-
-        updateDashboardStats();
-
-    });
-
-}
-
-
-async function loadTeachersTable(){
-
-    try{
-
-        const snap =
-        await db
-        .collection("teachers")
-        .get();
-
-        let html="";
-
-        snap.forEach(doc=>{
-
-            const t=doc.data();
-
-            html += `
-
-            <tr class="border-b text-sm">
-
-                <td class="p-3 font-semibold">
-                    ${escapeHTML(t.name || '')}
-                </td>
-
-                <td class="p-3">
-                    ${escapeHTML(t.role || '')}
-                </td>
-
-                <td class="p-3">
-                    ${escapeHTML(t.phone || '')}
-                </td>
-
-                <td class="p-3 text-center">
-
-                    <button
-                    onclick="deleteDocItem('teachers','${doc.id}',loadTeachersTable)"
-                    class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
-
-                    ডিলিট
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-            `;
-
-        });
-
-
-        document.getElementById('teacherTableBody').innerHTML =
-        html ||
-        `<tr>
-        <td colspan="4"
-        class="p-8 text-center text-slate-400">
-        কোনো শিক্ষক নেই
-        </td>
-        </tr>`;
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   INCOME
-===================================================== */
-
-function saveIncomeData(e){
-
-    e.preventDefault();
-
-    db.collection("incomes")
-    .add({
-
-        category:
-        document.getElementById('inc-cat').value,
-
-        amount:
-        Number(document.getElementById('inc-amount').value),
-
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        alert("জমা হিসাব সংরক্ষিত হয়েছে!");
-
-        e.target.reset();
-
-        loadIncomeTable();
-
-        updateDashboardStats();
-
-    });
-
-}
-
-
-async function loadIncomeTable(){
-
-    try{
-
-        const snap =
-        await db
-        .collection("incomes")
-        .get();
-
-        let html="";
-
-        snap.forEach(doc=>{
-
-            const i=doc.data();
-
-            html += `
-
-            <tr class="border-b text-sm">
-
-                <td class="p-3">
-                    ${escapeHTML(i.category || '')}
-                </td>
-
-                <td class="p-3 font-bold text-emerald-600">
-                    ${Number(i.amount || 0).toLocaleString('bn-BD')} টাকা
-                </td>
-
-                <td class="p-3 text-xs text-slate-400">
-                    সংরক্ষিত
-                </td>
-
-                <td class="p-3 text-center">
-
-                    <button
-                    onclick="deleteDocItem('incomes','${doc.id}',loadIncomeTable)"
-                    class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
-
-                    ডিলিট
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-            `;
-
-        });
-
-
-        document.getElementById('incomeTableBody').innerHTML =
-        html ||
-        `<tr>
-        <td colspan="4"
-        class="p-8 text-center text-slate-400">
-        কোনো জমা নেই
-        </td>
-        </tr>`;
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   EXPENSE
-===================================================== */
-
-function saveExpenseData(e){
-
-    e.preventDefault();
-
-    db.collection("expenses")
-    .add({
-
-        description:
-        document.getElementById('exp-desc').value,
-
-        amount:
-        Number(document.getElementById('exp-amount').value),
-
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        alert("খরচ সংরক্ষণ হয়েছে!");
-
-        e.target.reset();
-
-        loadExpenseTable();
-
-        updateDashboardStats();
-
-    });
-
-}
-
-
-async function loadExpenseTable(){
-
-    try{
-
-        const snap =
-        await db
-        .collection("expenses")
-        .get();
-
-        let html="";
-
-        snap.forEach(doc=>{
-
-            const ex=doc.data();
-
-            html += `
-
-            <tr class="border-b text-sm">
-
-                <td class="p-3">
-                    ${escapeHTML(ex.description || '')}
-                </td>
-
-                <td class="p-3 font-bold text-rose-600">
-                    ${Number(ex.amount || 0).toLocaleString('bn-BD')} টাকা
-                </td>
-
-                <td class="p-3 text-xs text-slate-400">
-                    সংরক্ষিত
-                </td>
-
-                <td class="p-3 text-center">
-
-                    <button
-                    onclick="deleteDocItem('expenses','${doc.id}',loadExpenseTable)"
-                    class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
-
-                    ডিলিট
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-            `;
-
-        });
-
-
-        document.getElementById('expenseTableBody').innerHTML =
-        html ||
-        `<tr>
-        <td colspan="4"
-        class="p-8 text-center text-slate-400">
-        কোনো খরচ নেই
-        </td>
-        </tr>`;
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   ZAKAT
-===================================================== */
-
-function saveZakatData(e){
-
-    e.preventDefault();
-
-    db.collection("zakat")
-    .add({
-
-        name:
-        document.getElementById('zak-name').value,
-
-        amount:
-        Number(document.getElementById('zak-amount').value),
-
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        alert("যাকাত ফান্ডে যোগ হয়েছে!");
-
-        e.target.reset();
-
-        loadZakatTable();
-
-    });
-
-}
-
-
-async function loadZakatTable(){
-
-    try{
-
-        const snap =
-        await db
-        .collection("zakat")
-        .get();
-
-        let html="";
-
-        snap.forEach(doc=>{
-
-            const z=doc.data();
-
-            html += `
-
-            <tr class="border-b text-sm">
-
-                <td class="p-3 font-semibold">
-                    ${escapeHTML(z.name || '')}
-                </td>
-
-                <td class="p-3 font-bold text-amber-600">
-                    ${Number(z.amount || 0).toLocaleString('bn-BD')} টাকা
-                </td>
-
-                <td class="p-3 text-xs text-slate-400">
-                    সংরক্ষিত
-                </td>
-
-                <td class="p-3 text-center">
-
-                    <button
-                    onclick="deleteDocItem('zakat','${doc.id}',loadZakatTable)"
-                    class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
-
-                    ডিলিট
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-            `;
-
-        });
-
-
-        document.getElementById('zakatTableBody').innerHTML =
-        html ||
-        `<tr>
-        <td colspan="4"
-        class="p-8 text-center text-slate-400">
-        কোনো রেকর্ড নেই
-        </td>
-        </tr>`;
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   ATTENDANCE
-===================================================== */
-
-function saveAttendance(e){
-
-    e.preventDefault();
-
-    const date =
-    document.getElementById('att-date').value;
-
-    if(!date){
-
-        alert("তারিখ নির্বাচন করুন!");
-
-        return;
-
-    }
-
-
-    db.collection("attendance")
-    .add({
-
-        className:
-        document.getElementById('att-class').value,
-
-        date:date,
-
-        createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        alert("হাজিরা সফলভাবে সংরক্ষিত হয়েছে!");
-
-        loadAttendanceStats();
-
-    });
-
-}
-
-
-/* =====================================================
-   DELETE
-===================================================== */
-
-async function deleteDocItem(
-    collectionName,
-    docId,
-    callback
-){
-
-    if(!confirm("নিশ্চিতভাবে ডিলিট করতে চান?")){
-        return;
-    }
-
-    try{
-
-        await db
-        .collection(collectionName)
-        .doc(docId)
-        .delete();
-
-        callback();
-
-        updateDashboardStats();
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-        alert("ডিলিট করা যায়নি।");
-
-    }
-
-}
-
-
-/* =====================================================
-   DASHBOARD STATS
-===================================================== */
-
-async function updateDashboardStats(){
-
-    try{
-
-        const students =
-        await db.collection("students").get();
-
-        const teachers =
-        await db.collection("teachers").get();
-
-        const incomes =
-        await db.collection("incomes").get();
-
-        const expenses =
-        await db.collection("expenses").get();
-
-
-        let incomeTotal=0;
-
-        incomes.forEach(doc=>{
-            incomeTotal +=
-            Number(doc.data().amount || 0);
-        });
-
-
-        let expenseTotal=0;
-
-        expenses.forEach(doc=>{
-            expenseTotal +=
-            Number(doc.data().amount || 0);
-        });
-
-
-        const balance =
-        incomeTotal - expenseTotal;
-
-
-        document.getElementById('dashStudentCount').innerText =
-        toBanglaNumber(students.size);
-
-        document.getElementById('dashTeacherCount').innerText =
-        toBanglaNumber(teachers.size);
-
-        document.getElementById('dashIncome').innerText =
-        formatMoney(incomeTotal);
-
-        document.getElementById('dashExpense').innerText =
-        formatMoney(expenseTotal);
-
-        document.getElementById('dashBalance').innerText =
-        formatMoney(balance);
-
-
-        document.getElementById('accountIncome').innerText =
-        formatMoney(incomeTotal);
-
-        document.getElementById('accountExpense').innerText =
-        formatMoney(expenseTotal);
-
-        document.getElementById('accountBalance').innerText =
-        formatMoney(balance);
-
-
-        renderDashboardStudents(students);
-
-        renderDashboardIncome(incomes);
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   DASHBOARD STUDENTS
-===================================================== */
-
-function renderDashboardStudents(snap){
-
-    const container =
-    document.getElementById('dashboardStudents');
-
-    if(!container) return;
-
-
-    let items=[];
-
-    snap.forEach(doc=>{
-        items.push({
-            id:doc.id,
-            ...doc.data()
-        });
-    });
-
-
-    items =
-    items.slice(-5).reverse();
-
-
-    if(!items.length){
-
-        container.innerHTML =
-        `<p class="text-xs text-slate-400 text-center py-6">
-        কোনো ছাত্র নেই
-        </p>`;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-    items.map(s=>`
-
-    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-
-        <div class="w-9 h-9 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center">
-
-            <i class="fa-solid fa-user"></i>
-
-        </div>
-
-        <div class="flex-1 min-w-0">
-
-            <p class="text-xs font-bold text-slate-700 truncate">
-                ${escapeHTML(s.name || '')}
-            </p>
-
-            <p class="text-[10px] text-slate-400">
-                ${escapeHTML(s.className || '')}
-            </p>
-
-        </div>
-
-    </div>
-
-    `).join('');
-
-}
-
-
-/* =====================================================
-   DASHBOARD INCOME
-===================================================== */
-
-function renderDashboardIncome(snap){
-
-    const container =
-    document.getElementById('dashboardIncome');
-
-    if(!container) return;
-
-
-    let items=[];
-
-    snap.forEach(doc=>{
-        items.push({
-            id:doc.id,
-            ...doc.data()
-        });
-    });
-
-
-    items =
-    items.slice(-5).reverse();
-
-
-    if(!items.length){
-
-        container.innerHTML =
-        `<p class="text-xs text-slate-400 text-center py-6">
-        কোনো পেমেন্ট নেই
-        </p>`;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-    items.map(i=>`
-
-    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-
-        <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-
-            <i class="fa-solid fa-bangladeshi-taka-sign"></i>
-
-        </div>
-
-        <div class="flex-1">
-
-            <p class="text-xs font-bold text-slate-700">
-                ${escapeHTML(i.category || '')}
-            </p>
-
-            <p class="text-[10px] text-slate-400">
-                সাম্প্রতিক জমা
-            </p>
-
-        </div>
-
-        <p class="text-xs font-extrabold text-emerald-600">
-            ${formatMoney(i.amount || 0)}
-        </p>
-
-    </div>
-
-    `).join('');
-
-}
-
-
-/* =====================================================
-   ATTENDANCE STATS
-===================================================== */
-
-async function loadAttendanceStats(){
-
-    try{
-
-        const snap =
-        await db
-        .collection("attendance")
-        .get();
-
-
-        const total=snap.size;
-
-
-        document.getElementById('attendanceTotal').innerText =
-        toBanglaNumber(total);
-
-
-        document.getElementById('dashAttendance').innerText =
-        toBanglaNumber(total);
-
-
-        document.getElementById('presentStat').innerText =
-        toBanglaNumber(total);
-
-        document.getElementById('attendancePagePresent').innerText =
-        toBanglaNumber(total);
-
-
-        document.getElementById('absentStat').innerText =
-        "০";
-
-        document.getElementById('attendancePageAbsent').innerText =
-        "০";
-
-
-        document.getElementById('leaveStat').innerText =
-        "০";
-
-
-        const percent =
-        total > 0 ? 100 : 0;
-
-
-        document.getElementById('attendancePercent').innerText =
-        toBanglaNumber(percent) + "%";
-
-
-        document.getElementById('attendanceProgress').style.width =
-        percent + "%";
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   BANNER
-===================================================== */
-
-function openBannerModal(){
-
-    const modal =
-    document.getElementById('bannerModal');
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-
-
-    const saved =
-    JSON.parse(
-        localStorage.getItem('madrasaBannerData') || '{}'
-    );
-
-
-    document.getElementById('input-name').value =
-    saved.name || document.getElementById('disp-name').innerText;
-
-    document.getElementById('input-tagline').value =
-    saved.tagline || document.getElementById('disp-tagline').innerText;
-
-    document.getElementById('input-estd').value =
-    saved.estd || document.getElementById('disp-estd').innerText;
-
-    document.getElementById('input-address').value =
-    saved.address || document.getElementById('disp-address').innerText;
-
-    document.getElementById('input-phone').value =
-    saved.phone || document.getElementById('disp-phone').innerText;
-
-}
-
-
-function closeBannerModal(){
-
-    const modal =
-    document.getElementById('bannerModal');
-
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-
-}
-
-
-function saveBannerInfo(e){
-
-    e.preventDefault();
-
-
-    const file =
-    document.getElementById('input-logo-file').files[0];
-
-
-    const oldData =
-    JSON.parse(
-        localStorage.getItem('madrasaBannerData') || '{}'
-    );
-
-
-    const save=(logo)=>{
-
-        const data={
-
-            name:
-            document.getElementById('input-name').value,
-
-            tagline:
-            document.getElementById('input-tagline').value,
-
-            estd:
-            document.getElementById('input-estd').value,
-
-            address:
-            document.getElementById('input-address').value,
-
-            phone:
-            document.getElementById('input-phone').value,
-
-            logo:
-            logo || oldData.logo || ''
-
-        };
-
-
-        localStorage.setItem(
-            'madrasaBannerData',
-            JSON.stringify(data)
-        );
-
-
-        loadBannerInfo();
-
-        closeBannerModal();
-
-        alert("ব্যানার আপডেট হয়েছে!");
-
-    };
-
-
-    if(file){
-
-        const reader =
-        new FileReader();
-
-        reader.onload =
-        ev=>save(ev.target.result);
-
-        reader.readAsDataURL(file);
-
-    }
-
-    else{
-
-        save(null);
-
-    }
-
-}
-
-
-function loadBannerInfo(){
-
-    const saved =
-    JSON.parse(
-        localStorage.getItem('madrasaBannerData') || '{}'
-    );
-
-
-    if(!saved) return;
-
-
-    if(saved.name)
-        document.getElementById('disp-name').innerText =
-        saved.name;
-
-
-    if(saved.tagline)
-        document.getElementById('disp-tagline').innerText =
-        saved.tagline;
-
-
-    if(saved.estd)
-        document.getElementById('disp-estd').innerText =
-        saved.estd;
-
-
-    if(saved.address)
-        document.getElementById('disp-address').innerText =
-        saved.address;
-
-
-    if(saved.phone)
-        document.getElementById('disp-phone').innerText =
-        saved.phone;
-
-
-    if(saved.logo){
-
-        document
-        .getElementById('bannerLogoIcon')
-        .classList.add('hidden');
-
-
-        const img =
-        document.getElementById('bannerLogoImg');
-
-
-        img.src=saved.logo;
-
-        img.classList.remove('hidden');
-
-    }
-
-}
-
-
-/* =====================================================
-   SIDEBAR LOGO
-===================================================== */
-
-function updateSidebarLogo(event){
-
-    const file =
-    event.target.files[0];
-
-    if(!file) return;
-
-
-    const reader =
-    new FileReader();
-
-
-    reader.onload=(e)=>{
-
-        localStorage.setItem(
-            'madrasaCustomLogo',
-            e.target.result
-        );
-
-
-        applySidebarLogo(
-            e.target.result
-        );
-
-    };
-
-
-    reader.readAsDataURL(file);
-
-}
-
-
-function applySidebarLogo(src){
-
-    document
-    .getElementById('sidebarLogoIcon')
-    .classList.add('hidden');
-
-
-    const img =
-    document.getElementById('sidebarLogoImg');
-
-
-    img.src=src;
-
-    img.classList.remove('hidden');
-
-}
-
-
-/* =====================================================
-   ADMIN
-===================================================== */
-
-function openAdminModal(){
-
-    const modal =
-    document.getElementById('adminModal');
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-
-}
-
-
-function closeAdminModal(){
-
-    const modal =
-    document.getElementById('adminModal');
-
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-
-}
-
-
-function factoryReset(){
-
-    if(
-        confirm(
-            "Local Storage পরিষ্কার করতে চান?\nFirebase-এর ডাটা মুছে যাবে না।"
-        )
-    ){
-
-        localStorage.clear();
-
-        location.reload();
-
-    }
-
-}
-
-
-/* =====================================================
-   ID CARD
-===================================================== */
-
-function generateIdCard(){
-
-    alert(
-        "ID Card Generator-এর ডিজাইন প্রস্তুত করা হয়েছে।\nপরবর্তী ধাপে ছাত্রের তথ্য দিয়ে স্বয়ংক্রিয় PDF/Print ID Card যুক্ত করা যাবে।"
-    );
-
-}
-
-
-/* =====================================================
-   HELPERS
-===================================================== */
-
-function formatMoney(amount){
-
-    return Number(amount || 0)
-    .toLocaleString('bn-BD') + " টাকা";
-
-}
-
-
-function toBanglaNumber(number){
-
-    return Number(number || 0)
-    .toLocaleString('bn-BD');
-
-}
-
-
-function escapeHTML(value){
-
-    return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   INITIAL LOAD
-===================================================== */
-
-window.onload=function(){
-
-    // অটোমেটিক ক্যালেন্ডার সচল করা
-    scheduleMidnightCalendarUpdate();
-
-    loadBannerInfo();
-
-    const logo =
-    localStorage.getItem(
-        'madrasaCustomLogo'
-    );
-
-    if(logo){
-        applySidebarLogo(logo);
-    }
-
-    updateDashboardStats();
-
-    loadAttendanceStats();
-
-    loadStudentsTable();
-
-};
-
-auth.onAuthStateChanged(function(user){
-
-    if(user){
-        console.log("✅ Firebase Auth Ready");
-        console.log("Logged in:", user.email);
-    }else{
-        console.log("⚠️ Not Logged In");
-    }
-
-});
-
-</script>
-
+    </script>
 </body>
 </html>

@@ -3,31 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>মদিনাতুল উলূম - মাদ্রাসা ম্যানেজমেন্ট</title>
+
 <script src="https://cdn.tailwindcss.com"></script>
+
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
 rel="stylesheet">
+
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
 <style>
+
 *{
     scrollbar-width:thin;
     scrollbar-color:#cbd5e1 transparent;
 }
+
 body{
     font-family:'Inter',sans-serif;
     background:#f8fafc;
 }
+
 .sidebar-item{
     transition:.2s ease;
 }
+
 .sidebar-item:hover{
     background:#f0fdf4;
     color:#059669;
 }
+
 .active-tab{
     background:#dcfce7 !important;
     color:#047857 !important;
@@ -37,21 +48,27 @@ body{
 .section-title{
     letter-spacing:-.02em;
 }
+
 .card-hover{
     transition:.2s ease;
 }
+
 .card-hover:hover{
     transform:translateY(-2px);
     box-shadow:0 12px 25px rgba(15,23,42,.07);
 }
+
 .mobile-overlay{
     background:rgba(15,23,42,.45);
     backdrop-filter:blur(2px);
 }
+
 .chart-bar{
     transition:.4s ease;
 }
+
 @media(max-width:767px){
+
     #sidebar{
         position:fixed;
         left:0;
@@ -61,147 +78,229 @@ body{
         transform:translateX(-100%);
         transition:.25s ease;
     }
+
     #sidebar.mobile-open{
         transform:translateX(0);
     }
+
 }
+
 </style>
 </head>
+
 <body class="text-slate-700">
+
 <!-- MOBILE OVERLAY -->
 <div id="mobileOverlay"
      onclick="closeMobileSidebar()"
      class="fixed inset-0 mobile-overlay z-40 hidden">
 </div>
+
+
 <!-- ================= SIDEBAR ================= -->
+
 <aside id="sidebar"
 class="w-72 bg-white border-r border-slate-200 flex flex-col justify-between shadow-sm">
+
 <div>
+
     <!-- LOGO / BRAND -->
+
     <div class="px-5 py-5 border-b border-slate-100">
+
         <div class="flex items-center gap-3">
+
             <div onclick="document.getElementById('logoFileInput').click()"
                  class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg overflow-hidden cursor-pointer">
+
                 <i id="sidebarLogoIcon"
                    class="fa-solid fa-mosque text-xl"></i>
+
                 <img id="sidebarLogoImg"
                      class="hidden w-full h-full object-cover"
                      alt="Logo">
+
             </div>
+
             <input type="file"
                    id="logoFileInput"
                    accept="image/*"
                    class="hidden"
                    onchange="updateSidebarLogo(event)">
+
             <div class="min-w-0">
                 <h1 class="font-extrabold text-slate-800 truncate">
                     মদিনাতুল উলূম
                 </h1>
+
                 <p class="text-xs text-slate-500 mt-0.5">
                     মাদ্রাসা ম্যানেজমেন্ট
                 </p>
             </div>
+
         </div>
+
     </div>
+
+
     <!-- NAVIGATION -->
+
     <nav class="p-3 overflow-y-auto h-[calc(100vh-100px)] text-sm">
+
         <!-- MAIN -->
+
         <p class="px-3 pt-2 pb-2 text-[10px] font-bold text-slate-400 uppercase">
             Main Menu
         </p>
+
         <a href="#"
            onclick="switchTab('dashboard');closeMobileSidebar()"
            id="menu-dashboard"
            class="sidebar-item active-tab flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-house w-5"></i>
             <span>ড্যাশবোর্ড</span>
+
         </a>
+
+
         <!-- PEOPLE -->
+
         <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
             People Management
         </p>
+
         <a href="#"
            onclick="switchTab('students');closeMobileSidebar()"
            id="menu-students"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-user-graduate w-5"></i>
             <span>ছাত্র ব্যবস্থাপনা</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('teachers');closeMobileSidebar()"
            id="menu-teachers"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-chalkboard-user w-5"></i>
             <span>শিক্ষক ও কর্মচারী</span>
+
         </a>
+
+
         <!-- ACADEMIC -->
+
         <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
             Academic
         </p>
+
+
         <a href="#"
            onclick="switchTab('academic');closeMobileSidebar()"
            id="menu-academic"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-school w-5"></i>
             <span>একাডেমিক</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('hifz');closeMobileSidebar()"
            id="menu-hifz"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-book-quran w-5"></i>
             <span>হিফজ ও কুরআন</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('attendance');closeMobileSidebar()"
            id="menu-attendance"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-clipboard-user w-5"></i>
             <span>হাজিরা</span>
+
         </a>
+
+
         <!-- FINANCE -->
+
         <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
             Finance
         </p>
+
+
         <a href="#"
            onclick="switchTab('income');closeMobileSidebar()"
            id="menu-income"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-money-bill-transfer w-5"></i>
             <span>ফি ও পেমেন্ট</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('expense');closeMobileSidebar()"
            id="menu-expense"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-wallet w-5"></i>
             <span>খরচ ও ব্যয়</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('accounts');closeMobileSidebar()"
            id="menu-accounts"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-building-columns w-5"></i>
             <span>একাউন্টস</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('zakat');closeMobileSidebar()"
            id="menu-zakat"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-hand-holding-heart w-5"></i>
             <span>যাকাত ফান্ড</span>
+
         </a>
+
+
         <!-- ACADEMIC TOOLS -->
+
         <p class="px-3 pt-5 pb-2 text-[10px] font-bold text-slate-400 uppercase">
             Academic Tools
         </p>
+
+
         <a href="#"
            onclick="switchTab('exam');closeMobileSidebar()"
            id="menu-exam"
            class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1">
+
             <i class="fa-solid fa-file-pen w-5"></i>
             <span>পরীক্ষা ও ফলাফল</span>
+
         </a>
+
+
         <a href="#"
            onclick="switchTab('library');closeMobileSidebar()"
            id="menu-library"
@@ -1852,70 +1951,98 @@ class="content-section hidden space-y-5">
 <!-- =====================================================
      EXAM
 ===================================================== -->
+
 <section id="section-exam"
 class="content-section hidden space-y-5">
+
 <div>
 <h2 class="text-xl font-extrabold text-slate-800">
 পরীক্ষা ও ফলাফল
 </h2>
+
 <p class="text-xs text-slate-400">
 পরীক্ষা, নম্বর, গ্রেড ও ফলাফল
 </p>
 </div>
+
+
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
 <div class="module-card">
 <i class="fa-solid fa-calendar-days"></i>
 <h3>পরীক্ষার রুটিন</h3>
 <p>পরীক্ষার সময়সূচি</p>
 </div>
+
 <div class="module-card">
 <i class="fa-solid fa-pen"></i>
 <h3>নম্বর প্রদান</h3>
 <p>বিষয়ভিত্তিক নম্বর</p>
 </div>
+
 <div class="module-card">
 <i class="fa-solid fa-chart-simple"></i>
 <h3>ফলাফল</h3>
 <p>Marksheet ও Result</p>
 </div>
+
 </div>
+
+
 <div class="bg-white border rounded-2xl p-6">
+
 <h3 class="font-bold mb-4">
 পরীক্ষা মডিউল
 </h3>
+
 <p class="text-sm text-slate-500">
 এই অংশে পরবর্তী ধাপে Firebase-এর সাথে পরীক্ষা, নম্বর, Grade, Position এবং Automatic Result যুক্ত করা যাবে।
 </p>
+
 <button onclick="alert('Exam & Result module প্রস্তুত করার জন্য UI তৈরি আছে।')"
         class="btn-primary mt-4">
+
 পরীক্ষা তৈরি করুন
+
 </button>
+
 </div>
+
 </section>
+
+
 <!-- =====================================================
      LIBRARY
 ===================================================== -->
+
 <section id="section-library"
 class="content-section hidden space-y-5">
+
 <div>
 <h2 class="text-xl font-extrabold text-slate-800">
 লাইব্রেরি
 </h2>
+
 <p class="text-xs text-slate-400">
 বই, Issue ও Return ব্যবস্থাপনা
 </p>
 </div>
+
+
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
 <div class="module-card">
 <i class="fa-solid fa-book"></i>
 <h3>বইয়ের তালিকা</h3>
 <p>সকল বই</p>
 </div>
+
 <div class="module-card">
 <i class="fa-solid fa-arrow-right-from-bracket"></i>
 <h3>বই Issue</h3>
 <p>বই প্রদান</p>
 </div>
+
 <div class="module-card">
 <i class="fa-solid fa-arrow-right-to-bracket"></i>
 <h3>Return</h3>
@@ -3360,12 +3487,20 @@ async function loadExpenseTable(){
                     <button
                     onclick="deleteDocItem('expenses','${doc.id}',loadExpenseTable)"
                     class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
+
                     ডিলিট
+
                     </button>
+
                 </td>
+
             </tr>
+
             `;
+
         });
+
+
         document.getElementById('expenseTableBody').innerHTML =
         html ||
         `<tr>
@@ -3374,61 +3509,102 @@ async function loadExpenseTable(){
         কোনো খরচ নেই
         </td>
         </tr>`;
+
     }
+
     catch(error){
+
         console.error(error);
+
     }
+
 }
+
+
 /* =====================================================
    ZAKAT
 ===================================================== */
+
 function saveZakatData(e){
+
     e.preventDefault();
+
     db.collection("zakat")
     .add({
+
         name:
         document.getElementById('zak-name').value,
+
         amount:
         Number(document.getElementById('zak-amount').value),
+
         createdAt:
         firebase.firestore.FieldValue.serverTimestamp()
+
     })
     .then(()=>{
+
         alert("যাকাত ফান্ডে যোগ হয়েছে!");
+
         e.target.reset();
+
         loadZakatTable();
+
     });
+
 }
+
+
 async function loadZakatTable(){
+
     try{
+
         const snap =
         await db
         .collection("zakat")
         .get();
+
         let html="";
+
         snap.forEach(doc=>{
+
             const z=doc.data();
+
             html += `
+
             <tr class="border-b text-sm">
+
                 <td class="p-3 font-semibold">
                     ${escapeHTML(z.name || '')}
                 </td>
+
                 <td class="p-3 font-bold text-amber-600">
                     ${Number(z.amount || 0).toLocaleString('bn-BD')} টাকা
                 </td>
+
                 <td class="p-3 text-xs text-slate-400">
                     সংরক্ষিত
                 </td>
+
                 <td class="p-3 text-center">
+
                     <button
                     onclick="deleteDocItem('zakat','${doc.id}',loadZakatTable)"
                     class="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
+
                     ডিলিট
+
                     </button>
+
                 </td>
+
             </tr>
+
             `;
+
         });
+
+
         document.getElementById('zakatTableBody').innerHTML =
         html ||
         `<tr>
@@ -3437,238 +3613,405 @@ async function loadZakatTable(){
         কোনো রেকর্ড নেই
         </td>
         </tr>`;
+
     }
+
     catch(error){
+
         console.error(error);
+
     }
+
 }
+
+
 /* =====================================================
    ATTENDANCE
 ===================================================== */
+
 function saveAttendance(e){
+
     e.preventDefault();
+
     const date =
     document.getElementById('att-date').value;
+
     if(!date){
+
         alert("তারিখ নির্বাচন করুন!");
+
         return;
+
     }
+
+
     db.collection("attendance")
     .add({
+
         className:
         document.getElementById('att-class').value,
+
         date:date,
+
         createdAt:
         firebase.firestore.FieldValue.serverTimestamp()
+
     })
     .then(()=>{
+
         alert("হাজিরা সফলভাবে সংরক্ষিত হয়েছে!");
+
         loadAttendanceStats();
+
     });
+
 }
+
+
 /* =====================================================
    DELETE
 ===================================================== */
+
 async function deleteDocItem(
     collectionName,
     docId,
     callback
 ){
+
     if(!confirm("নিশ্চিতভাবে ডিলিট করতে চান?")){
         return;
     }
+
     try{
+
         await db
         .collection(collectionName)
         .doc(docId)
         .delete();
+
         callback();
+
         updateDashboardStats();
+
     }
+
     catch(error){
+
         console.error(error);
+
         alert("ডিলিট করা যায়নি।");
+
     }
+
 }
+
+
 /* =====================================================
    DASHBOARD STATS
 ===================================================== */
+
 async function updateDashboardStats(){
+
     try{
+
         const students =
         await db.collection("students").get();
+
         const teachers =
         await db.collection("teachers").get();
+
         const incomes =
         await db.collection("incomes").get();
+
         const expenses =
         await db.collection("expenses").get();
+
+
         let incomeTotal=0;
+
         incomes.forEach(doc=>{
             incomeTotal +=
             Number(doc.data().amount || 0);
         });
+
+
         let expenseTotal=0;
+
         expenses.forEach(doc=>{
             expenseTotal +=
             Number(doc.data().amount || 0);
         });
+
+
         const balance =
         incomeTotal - expenseTotal;
+
+
         document.getElementById('dashStudentCount').innerText =
         toBanglaNumber(students.size);
+
         document.getElementById('dashTeacherCount').innerText =
         toBanglaNumber(teachers.size);
+
         document.getElementById('dashIncome').innerText =
         formatMoney(incomeTotal);
+
         document.getElementById('dashExpense').innerText =
         formatMoney(expenseTotal);
+
         document.getElementById('dashBalance').innerText =
         formatMoney(balance);
+
+
         document.getElementById('accountIncome').innerText =
         formatMoney(incomeTotal);
+
         document.getElementById('accountExpense').innerText =
         formatMoney(expenseTotal);
+
         document.getElementById('accountBalance').innerText =
         formatMoney(balance);
+
+
         renderDashboardStudents(students);
+
         renderDashboardIncome(incomes);
+
     }
+
     catch(error){
+
         console.error(error);
+
     }
+
 }
+
+
 /* =====================================================
    DASHBOARD STUDENTS
 ===================================================== */
+
 function renderDashboardStudents(snap){
+
     const container =
     document.getElementById('dashboardStudents');
+
     if(!container) return;
+
+
     let items=[];
+
     snap.forEach(doc=>{
         items.push({
             id:doc.id,
             ...doc.data()
         });
     });
+
+
     items =
     items.slice(-5).reverse();
+
+
     if(!items.length){
+
         container.innerHTML =
         `<p class="text-xs text-slate-400 text-center py-6">
         কোনো ছাত্র নেই
         </p>`;
+
         return;
+
     }
+
+
     container.innerHTML =
     items.map(s=>`
+
     <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+
         <div class="w-9 h-9 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center">
+
             <i class="fa-solid fa-user"></i>
+
         </div>
+
         <div class="flex-1 min-w-0">
+
             <p class="text-xs font-bold text-slate-700 truncate">
                 ${escapeHTML(s.name || '')}
             </p>
+
             <p class="text-[10px] text-slate-400">
                 ${escapeHTML(s.className || '')}
             </p>
+
         </div>
+
     </div>
+
     `).join('');
+
 }
+
+
 /* =====================================================
    DASHBOARD INCOME
 ===================================================== */
+
 function renderDashboardIncome(snap){
+
     const container =
     document.getElementById('dashboardIncome');
+
     if(!container) return;
+
+
     let items=[];
+
     snap.forEach(doc=>{
         items.push({
             id:doc.id,
             ...doc.data()
         });
     });
+
+
     items =
     items.slice(-5).reverse();
+
+
     if(!items.length){
+
         container.innerHTML =
         `<p class="text-xs text-slate-400 text-center py-6">
         কোনো পেমেন্ট নেই
         </p>`;
+
         return;
+
     }
+
+
     container.innerHTML =
     items.map(i=>`
+
     <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
+
         <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+
             <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+
         </div>
+
         <div class="flex-1">
+
             <p class="text-xs font-bold text-slate-700">
                 ${escapeHTML(i.category || '')}
             </p>
+
             <p class="text-[10px] text-slate-400">
                 সাম্প্রতিক জমা
             </p>
+
         </div>
+
         <p class="text-xs font-extrabold text-emerald-600">
             ${formatMoney(i.amount || 0)}
         </p>
+
     </div>
+
     `).join('');
+
 }
+
+
 /* =====================================================
    ATTENDANCE STATS
 ===================================================== */
+
 async function loadAttendanceStats(){
+
     try{
+
         const snap =
         await db
         .collection("attendance")
         .get();
+
+
         const total=snap.size;
+
+
         document.getElementById('attendanceTotal').innerText =
         toBanglaNumber(total);
+
+
         document.getElementById('dashAttendance').innerText =
         toBanglaNumber(total);
+
+
         document.getElementById('presentStat').innerText =
         toBanglaNumber(total);
+
         document.getElementById('attendancePagePresent').innerText =
         toBanglaNumber(total);
+
+
         document.getElementById('absentStat').innerText =
         "০";
+
         document.getElementById('attendancePageAbsent').innerText =
         "০";
+
+
         document.getElementById('leaveStat').innerText =
         "০";
+
+
         const percent =
         total > 0 ? 100 : 0;
+
+
         document.getElementById('attendancePercent').innerText =
         toBanglaNumber(percent) + "%";
+
+
         document.getElementById('attendanceProgress').style.width =
         percent + "%";
+
     }
+
     catch(error){
+
         console.error(error);
+
     }
+
 }
+
+
 /* =====================================================
    BANNER
 ===================================================== */
+
 function openBannerModal(){
+
     const modal =
     document.getElementById('bannerModal');
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+
+
     const saved =
     JSON.parse(
         localStorage.getItem('madrasaBannerData') || '{}'
     );
+
+
     document.getElementById('input-name').value =
     saved.name || document.getElementById('disp-name').innerText;
 
@@ -3683,195 +4026,335 @@ function openBannerModal(){
 
     document.getElementById('input-phone').value =
     saved.phone || document.getElementById('disp-phone').innerText;
+
 }
+
+
 function closeBannerModal(){
+
     const modal =
     document.getElementById('bannerModal');
+
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+
 }
+
+
 function saveBannerInfo(e){
+
     e.preventDefault();
+
+
     const file =
     document.getElementById('input-logo-file').files[0];
+
+
     const oldData =
     JSON.parse(
         localStorage.getItem('madrasaBannerData') || '{}'
     );
+
+
     const save=(logo)=>{
+
         const data={
+
             name:
             document.getElementById('input-name').value,
+
             tagline:
             document.getElementById('input-tagline').value,
+
             estd:
             document.getElementById('input-estd').value,
+
             address:
             document.getElementById('input-address').value,
+
             phone:
             document.getElementById('input-phone').value,
+
             logo:
             logo || oldData.logo || ''
+
         };
+
+
         localStorage.setItem(
             'madrasaBannerData',
             JSON.stringify(data)
         );
+
+
         loadBannerInfo();
+
         closeBannerModal();
+
         alert("ব্যানার আপডেট হয়েছে!");
+
     };
+
+
     if(file){
+
         const reader =
         new FileReader();
+
         reader.onload =
         ev=>save(ev.target.result);
+
         reader.readAsDataURL(file);
+
     }
+
     else{
+
         save(null);
-    }
+
+    }
+
 }
+
+
 function loadBannerInfo(){
+
     const saved =
     JSON.parse(
         localStorage.getItem('madrasaBannerData') || '{}'
     );
+
+
     if(!saved) return;
+
+
     if(saved.name)
         document.getElementById('disp-name').innerText =
         saved.name;
+
+
     if(saved.tagline)
         document.getElementById('disp-tagline').innerText =
         saved.tagline;
+
+
     if(saved.estd)
         document.getElementById('disp-estd').innerText =
         saved.estd;
+
+
     if(saved.address)
         document.getElementById('disp-address').innerText =
         saved.address;
+
+
     if(saved.phone)
         document.getElementById('disp-phone').innerText =
         saved.phone;
+
+
     if(saved.logo){
+
         document
         .getElementById('bannerLogoIcon')
         .classList.add('hidden');
+
+
         const img =
         document.getElementById('bannerLogoImg');
+
+
         img.src=saved.logo;
+
         img.classList.remove('hidden');
+
     }
+
 }
+
+
 /* =====================================================
    SIDEBAR LOGO
 ===================================================== */
+
 function updateSidebarLogo(event){
+
     const file =
     event.target.files[0];
+
     if(!file) return;
+
+
     const reader =
     new FileReader();
+
+
     reader.onload=(e)=>{
+
         localStorage.setItem(
             'madrasaCustomLogo',
             e.target.result
         );
+
+
         applySidebarLogo(
             e.target.result
         );
+
     };
+
+
     reader.readAsDataURL(file);
+
 }
+
+
 function applySidebarLogo(src){
+
     document
     .getElementById('sidebarLogoIcon')
     .classList.add('hidden');
+
+
     const img =
     document.getElementById('sidebarLogoImg');
+
+
     img.src=src;
+
     img.classList.remove('hidden');
+
 }
+
+
 /* =====================================================
    ADMIN
 ===================================================== */
+
 function openAdminModal(){
 
     const modal =
     document.getElementById('adminModal');
+
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+
 }
+
+
 function closeAdminModal(){
+
     const modal =
     document.getElementById('adminModal');
+
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+
 }
+
+
 function factoryReset(){
+
     if(
         confirm(
             "Local Storage পরিষ্কার করতে চান?\nFirebase-এর ডাটা মুছে যাবে না।"
         )
     ){
+
         localStorage.clear();
+
         location.reload();
+
     }
+
 }
+
+
 /* =====================================================
    ID CARD
 ===================================================== */
+
 function generateIdCard(){
+
     alert(
         "ID Card Generator-এর ডিজাইন প্রস্তুত করা হয়েছে।\nপরবর্তী ধাপে ছাত্রের তথ্য দিয়ে স্বয়ংক্রিয় PDF/Print ID Card যুক্ত করা যাবে।"
     );
+
 }
+
+
 /* =====================================================
    HELPERS
 ===================================================== */
+
 function formatMoney(amount){
+
     return Number(amount || 0)
     .toLocaleString('bn-BD') + " টাকা";
+
 }
+
+
 function toBanglaNumber(number){
 
     return Number(number || 0)
     .toLocaleString('bn-BD');
+
 }
+
+
 function escapeHTML(value){
+
     return String(value)
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
+
 }
+
+
 /* =====================================================
    INITIAL LOAD
 ===================================================== */
+
 window.onload=function(){
+
     // অটোমেটিক ক্যালেন্ডার সচল করা
     scheduleMidnightCalendarUpdate();
+
     loadBannerInfo();
+
     const logo =
     localStorage.getItem(
         'madrasaCustomLogo'
     );
+
     if(logo){
         applySidebarLogo(logo);
     }
+
     updateDashboardStats();
+
     loadAttendanceStats();
+
     loadStudentsTable();
+
 };
+
 auth.onAuthStateChanged(function(user){
+
     if(user){
         console.log("✅ Firebase Auth Ready");
         console.log("Logged in:", user.email);
     }else{
         console.log("⚠️ Not Logged In");
     }
+
 });
+
 </script>
+
 </body>
 </html>

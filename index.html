@@ -493,7 +493,7 @@ class="w-72 bg-white border-r border-slate-200 flex flex-col justify-between sha
 <div class="p-4 md:p-6 lg:p-8 space-y-6">
 
 
-<!-- ================= BANNER ================= -->
+<!-- ================= BANNER WITH DYNAMIC CALENDAR ================= -->
 
 <section class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 text-white rounded-3xl shadow-xl overflow-hidden relative">
 
@@ -559,14 +559,37 @@ class="w-72 bg-white border-r border-slate-200 flex flex-col justify-between sha
 
             </div>
 
+            <!-- DYNAMIC CALENDAR DISPLAY WIDGET -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 p-3.5 rounded-2xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-400/20 flex items-center justify-center text-amber-300">
+                        <i class="fa-solid fa-calendar-days text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-emerald-200 font-medium uppercase tracking-wider">আজকের তারিখ (স্বয়ংক্রিয়)</p>
+                        <p id="disp-date-english" class="font-bold text-white text-xs sm:text-sm">তারিখ লোড হচ্ছে...</p>
+                    </div>
+                </div>
 
-            <button onclick="openBannerModal()"
-                    class="self-start lg:self-center bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2.5 rounded-xl text-xs flex items-center gap-2">
+                <div class="hidden sm:block w-px h-8 bg-white/20"></div>
 
-                <i class="fa-solid fa-pen text-amber-300"></i>
-                ব্যানার এডিট
+                <div class="flex flex-wrap gap-2 text-[11px] font-semibold">
+                    <span class="bg-emerald-950/50 text-emerald-100 px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
+                        <i class="fa-solid fa-moon text-amber-300"></i>
+                        <span id="disp-date-hijri">--</span>
+                    </span>
+                    <span class="bg-emerald-950/50 text-emerald-100 px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5">
+                        <i class="fa-solid fa-sun text-amber-300"></i>
+                        <span id="disp-date-bangla">--</span>
+                    </span>
+                </div>
 
-            </button>
+                <button onclick="openBannerModal()"
+                        class="self-stretch sm:self-auto bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition ml-auto">
+                    <i class="fa-solid fa-pen text-amber-300"></i>
+                    ব্যানার এডিট
+                </button>
+            </div>
 
         </div>
 
@@ -2775,6 +2798,131 @@ auth.onAuthStateChanged((user) => {
 });
 
 
+/* =====================================================
+   LIVE DYNAMIC CALENDAR ENGINE (HIJRI, BANGLA, ENGLISH)
+===================================================== */
+
+function toBanglaDigit(str) {
+    const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    return String(str).replace(/\d/g, d => banglaDigits[d]);
+}
+
+// বাংলাদেশের সরকারি সংশোধিত বাংলা ক্যালেন্ডার নিয়ম অনুযায়ী হিসাব
+function getBanglaDateDetails(date = new Date()) {
+    const monthNames = [
+        "বৈশাখ", "জ্যৈষ্ঠ", "আষাঢ়", "শ্রাবণ", "ভাদ্র", "আশ্বিন",
+        "কার্তিক", "অগ্রহায়ণ", "পৌষ", "মাঘ", "ফাল্গুন", "চৈত্র"
+    ];
+    
+    const year = date.getFullYear();
+    const month = date.getMonth(); 
+    const day = date.getDate();
+
+    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    const banglaDaysInMonth = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapYear ? 31 : 30, 30];
+
+    let banglaYear = year - 593;
+    if (month < 3 || (month === 3 && day < 14)) {
+        banglaYear -= 1;
+    }
+
+    let bMonth = 0;
+    let bDay = 1;
+
+    const apr14 = new Date(year, 3, 14);
+    if (date >= apr14) {
+        let diffDays = Math.floor((date - apr14) / (1000 * 60 * 60 * 24));
+        for (let i = 0; i < 12; i++) {
+            if (diffDays < banglaDaysInMonth[i]) {
+                bMonth = i;
+                bDay = diffDays + 1;
+                break;
+            }
+            diffDays -= banglaDaysInMonth[i];
+        }
+    } else {
+        const prevYearApr14 = new Date(year - 1, 3, 14);
+        let diffDays = Math.floor((date - prevYearApr14) / (1000 * 60 * 60 * 24));
+        const prevLeap = ((year - 1) % 4 === 0 && (year - 1) % 100 !== 0) || ((year - 1) % 400 === 0);
+        const prevBanglaDays = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, prevLeap ? 31 : 30, 30];
+
+        for (let i = 0; i < 12; i++) {
+            if (diffDays < prevBanglaDays[i]) {
+                bMonth = i;
+                bDay = diffDays + 1;
+                break;
+            }
+            diffDays -= prevBanglaDays[i];
+        }
+    }
+
+    return `${toBanglaDigit(bDay)} ${monthNames[bMonth]} ${toBanglaDigit(banglaYear)} বঙ্গাব্দ`;
+}
+
+// আন্তর্জাতিক উম্মুল কুরা হিজরি ক্যালেন্ডার
+function getHijriDateDetails(date = new Date()) {
+    try {
+        const formatter = new Intl.DateTimeFormat('bn-BD-u-ca-islamic-umalqura', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        return formatter.format(date) + " হিজরী";
+    } catch(e) {
+        try {
+            const formatter = new Intl.DateTimeFormat('bn-BD-u-ca-islamic', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            return formatter.format(date) + " হিজরী";
+        } catch(err) {
+            return "হিজরি তারিখ লোড হচ্ছে...";
+        }
+    }
+}
+
+// বাংলা ফরম্যাটে ইংরেজি তারিখ
+function getEnglishDateDetails(date = new Date()) {
+    return date.toLocaleDateString('bn-BD', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }) + " ইং";
+}
+
+function updateCalendarDisplay() {
+    const now = new Date();
+
+    const engEl = document.getElementById('disp-date-english');
+    const hijEl = document.getElementById('disp-date-hijri');
+    const banEl = document.getElementById('disp-date-bangla');
+
+    if(engEl) engEl.innerText = getEnglishDateDetails(now);
+    if(hijEl) hijEl.innerText = getHijriDateDetails(now);
+    if(banEl) banEl.innerText = getBanglaDateDetails(now);
+}
+
+// রাত ১২:০০:০৫ এ স্বয়ংক্রিয় তারিখ আপডেটের টাইমার
+function scheduleMidnightCalendarUpdate() {
+    updateCalendarDisplay();
+
+    const now = new Date();
+    const midnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0, 0, 5 
+    );
+    const msToMidnight = midnight.getTime() - now.getTime();
+
+    setTimeout(() => {
+        updateCalendarDisplay();
+        setInterval(updateCalendarDisplay, 24 * 60 * 60 * 1000);
+    }, msToMidnight);
+}
+
 
 /* =====================================================
    PAGE TITLES
@@ -4173,21 +4321,19 @@ function escapeHTML(value){
 
 window.onload=function(){
 
-    loadBannerInfo();
+    // অটোমেটিক ক্যালেন্ডার সচল করা
+    scheduleMidnightCalendarUpdate();
 
+    loadBannerInfo();
 
     const logo =
     localStorage.getItem(
         'madrasaCustomLogo'
     );
 
-
     if(logo){
-
         applySidebarLogo(logo);
-
     }
-
 
     updateDashboardStats();
 
@@ -4197,7 +4343,7 @@ window.onload=function(){
 
 };
 
-    auth.onAuthStateChanged(function(user){
+auth.onAuthStateChanged(function(user){
 
     if(user){
         console.log("✅ Firebase Auth Ready");
@@ -4207,8 +4353,8 @@ window.onload=function(){
     }
 
 });
-    
+
 </script>
 
 </body>
-    </html>
+</html>

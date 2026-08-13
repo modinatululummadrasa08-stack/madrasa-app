@@ -1,193 +1,222 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মাদ্রাসা ম্যানেজমেন্ট সিস্টেম</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=SolaimanLipi&display=swap');
-        body {
-            font-family: 'SolaimanLipi', sans-serif;
+<script>
+/* =====================================================
+   BANNER MODAL & INFO
+===================================================== */
+function openBannerModal(){
+    const modal = document.getElementById('bannerModal');
+    if(!modal) return;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+
+    if(document.getElementById('input-name')) 
+        document.getElementById('input-name').value = saved.name || document.getElementById('disp-name').innerText;
+    if(document.getElementById('input-tagline')) 
+        document.getElementById('input-tagline').value = saved.tagline || document.getElementById('disp-tagline').innerText;
+    if(document.getElementById('input-estd')) 
+        document.getElementById('input-estd').value = saved.estd || document.getElementById('disp-estd').innerText;
+    if(document.getElementById('input-address')) 
+        document.getElementById('input-address').value = saved.address || document.getElementById('disp-address').innerText;
+    if(document.getElementById('input-phone')) 
+        document.getElementById('input-phone').value = saved.phone || document.getElementById('disp-phone').innerText;
+}
+
+
+function closeBannerModal(){
+    const modal = document.getElementById('bannerModal');
+    if(!modal) return;
+
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+
+function saveBannerInfo(e){
+    e.preventDefault();
+
+    const fileInput = document.getElementById('input-logo-file');
+    const file = fileInput ? fileInput.files[0] : null;
+
+    const oldData = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+
+    const save = (logo) => {
+        const data = {
+            name: document.getElementById('input-name').value,
+            tagline: document.getElementById('input-tagline').value,
+            estd: document.getElementById('input-estd').value,
+            address: document.getElementById('input-address').value,
+            phone: document.getElementById('input-phone').value,
+            logo: logo || oldData.logo || ''
+        };
+
+        localStorage.setItem('madrasaBannerData', JSON.stringify(data));
+
+        loadBannerInfo();
+        closeBannerModal();
+        alert("ব্যানার সফলভাবে আপডেট হয়েছে!");
+    };
+
+    if(file){
+        const reader = new FileReader();
+        reader.onload = (ev) => save(ev.target.result);
+        reader.readAsDataURL(file);
+    } else {
+        save(null);
+    }
+}
+
+
+function loadBannerInfo(){
+    const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+    if(!saved) return;
+
+    if(saved.name && document.getElementById('disp-name'))
+        document.getElementById('disp-name').innerText = saved.name;
+
+    if(saved.tagline && document.getElementById('disp-tagline'))
+        document.getElementById('disp-tagline').innerText = saved.tagline;
+
+    if(saved.estd && document.getElementById('disp-estd'))
+        document.getElementById('disp-estd').innerText = saved.estd;
+
+    if(saved.address && document.getElementById('disp-address'))
+        document.getElementById('disp-address').innerText = saved.address;
+
+    if(saved.phone && document.getElementById('disp-phone'))
+        document.getElementById('disp-phone').innerText = saved.phone;
+
+    if(saved.logo){
+        const icon = document.getElementById('bannerLogoIcon');
+        if(icon) icon.classList.add('hidden');
+
+        const img = document.getElementById('bannerLogoImg');
+        if(img) {
+            img.src = saved.logo;
+            img.classList.remove('hidden');
         }
-    </style>
-</head>
-<body class="bg-gray-100 text-gray-800">
+    }
+}
 
-    <div class="flex h-screen overflow-hidden">
 
-        <!-- সাইডবার (Sidebar) -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-emerald-800 text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto">
-            <div class="flex items-center justify-between h-16 px-6 bg-emerald-900">
-                <h1 class="text-xl font-bold">মাদ্রাসা ম্যানেজমেন্ট</h1>
-                <button id="closeSidebar" class="md:hidden text-white focus:outline-none">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div class="p-4 text-center border-b border-emerald-700">
-                <img src="https://via.placeholder.com/80" alt="Admin" class="w-16 h-16 mx-auto rounded-full border-2 border-white mb-2">
-                <h2 class="font-semibold text-lg">অ্যাডমিন প্যানেল</h2>
-                <p class="text-xs text-emerald-200">সুপার অ্যাডমিন</p>
-            </div>
-            <nav class="p-4 space-y-2 overflow-y-auto h-[calc(100vh-13rem)]">
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-700 text-white font-medium transition">
-                    <i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ড
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-user-graduate"></i> শিক্ষার্থী তালিকা
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-chalkboard-teacher"></i> শিক্ষক ও স্টাফ
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-calendar-check"></i> উপস্থিতি
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-wallet"></i> ফি ও হিসাব-নিকাশ
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-poll"></i> ফলাফল ও পরীক্ষা
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-bullhorn"></i> নোটিশ বোর্ড
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-cog"></i> সেটিংস
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-red-600 text-red-100 transition mt-6">
-                    <i class="fas fa-sign-out-alt"></i> প্রস্থান (Logout)
-                </a>
-            </nav>
-        </aside>
+/* =====================================================
+   SIDEBAR LOGO
+===================================================== */
+function updateSidebarLogo(event){
+    const file = event.target.files[0];
+    if(!file) return;
 
-        <!-- মূল কন্টেন্ট এলাকা (Main Content) -->
-        <div class="flex flex-col flex-1 h-full overflow-hidden">
-            
-            <!-- টপ হেডার (Top Navbar) -->
-            <header class="flex items-center justify-between h-16 px-6 bg-white shadow-sm z-10">
-                <button id="toggleSidebar" class="text-gray-600 focus:outline-none md:hidden">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-                <div class="text-lg font-semibold text-gray-700">জামিয়া ইসলামিয়া আরাবিয়া মাদ্রাসা</div>
-                <div class="flex items-center gap-4">
-                    <button class="relative text-gray-600 hover:text-emerald-700">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-gray-700 hidden sm:inline">অ্যাডমিন</span>
-                    </div>
-                </div>
-            </header>
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        localStorage.setItem('madrasaCustomLogo', e.target.result);
+        applySidebarLogo(e.target.result);
+    };
+    reader.readAsDataURL(file);
+}
 
-            <!-- ড্যাশবোর্ড বডি (Dashboard Content) -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-                
-                <!-- স্ট্যাটিস্টিকস কার্ডস -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">মোট শিক্ষার্থী</p>
-                            <h3 class="text-2xl font-bold text-gray-800">৪৫০ জন</h3>
-                        </div>
-                        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-full">
-                            <i class="fas fa-user-graduate text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">মোট শিক্ষক</p>
-                            <h3 class="text-2xl font-bold text-gray-800">২৫ জন</h3>
-                        </div>
-                        <div class="p-3 bg-blue-100 text-blue-700 rounded-full">
-                            <i class="fas fa-chalkboard-teacher text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">আজকের উপস্থিতি</p>
-                            <h3 class="text-2xl font-bold text-gray-800">৯২%</h3>
-                        </div>
-                        <div class="p-3 bg-amber-100 text-amber-700 rounded-full">
-                            <i class="fas fa-calendar-check text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">মাসিক চাঁদা/ফি সংগ্রহ</p>
-                            <h3 class="text-2xl font-bold text-gray-800">১,২৫,০০০ ৳</h3>
-                        </div>
-                        <div class="p-3 bg-purple-100 text-purple-700 rounded-full">
-                            <i class="fas fa-wallet text-xl"></i>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- সাম্প্রতিক কার্যক্রম টেবিল -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-gray-800">সাম্প্রতিক শিক্ষার্থী ভর্তি</h3>
-                        <button class="px-4 py-2 bg-emerald-700 text-white rounded-lg text-sm font-medium hover:bg-emerald-800 transition">সব দেখুন</button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-gray-200 text-gray-600 text-sm">
-                                    <th class="py-3 px-4">নাম</th>
-                                    <th class="py-3 px-4">জামাত/শ্রেণি</th>
-                                    <th class="py-3 px-4">রোল নম্বর</th>
-                                    <th class="py-3 px-4">যোগাযোগ</th>
-                                    <th class="py-3 px-4">অবস্থা</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm text-gray-700">
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <td class="py-3 px-4 font-medium">আব্দুল্লাহ আল মামুন</td>
-                                    <td class="py-3 px-4">হিফজ বিভাগ</td>
-                                    <td class="py-3 px-4">১০১</td>
-                                    <td class="py-3 px-4">০১৭০০০০০০০০</td>
-                                    <td class="py-3 px-4"><span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">সক্রিয়</span></td>
-                                </tr>
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
-                                    <td class="py-3 px-4 font-medium">উমর ফারুক</td>
-                                    <td class="py-3 px-4">নাদিয়ারা</td>
-                                    <td class="py-3 px-4">১০২</td>
-                                    <td class="py-3 px-4">০১৮০০০০০০০০</td>
-                                    <td class="py-3 px-4"><span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">সক্রিয়</span></td>
-                                </tr>
-                                <tr class="hover:bg-gray-50">
-                                    <td class="py-3 px-4 font-medium">মুহাম্মদ হাসান</td>
-                                    <td class="py-3 px-4">কিতাব বিভাগ</td>
-                                    <td class="py-3 px-4">১০৩</td>
-                                    <td class="py-3 px-4">০১৯০০০০০০০০</td>
-                                    <td class="py-3 px-4"><span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">সক্রিয়</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+function applySidebarLogo(src){
+    const icon = document.getElementById('sidebarLogoIcon');
+    if(icon) icon.classList.add('hidden');
 
-            </main>
-        </div>
+    const img = document.getElementById('sidebarLogoImg');
+    if(img) {
+        img.src = src;
+        img.classList.remove('hidden');
+    }
+}
 
-    </div>
 
-    <!-- মোবাইল সাইডবার টগল স্ক্রিপ্ট -->
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
+/* =====================================================
+   ADMIN
+===================================================== */
+function openAdminModal(){
+    const modal = document.getElementById('adminModal');
+    if(!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
 
-        toggleSidebar.addEventListener('click', () => {
-            sidebar.classList.remove('-translate-x-full');
-        });
 
-        closeSidebar.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-        });
-    </script>
-</body>
-</html>
+function closeAdminModal(){
+    const modal = document.getElementById('adminModal');
+    if(!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+
+function factoryReset(){
+    if(confirm("Local Storage পরিষ্কার করতে চান?\nFirebase-এর ডাটা মুছে যাবে না।")){
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+
+/* =====================================================
+   ID CARD
+===================================================== */
+function generateIdCard(){
+    alert("ID Card Generator-এর ডিজাইন প্রস্তুত করা হয়েছে।\nপরবর্তী ধাপে ছাত্রের তথ্য দিয়ে স্বয়ংক্রিয় প্রিন্ট বা PDF যুক্ত করা যাবে।");
+}
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+function formatMoney(amount){
+    return Number(amount || 0).toLocaleString('bn-BD') + " টাকা";
+}
+
+
+function toBanglaNumber(number){
+    return Number(number || 0).toLocaleString('bn-BD');
+}
+
+
+function escapeHTML(value){
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+window.onload = function(){
+    // অটোমেটিক ক্যালেন্ডার সচল করা (যদি ফাংশনটি থেকে থাকে)
+    if(typeof scheduleMidnightCalendarUpdate === 'function') {
+        scheduleMidnightCalendarUpdate();
+    }
+
+    loadBannerInfo();
+
+    const logo = localStorage.getItem('madrasaCustomLogo');
+    if(logo){
+        applySidebarLogo(logo);
+    }
+
+    if(typeof updateDashboardStats === 'function') updateDashboardStats();
+    if(typeof loadAttendanceStats === 'function') loadAttendanceStats();
+    if(typeof loadStudentsTable === 'function') loadStudentsTable();
+};
+
+
+// Firebase Auth Check (যদি auth অবজেক্ট থাকে)
+if(typeof auth !== 'undefined') {
+    auth.onAuthStateChanged(function(user){
+        if(user){
+            console.log("✅ Firebase Auth Ready");
+            console.log("Logged in:", user.email);
+        } else {
+            console.log("⚠️ Not Logged In");
+        }
+    });
+}
+</script>

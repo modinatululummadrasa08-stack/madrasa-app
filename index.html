@@ -1,222 +1,345 @@
-<script>
-/* =====================================================
-   BANNER MODAL & INFO
-===================================================== */
-function openBannerModal(){
-    const modal = document.getElementById('bannerModal');
-    if(!modal) return;
-    
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মাদ্রাসা ম্যানেজমেন্ট সিস্টেম</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SolaimanLipi&display=swap');
+        body {
+            font-family: 'SolaimanLipi', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
 
-    const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+    <div class="flex h-screen overflow-hidden">
 
-    if(document.getElementById('input-name')) 
-        document.getElementById('input-name').value = saved.name || document.getElementById('disp-name').innerText;
-    if(document.getElementById('input-tagline')) 
-        document.getElementById('input-tagline').value = saved.tagline || document.getElementById('disp-tagline').innerText;
-    if(document.getElementById('input-estd')) 
-        document.getElementById('input-estd').value = saved.estd || document.getElementById('disp-estd').innerText;
-    if(document.getElementById('input-address')) 
-        document.getElementById('input-address').value = saved.address || document.getElementById('disp-address').innerText;
-    if(document.getElementById('input-phone')) 
-        document.getElementById('input-phone').value = saved.phone || document.getElementById('disp-phone').innerText;
-}
+        <!-- সাইডবার (Sidebar) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-emerald-800 text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
+            <div class="flex items-center justify-between h-16 px-6 bg-emerald-900">
+                <h1 class="text-xl font-bold">মাদ্রাসা ম্যানেজমেন্ট</h1>
+                <button id="closeSidebar" class="md:hidden text-white focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- সাইডবার লোগো ও প্রোফাইল সেকশন -->
+            <div class="p-4 text-center border-b border-emerald-700 relative">
+                <label for="sidebarLogoInput" class="cursor-pointer inline-block relative group">
+                    <div id="sidebarLogoIcon" class="w-16 h-16 mx-auto rounded-full border-2 border-white mb-2 flex items-center justify-center bg-emerald-700 text-white text-xl">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <img id="sidebarLogoImg" src="" alt="Logo" class="w-16 h-16 mx-auto rounded-full border-2 border-white mb-2 object-cover hidden">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <span class="text-xs text-white">পরিবর্তন</span>
+                    </div>
+                </label>
+                <input type="file" id="sidebarLogoInput" class="hidden" accept="image/*" onchange="updateSidebarLogo(event)">
+                
+                <h2 id="disp-name" class="font-semibold text-lg">জামিয়া ইসলামিয়া</h2>
+                <p id="disp-tagline" class="text-xs text-emerald-200">ম্যানেজমেন্ট সিস্টেম</p>
+            </div>
 
+            <!-- নেভিগেশন লিংক -->
+            <nav class="p-4 space-y-2 overflow-y-auto flex-1">
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-700 text-white font-medium transition">
+                    <i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ড
+                </a>
+                <a href="#" onclick="openBannerModal()" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-edit"></i> ব্যানার সেটিংস
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-user-graduate"></i> শিক্ষার্থী তালিকা
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-chalkboard-teacher"></i> শিক্ষক ও স্টাফ
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-calendar-check"></i> উপস্থিতি
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-wallet"></i> ফি ও হিসাব-নিকাশ
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-poll"></i> ফলাফল ও পরীক্ষা
+                </a>
+                <a href="#" onclick="openAdminModal()" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
+                    <i class="fas fa-cog"></i> অ্যাডমিন সেটিংস
+                </a>
+                <a href="#" onclick="factoryReset()" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-red-600 text-red-100 transition mt-6">
+                    <i class="fas fa-sync-alt"></i> ফ্যাক্টরি রিসেট
+                </a>
+            </nav>
+        </aside>
 
-function closeBannerModal(){
-    const modal = document.getElementById('bannerModal');
-    if(!modal) return;
+        <!-- মূল কন্টেন্ট এলাকা (Main Content) -->
+        <div class="flex flex-col flex-1 h-full overflow-hidden">
+            
+            <!-- টপ হেডার (Top Navbar) -->
+            <header class="flex items-center justify-between h-16 px-6 bg-white shadow-sm z-10">
+                <button id="toggleSidebar" class="text-gray-600 focus:outline-none md:hidden">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div id="disp-address" class="text-sm md:text-base font-semibold text-gray-700 truncate">মাদ্রাসা ম্যানেজমেন্ট ড্যাশবোর্ড</div>
+                <div class="flex items-center gap-4">
+                    <span id="disp-phone" class="text-xs text-gray-500 hidden sm:inline"></span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-gray-700">অ্যাডমিন</span>
+                    </div>
+                </div>
+            </header>
 
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
+            <!-- ড্যাশবোর্ড বডি -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+                
+                <!-- স্ট্যাটিস্টিকস কার্ডস -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">মোট শিক্ষার্থী</p>
+                            <h3 class="text-2xl font-bold text-gray-800">৪৫০ জন</h3>
+                        </div>
+                        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-full">
+                            <i class="fas fa-user-graduate text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">মোট শিক্ষক</p>
+                            <h3 class="text-2xl font-bold text-gray-800">২৫ জন</h3>
+                        </div>
+                        <div class="p-3 bg-blue-100 text-blue-700 rounded-full">
+                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">আজকের উপস্থিতি</p>
+                            <h3 class="text-2xl font-bold text-gray-800">৯২%</h3>
+                        </div>
+                        <div class="p-3 bg-amber-100 text-amber-700 rounded-full">
+                            <i class="fas fa-calendar-check text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">মাসিক ফি সংগ্রহ</p>
+                            <h3 class="text-2xl font-bold text-gray-800">১,২৫,০০০ ৳</h3>
+                        </div>
+                        <div class="p-3 bg-purple-100 text-purple-700 rounded-full">
+                            <i class="fas fa-wallet text-xl"></i>
+                        </div>
+                    </div>
+                </div>
 
+            </main>
+        </div>
 
-function saveBannerInfo(e){
-    e.preventDefault();
+    </div>
 
-    const fileInput = document.getElementById('input-logo-file');
-    const file = fileInput ? fileInput.files[0] : null;
+    <!-- ব্যানার এডিট মডাল (Banner Modal) -->
+    <div id="bannerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">মাদ্রাসা তথ্য পরিবর্তন করুন</h3>
+            <form onsubmit="saveBannerInfo(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">মাদ্রাসার নাম</label>
+                    <input type="text" id="input-name" class="w-full mt-1 p-2 border rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">ট্যাগলাইন / সাবটাইটেল</label>
+                    <input type="text" id="input-tagline" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">প্রতিষ্ঠা সাল (Estd)</label>
+                    <input type="text" id="input-estd" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">ঠিকানা</label>
+                    <input type="text" id="input-address" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">ফোন নম্বর</label>
+                    <input type="text" id="input-phone" class="w-full mt-1 p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">লোগো ছবি</label>
+                    <input type="file" id="input-logo-file" class="w-full mt-1 p-2 border rounded-lg text-sm" accept="image/*">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeBannerModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">বাতিল</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-700 text-white rounded-lg">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    const oldData = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+    <!-- অ্যাডমিন মডাল (Admin Modal) -->
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl text-center">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">অ্যাডমিন অপশন</h3>
+            <p class="text-sm text-gray-600 mb-4">আপনার ডাটাবেজ বা লোকাল স্টোরেজ রিসেট করতে নিচে ক্লিক করুন।</p>
+            <button onclick="factoryReset()" class="w-full py-2 bg-red-600 text-white rounded-lg mb-2">ফ্যাক্টরি রিসেট</button>
+            <button onclick="closeAdminModal()" class="w-full py-2 bg-gray-300 text-gray-700 rounded-lg">বন্ধ করুন</button>
+        </div>
+    </div>
 
-    const save = (logo) => {
-        const data = {
-            name: document.getElementById('input-name').value,
-            tagline: document.getElementById('input-tagline').value,
-            estd: document.getElementById('input-estd').value,
-            address: document.getElementById('input-address').value,
-            phone: document.getElementById('input-phone').value,
-            logo: logo || oldData.logo || ''
+    <!-- জাভাস্ক্রিপ্ট কোড -->
+    <script>
+        // মোবাইল সাইডবার টগল
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        if(toggleSidebar && sidebar) {
+            toggleSidebar.addEventListener('click', () => {
+                sidebar.classList.remove('-translate-x-full');
+            });
+        }
+        if(closeSidebar && sidebar) {
+            closeSidebar.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+            });
+        }
+
+        function openBannerModal(){
+            const modal = document.getElementById('bannerModal');
+            if(!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+
+            if(document.getElementById('input-name')) 
+                document.getElementById('input-name').value = saved.name || document.getElementById('disp-name').innerText;
+            if(document.getElementById('input-tagline')) 
+                document.getElementById('input-tagline').value = saved.tagline || document.getElementById('disp-tagline').innerText;
+            if(document.getElementById('input-estd')) 
+                document.getElementById('input-estd').value = saved.estd || '';
+            if(document.getElementById('input-address')) 
+                document.getElementById('input-address').value = saved.address || document.getElementById('disp-address').innerText;
+            if(document.getElementById('input-phone')) 
+                document.getElementById('input-phone').value = saved.phone || '';
+        }
+
+        function closeBannerModal(){
+            const modal = document.getElementById('bannerModal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function saveBannerInfo(e){
+            e.preventDefault();
+            const fileInput = document.getElementById('input-logo-file');
+            const file = fileInput ? fileInput.files[0] : null;
+            const oldData = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+
+            const save = (logo) => {
+                const data = {
+                    name: document.getElementById('input-name').value,
+                    tagline: document.getElementById('input-tagline').value,
+                    estd: document.getElementById('input-estd').value,
+                    address: document.getElementById('input-address').value,
+                    phone: document.getElementById('input-phone').value,
+                    logo: logo || oldData.logo || ''
+                };
+                localStorage.setItem('madrasaBannerData', JSON.stringify(data));
+                loadBannerInfo();
+                closeBannerModal();
+                alert("ব্যানার সফলভাবে আপডেট হয়েছে!");
+            };
+
+            if(file){
+                const reader = new FileReader();
+                reader.onload = (ev) => save(ev.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                save(null);
+            }
+        }
+
+        function loadBannerInfo(){
+            const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
+            if(!saved) return;
+
+            if(saved.name && document.getElementById('disp-name'))
+                document.getElementById('disp-name').innerText = saved.name;
+            if(saved.tagline && document.getElementById('disp-tagline'))
+                document.getElementById('disp-tagline').innerText = saved.tagline;
+            if(saved.address && document.getElementById('disp-address'))
+                document.getElementById('disp-address').innerText = saved.address;
+            if(saved.phone && document.getElementById('disp-phone'))
+                document.getElementById('disp-phone').innerText = saved.phone;
+
+            if(saved.logo){
+                const icon = document.getElementById('sidebarLogoIcon');
+                if(icon) icon.classList.add('hidden');
+                const img = document.getElementById('sidebarLogoImg');
+                if(img) {
+                    img.src = saved.logo;
+                    img.classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateSidebarLogo(event){
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                localStorage.setItem('madrasaCustomLogo', e.target.result);
+                applySidebarLogo(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applySidebarLogo(src){
+            const icon = document.getElementById('sidebarLogoIcon');
+            if(icon) icon.classList.add('hidden');
+            const img = document.getElementById('sidebarLogoImg');
+            if(img) {
+                img.src = src;
+                img.classList.remove('hidden');
+            }
+        }
+
+        function openAdminModal(){
+            const modal = document.getElementById('adminModal');
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeAdminModal(){
+            const modal = document.getElementById('adminModal');
+            if(modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function factoryReset(){
+            if(confirm("Local Storage পরিষ্কার করতে চান?\nFirebase-এর ডাটা মুছে যাবে না।")){
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        window.onload = function(){
+            loadBannerInfo();
+            const logo = localStorage.getItem('madrasaCustomLogo');
+            if(logo){
+                applySidebarLogo(logo);
+            }
         };
-
-        localStorage.setItem('madrasaBannerData', JSON.stringify(data));
-
-        loadBannerInfo();
-        closeBannerModal();
-        alert("ব্যানার সফলভাবে আপডেট হয়েছে!");
-    };
-
-    if(file){
-        const reader = new FileReader();
-        reader.onload = (ev) => save(ev.target.result);
-        reader.readAsDataURL(file);
-    } else {
-        save(null);
-    }
-}
-
-
-function loadBannerInfo(){
-    const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
-    if(!saved) return;
-
-    if(saved.name && document.getElementById('disp-name'))
-        document.getElementById('disp-name').innerText = saved.name;
-
-    if(saved.tagline && document.getElementById('disp-tagline'))
-        document.getElementById('disp-tagline').innerText = saved.tagline;
-
-    if(saved.estd && document.getElementById('disp-estd'))
-        document.getElementById('disp-estd').innerText = saved.estd;
-
-    if(saved.address && document.getElementById('disp-address'))
-        document.getElementById('disp-address').innerText = saved.address;
-
-    if(saved.phone && document.getElementById('disp-phone'))
-        document.getElementById('disp-phone').innerText = saved.phone;
-
-    if(saved.logo){
-        const icon = document.getElementById('bannerLogoIcon');
-        if(icon) icon.classList.add('hidden');
-
-        const img = document.getElementById('bannerLogoImg');
-        if(img) {
-            img.src = saved.logo;
-            img.classList.remove('hidden');
-        }
-    }
-}
-
-
-/* =====================================================
-   SIDEBAR LOGO
-===================================================== */
-function updateSidebarLogo(event){
-    const file = event.target.files[0];
-    if(!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        localStorage.setItem('madrasaCustomLogo', e.target.result);
-        applySidebarLogo(e.target.result);
-    };
-    reader.readAsDataURL(file);
-}
-
-
-function applySidebarLogo(src){
-    const icon = document.getElementById('sidebarLogoIcon');
-    if(icon) icon.classList.add('hidden');
-
-    const img = document.getElementById('sidebarLogoImg');
-    if(img) {
-        img.src = src;
-        img.classList.remove('hidden');
-    }
-}
-
-
-/* =====================================================
-   ADMIN
-===================================================== */
-function openAdminModal(){
-    const modal = document.getElementById('adminModal');
-    if(!modal) return;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-
-function closeAdminModal(){
-    const modal = document.getElementById('adminModal');
-    if(!modal) return;
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-
-function factoryReset(){
-    if(confirm("Local Storage পরিষ্কার করতে চান?\nFirebase-এর ডাটা মুছে যাবে না।")){
-        localStorage.clear();
-        location.reload();
-    }
-}
-
-
-/* =====================================================
-   ID CARD
-===================================================== */
-function generateIdCard(){
-    alert("ID Card Generator-এর ডিজাইন প্রস্তুত করা হয়েছে।\nপরবর্তী ধাপে ছাত্রের তথ্য দিয়ে স্বয়ংক্রিয় প্রিন্ট বা PDF যুক্ত করা যাবে।");
-}
-
-
-/* =====================================================
-   HELPERS
-===================================================== */
-function formatMoney(amount){
-    return Number(amount || 0).toLocaleString('bn-BD') + " টাকা";
-}
-
-
-function toBanglaNumber(number){
-    return Number(number || 0).toLocaleString('bn-BD');
-}
-
-
-function escapeHTML(value){
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
-
-/* =====================================================
-   INITIAL LOAD
-===================================================== */
-window.onload = function(){
-    // অটোমেটিক ক্যালেন্ডার সচল করা (যদি ফাংশনটি থেকে থাকে)
-    if(typeof scheduleMidnightCalendarUpdate === 'function') {
-        scheduleMidnightCalendarUpdate();
-    }
-
-    loadBannerInfo();
-
-    const logo = localStorage.getItem('madrasaCustomLogo');
-    if(logo){
-        applySidebarLogo(logo);
-    }
-
-    if(typeof updateDashboardStats === 'function') updateDashboardStats();
-    if(typeof loadAttendanceStats === 'function') loadAttendanceStats();
-    if(typeof loadStudentsTable === 'function') loadStudentsTable();
-};
-
-
-// Firebase Auth Check (যদি auth অবজেক্ট থাকে)
-if(typeof auth !== 'undefined') {
-    auth.onAuthStateChanged(function(user){
-        if(user){
-            console.log("✅ Firebase Auth Ready");
-            console.log("Logged in:", user.email);
-        } else {
-            console.log("⚠️ Not Logged In");
-        }
-    });
-}
-</script>
+    </script>
+</body>
+</html>

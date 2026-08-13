@@ -8,6 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK CDNs (Compat Version) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=SolaimanLipi&display=swap');
         body {
@@ -189,8 +195,25 @@
         </div>
     </div>
 
-    <!-- জাভাস্ক্রিপ্ট কোড -->
+    <!-- জাভাস্ক্রিপ্ট এবং ডাটাবেজ কানেকশন স্ক্রিপ্ট -->
     <script>
+        // ফায়ারবেস কনফিগারেশন (আপনার কনফিগারেশন এখানে বসিয়ে নিন)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // ফায়ারবেস ইনিশিয়ালাইজেশন
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // মোবাইল সাইডবার টগল
         const sidebar = document.getElementById('sidebar');
         const toggleSidebar = document.getElementById('toggleSidebar');
@@ -333,6 +356,7 @@
             }
         }
 
+        // ইনিশিয়াল লোড এবং অথেন্টিকেশন চেক
         window.onload = function(){
             loadBannerInfo();
             const logo = localStorage.getItem('madrasaCustomLogo');
@@ -340,6 +364,14 @@
                 applySidebarLogo(logo);
             }
         };
+
+        auth.onAuthStateChanged(function(user){
+            if(user){
+                console.log("✅ Firebase Auth Ready - Logged in:", user.email);
+            } else {
+                console.log("⚠️ Not Logged In");
+            }
+        });
     </script>
 </body>
 </html>

@@ -9,7 +9,7 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK CDNs (Compat Version) -->
+    <!-- Firebase SDK CDNs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -25,60 +25,42 @@
 
     <div class="flex h-screen overflow-hidden">
 
+        <!-- মোবাইল ওভারলে -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
+
         <!-- সাইডবার (Sidebar) -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-emerald-800 text-white transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
-            <div class="flex items-center justify-between h-16 px-6 bg-emerald-900">
-                <h1 class="text-xl font-bold">মাদ্রাসা ম্যানেজমেন্ট</h1>
-                <button id="closeSidebar" class="md:hidden text-white focus:outline-none">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
             
-            <!-- সাইডবার লোগো ও প্রোফাইল সেকশন -->
-            <div class="p-4 text-center border-b border-emerald-700 relative">
-                <label for="sidebarLogoInput" class="cursor-pointer inline-block relative group">
-                    <div id="sidebarLogoIcon" class="w-16 h-16 mx-auto rounded-full border-2 border-white mb-2 flex items-center justify-center bg-emerald-700 text-white text-xl">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <img id="sidebarLogoImg" src="" alt="Logo" class="w-16 h-16 mx-auto rounded-full border-2 border-white mb-2 object-cover hidden">
-                    <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                        <span class="text-xs text-white">পরিবর্তন</span>
-                    </div>
-                </label>
-                <input type="file" id="sidebarLogoInput" class="hidden" accept="image/*" onchange="updateSidebarLogo(event)">
-                
-                <h2 id="disp-name" class="font-semibold text-lg">জামিয়া ইসলামিয়া</h2>
-                <p id="disp-tagline" class="text-xs text-emerald-200">ম্যানেজমেন্ট সিস্টেম</p>
+            <!-- সাইডবার লোগো সেকশন -->
+            <div class="p-4 border-b border-gray-100 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-gray-800 text-sm">মাদ্রাসা ম্যানেজমেন্ট</h2>
+                    <p class="text-xs text-gray-400 cursor-pointer hover:text-emerald-600">লোগো পরিবর্তন</p>
+                </div>
             </div>
 
-            <!-- নেভিগেশন লিংক -->
-            <nav class="p-4 space-y-2 overflow-y-auto flex-1">
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-700 text-white font-medium transition">
-                    <i class="fas fa-tachometer-alt"></i> ড্যাশবোর্ড
+            <!-- নেভিগেশন মেনু -->
+            <nav class="p-3 space-y-1 overflow-y-auto flex-1 text-sm">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-700 text-white font-medium shadow-sm transition">
+                    <i class="fas fa-chart-pie w-5"></i> ড্যাশবোর্ড
                 </a>
-                <a href="#" onclick="openBannerModal()" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-edit"></i> ব্যানার সেটিংস
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-user-graduate w-5 text-gray-400"></i> ছাত্র তালিকা
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-user-graduate"></i> শিক্ষার্থী তালিকা
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-calendar-check w-5 text-gray-400"></i> উপস্থিতি
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-chalkboard-teacher"></i> শিক্ষক ও স্টাফ
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-wallet w-5 text-gray-400"></i> হিসাব-নিকাশ
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-calendar-check"></i> উপস্থিতি
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-award w-5 text-gray-400"></i> ফলাফল
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-wallet"></i> ফি ও হিসাব-নিকাশ
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-poll"></i> ফলাফল ও পরীক্ষা
-                </a>
-                <a href="#" onclick="openAdminModal()" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-emerald-700 transition">
-                    <i class="fas fa-cog"></i> অ্যাডমিন সেটিংস
-                </a>
-                <a href="#" onclick="factoryReset()" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-red-600 text-red-100 transition mt-6">
-                    <i class="fas fa-sync-alt"></i> ফ্যাক্টরি রিসেট
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-800 bg-emerald-50 font-medium transition">
+                    <i class="fas fa-calendar-alt w-5 text-emerald-600"></i> ক্যালেন্ডার (আরা/বাংলা/ইং)
                 </a>
             </nav>
         </aside>
@@ -87,60 +69,119 @@
         <div class="flex flex-col flex-1 h-full overflow-hidden">
             
             <!-- টপ হেডার (Top Navbar) -->
-            <header class="flex items-center justify-between h-16 px-6 bg-white shadow-sm z-10">
-                <button id="toggleSidebar" class="text-gray-600 focus:outline-none md:hidden">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-                <div id="disp-address" class="text-sm md:text-base font-semibold text-gray-700 truncate">মাদ্রাসা ম্যানেজমেন্ট ড্যাশবোর্ড</div>
-                <div class="flex items-center gap-4">
-                    <span id="disp-phone" class="text-xs text-gray-500 hidden sm:inline"></span>
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm font-medium text-gray-700">অ্যাডমিন</span>
+            <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200 z-10">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="text-gray-600 focus:outline-none md:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center gap-2 text-emerald-700 font-bold text-lg">
+                        <i class="fas fa-graduation-cap"></i> ড্যাশবোর্ড
+                    </div>
+                    <span class="text-xs text-gray-400 hidden sm:inline border-l pl-3">মদিনাতুল উলুম মাদ্রাসা বাঁশখালী</span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <!-- ফায়ারবেস স্ট্যাটাস ব্যাজ -->
+                    <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium border border-emerald-100">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Firebase Connected
+                    </div>
+                    <!-- অ্যাডমিন প্রোফাইল -->
+                    <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
+                        <span>অ্যাডমিন</span>
+                        <span class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px]">MU</span>
                     </div>
                 </div>
             </header>
 
             <!-- ড্যাশবোর্ড বডি -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 space-y-6">
                 
-                <!-- স্ট্যাটিস্টিকস কার্ডস -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">মোট শিক্ষার্থী</p>
-                            <h3 class="text-2xl font-bold text-gray-800">৪৫০ জন</h3>
+                <!-- মাদ্রাসা ব্যানার কার্ড -->
+                <div class="bg-emerald-900 text-white rounded-2xl p-6 relative shadow-md flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
+                        <div class="w-20 h-20 bg-white rounded-2xl p-2 flex items-center justify-center shadow-inner shrink-0">
+                            <i class="fas fa-mosque text-4xl text-emerald-800"></i>
                         </div>
-                        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-full">
-                            <i class="fas fa-user-graduate text-xl"></i>
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                                <h1 id="disp-name" class="text-xl md:text-2xl font-bold">মদিনাতুল উলুম মাদ্রাসা বাঁশখালী</h1>
+                                <span class="bg-amber-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">স্থাপিত: ۲۰۱৪ ইং</span>
+                            </div>
+                            <p id="disp-tagline" class="text-xs md:text-sm text-emerald-200">সুন্নতে নববীর আলোকে দ্বীনি শিক্ষায় সুপ্রতিষ্ঠিত একটি আদর্শ প্রতিষ্ঠান</p>
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-emerald-300 pt-1">
+                                <span><i class="fas fa-map-marker-alt text-amber-400 mr-1"></i> বাঁশখালী, চট্টগ্রাম</span>
+                                <span><i class="fas fa-phone-alt text-amber-400 mr-1"></i> ০১৮০০-০০০০০০</span>
+                                <span class="hidden sm:inline text-white font-medium">শুক্রবার, ১৪ আগস্ট, ২০২৬</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+
+                    <button onclick="openBannerModal()" class="shrink-0 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 border border-emerald-600 transition shadow">
+                        <i class="fas fa-edit"></i> ব্যানার এডিট
+                    </button>
+                </div>
+
+                <!-- স্ট্যাটিস্টিকস কার্ডস (৪টি বক্স) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- মোট ছাত্র -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-gray-500 font-medium">মোট শিক্ষক</p>
-                            <h3 class="text-2xl font-bold text-gray-800">২৫ জন</h3>
+                            <p class="text-xs text-gray-400 font-medium mb-1">মোট ছাত্র</p>
+                            <h3 class="text-2xl font-bold text-gray-800">১২৫</h3>
                         </div>
-                        <div class="p-3 bg-blue-100 text-blue-700 rounded-full">
-                            <i class="fas fa-chalkboard-teacher text-xl"></i>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fas fa-user-graduate"></i>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+                    <!-- আজকের উপস্থিতি -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-gray-500 font-medium">আজকের উপস্থিতি</p>
+                            <p class="text-xs text-gray-400 font-medium mb-1">আজকের উপস্থিতি</p>
                             <h3 class="text-2xl font-bold text-gray-800">৯২%</h3>
                         </div>
-                        <div class="p-3 bg-amber-100 text-amber-700 rounded-full">
-                            <i class="fas fa-calendar-check text-xl"></i>
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fas fa-id-badge"></i>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex items-center justify-between">
+                    <!-- মাসিক আয় -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                         <div>
-                            <p class="text-sm text-gray-500 font-medium">মাসিক ফি সংগ্রহ</p>
-                            <h3 class="text-2xl font-bold text-gray-800">১,২৫,০০০ ৳</h3>
+                            <p class="text-xs text-gray-400 font-medium mb-1">মাসিক আয়</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-emerald-700">৪৫,০০০ টাকা</h3>
                         </div>
-                        <div class="p-3 bg-purple-100 text-purple-700 rounded-full">
-                            <i class="fas fa-wallet text-xl"></i>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fas fa-hand-holding-usd"></i>
                         </div>
                     </div>
+                    <!-- মাসিক ব্যয় -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium mb-1">মাসিক ব্যয়</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-rose-600">৩২,০০০ টাকা</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- পঞ্জিকা / ক্যালেন্ডার বার -->
+                <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <div class="bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-center font-bold min-w-[70px]">
+                            <span class="block text-[10px] text-emerald-200">শুক্রবার</span>
+                            <span class="text-xl">১৪</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm md:text-base">আজকের তাৎক্ষণিক পঞ্জিকা</h4>
+                            <p class="text-xs text-gray-500">ইংরেজি: শুক্রবার, ১৪ আগস্ট, ২০২৬ | আরবী ও বাংলা পঞ্জিকা সক্রিয়</p>
+                        </div>
+                    </div>
+                    <button class="w-full md:w-auto bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                        <i class="fas fa-calendar-alt text-amber-400"></i> বিস্তারিত ক্যালেন্ডার দেখুন
+                    </button>
                 </div>
 
             </main>
@@ -148,230 +189,61 @@
 
     </div>
 
-    <!-- ব্যানার এডিট মডাল (Banner Modal) -->
+    <!-- ব্যানার এডিট মডাল -->
     <div id="bannerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-xl">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">মাদ্রাসা তথ্য পরিবর্তন করুন</h3>
-            <form onsubmit="saveBannerInfo(event)" class="space-y-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">ব্যানার তথ্য পরিবর্তন করুন</h3>
+            <form onsubmit="saveBannerInfo(event)" class="space-y-3 text-sm">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">মাদ্রাসার নাম</label>
-                    <input type="text" id="input-name" class="w-full mt-1 p-2 border rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                    <label class="block text-gray-600 mb-1">মাদ্রাসার নাম</label>
+                    <input type="text" id="input-name" class="w-full p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-600">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">ট্যাগলাইন / সাবটাইটেল</label>
-                    <input type="text" id="input-tagline" class="w-full mt-1 p-2 border rounded-lg">
+                    <label class="block text-gray-600 mb-1">ট্যাগলাইন</label>
+                    <input type="text" id="input-tagline" class="w-full p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-600">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">প্রতিষ্ঠা সাল (Estd)</label>
-                    <input type="text" id="input-estd" class="w-full mt-1 p-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">ঠিকানা</label>
-                    <input type="text" id="input-address" class="w-full mt-1 p-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">ফোন নম্বর</label>
-                    <input type="text" id="input-phone" class="w-full mt-1 p-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">লোগো ছবি</label>
-                    <input type="file" id="input-logo-file" class="w-full mt-1 p-2 border rounded-lg text-sm" accept="image/*">
-                </div>
-                <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" onclick="closeBannerModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg">বাতিল</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-700 text-white rounded-lg">সংরক্ষণ করুন</button>
+                <div class="flex justify-end gap-2 mt-5">
+                    <button type="button" onclick="closeBannerModal()" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl font-medium">বাতিল</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-700 text-white rounded-xl font-medium">সংরক্ষণ</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- অ্যাডমিন মডাল (Admin Modal) -->
-    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl text-center">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">অ্যাডমিন অপশন</h3>
-            <p class="text-sm text-gray-600 mb-4">আপনার ডাটাবেজ বা লোকাল স্টোরেজ রিসেট করতে নিচে ক্লিক করুন।</p>
-            <button onclick="factoryReset()" class="w-full py-2 bg-red-600 text-white rounded-lg mb-2">ফ্যাক্টরি রিসেট</button>
-            <button onclick="closeAdminModal()" class="w-full py-2 bg-gray-300 text-gray-700 rounded-lg">বন্ধ করুন</button>
-        </div>
-    </div>
-
-    <!-- জাভাস্ক্রিপ্ট এবং ডাটাবেজ কানেকশন স্ক্রিপ্ট -->
+    <!-- স্ক্রিপ্ট -->
     <script>
-        // ফায়ারবেস কনফিগারেশন (আপনার কনফিগারেশন এখানে বসিয়ে নিন)
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // ফায়ারবেস ইনিশিয়ালাইজেশন
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // মোবাইল সাইডবার টগল
-        const sidebar = document.getElementById('sidebar');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-
-        if(toggleSidebar && sidebar) {
-            toggleSidebar.addEventListener('click', () => {
-                sidebar.classList.remove('-translate-x-full');
-            });
-        }
-        if(closeSidebar && sidebar) {
-            closeSidebar.addEventListener('click', () => {
-                sidebar.classList.add('-translate-x-full');
-            });
+        // মোবাইল সাইডবার টগল ফাংশন
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
         }
 
         function openBannerModal(){
-            const modal = document.getElementById('bannerModal');
-            if(!modal) return;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
-
-            if(document.getElementById('input-name')) 
-                document.getElementById('input-name').value = saved.name || document.getElementById('disp-name').innerText;
-            if(document.getElementById('input-tagline')) 
-                document.getElementById('input-tagline').value = saved.tagline || document.getElementById('disp-tagline').innerText;
-            if(document.getElementById('input-estd')) 
-                document.getElementById('input-estd').value = saved.estd || '';
-            if(document.getElementById('input-address')) 
-                document.getElementById('input-address').value = saved.address || document.getElementById('disp-address').innerText;
-            if(document.getElementById('input-phone')) 
-                document.getElementById('input-phone').value = saved.phone || '';
+            document.getElementById('bannerModal').classList.remove('hidden');
+            document.getElementById('bannerModal').classList.add('flex');
+            document.getElementById('input-name').value = document.getElementById('disp-name').innerText;
+            document.getElementById('input-tagline').value = document.getElementById('disp-tagline').innerText;
         }
 
         function closeBannerModal(){
-            const modal = document.getElementById('bannerModal');
-            if(modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
+            document.getElementById('bannerModal').classList.add('hidden');
+            document.getElementById('bannerModal').classList.remove('flex');
         }
 
         function saveBannerInfo(e){
             e.preventDefault();
-            const fileInput = document.getElementById('input-logo-file');
-            const file = fileInput ? fileInput.files[0] : null;
-            const oldData = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
-
-            const save = (logo) => {
-                const data = {
-                    name: document.getElementById('input-name').value,
-                    tagline: document.getElementById('input-tagline').value,
-                    estd: document.getElementById('input-estd').value,
-                    address: document.getElementById('input-address').value,
-                    phone: document.getElementById('input-phone').value,
-                    logo: logo || oldData.logo || ''
-                };
-                localStorage.setItem('madrasaBannerData', JSON.stringify(data));
-                loadBannerInfo();
-                closeBannerModal();
-                alert("ব্যানার সফলভাবে আপডেট হয়েছে!");
-            };
-
-            if(file){
-                const reader = new FileReader();
-                reader.onload = (ev) => save(ev.target.result);
-                reader.readAsDataURL(file);
-            } else {
-                save(null);
-            }
+            document.getElementById('disp-name').innerText = document.getElementById('input-name').value;
+            document.getElementById('disp-tagline').innerText = document.getElementById('input-tagline').value;
+            closeBannerModal();
+            alert("ব্যানার আপডেট সফল হয়েছে!");
         }
 
-        function loadBannerInfo(){
-            const saved = JSON.parse(localStorage.getItem('madrasaBannerData') || '{}');
-            if(!saved) return;
-
-            if(saved.name && document.getElementById('disp-name'))
-                document.getElementById('disp-name').innerText = saved.name;
-            if(saved.tagline && document.getElementById('disp-tagline'))
-                document.getElementById('disp-tagline').innerText = saved.tagline;
-            if(saved.address && document.getElementById('disp-address'))
-                document.getElementById('disp-address').innerText = saved.address;
-            if(saved.phone && document.getElementById('disp-phone'))
-                document.getElementById('disp-phone').innerText = saved.phone;
-
-            if(saved.logo){
-                const icon = document.getElementById('sidebarLogoIcon');
-                if(icon) icon.classList.add('hidden');
-                const img = document.getElementById('sidebarLogoImg');
-                if(img) {
-                    img.src = saved.logo;
-                    img.classList.remove('hidden');
-                }
-            }
-        }
-
-        function updateSidebarLogo(event){
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                localStorage.setItem('madrasaCustomLogo', e.target.result);
-                applySidebarLogo(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function applySidebarLogo(src){
-            const icon = document.getElementById('sidebarLogoIcon');
-            if(icon) icon.classList.add('hidden');
-            const img = document.getElementById('sidebarLogoImg');
-            if(img) {
-                img.src = src;
-                img.classList.remove('hidden');
-            }
-        }
-
-        function openAdminModal(){
-            const modal = document.getElementById('adminModal');
-            if(modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        function closeAdminModal(){
-            const modal = document.getElementById('adminModal');
-            if(modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        function factoryReset(){
-            if(confirm("Local Storage পরিষ্কার করতে চান?\nFirebase-এর ডাটা মুছে যাবে না।")){
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        // ইনিশিয়াল লোড এবং অথেন্টিকেশন চেক
-        window.onload = function(){
-            loadBannerInfo();
-            const logo = localStorage.getItem('madrasaCustomLogo');
-            if(logo){
-                applySidebarLogo(logo);
-            }
-        };
-
-        auth.onAuthStateChanged(function(user){
-            if(user){
-                console.log("✅ Firebase Auth Ready - Logged in:", user.email);
-            } else {
-                console.log("⚠️ Not Logged In");
-            }
-        });
+        // ফায়ারবেস কানেকশন টেস্ট
+        const firebaseConfig = { apiKey: "test", authDomain: "test", projectId: "test" };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        console.log("⚠️ Not Logged In (Firebase Ready)");
     </script>
 </body>
-</html>
+    </html>

@@ -14,7 +14,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
-    <style>@import url('https://fonts.googleapis.com/css2?family=SolaimanLipi&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SolaimanLipi&display=swap');
         body {
             font-family: 'SolaimanLipi', sans-serif;
         }
@@ -37,30 +38,30 @@
                 </div>
                 <div>
                     <h2 class="font-bold text-gray-800 text-sm">মাদ্রাসা ম্যানেজমেন্ট</h2>
-                    <p class="text-xs text-gray-400 cursor-pointer hover:text-emerald-600">লোগো পরিবর্তন</p>
+                    <p class="text-xs text-gray-400 cursor-pointer hover:text-emerald-600" onclick="openBannerModal()">লোগো পরিবর্তন</p>
                 </div>
             </div>
 
             <!-- নেভিগেশন মেনু -->
             <nav class="p-3 space-y-1 overflow-y-auto flex-1 text-sm">
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-700 text-white font-medium shadow-sm transition">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-700 text-white font-medium shadow-sm transition">
                     <i class="fas fa-chart-pie w-5"></i> ড্যাশবোর্ড
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                </button>
+                <button onclick="switchTab('students')" id="nav-students" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                     <i class="fas fa-user-graduate w-5 text-gray-400"></i> ছাত্র তালিকা
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                </button>
+                <button onclick="switchTab('attendance')" id="nav-attendance" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                     <i class="fas fa-calendar-check w-5 text-gray-400"></i> উপস্থিতি
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                </button>
+                <button onclick="switchTab('accounts')" id="nav-accounts" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                     <i class="fas fa-wallet w-5 text-gray-400"></i> হিসাব-নিকাশ
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                </button>
+                <button onclick="switchTab('results')" id="nav-results" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                     <i class="fas fa-award w-5 text-gray-400"></i> ফলাফল
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-800 bg-emerald-50 font-medium transition">
-                    <i class="fas fa-calendar-alt w-5 text-emerald-600"></i> ক্যালেন্ডার (আরা/বাংলা/ইং)
-                </a>
+                </button>
+                <button onclick="switchTab('calendar')" id="nav-calendar" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <i class="fas fa-calendar-alt w-5 text-gray-400"></i> ক্যালেন্ডার (আরা/বাংলা/ইং)
+                </button>
             </nav>
         </aside>
 
@@ -74,13 +75,13 @@
                         <i class="fas fa-bars text-xl"></i>
                     </button>
                     <div class="flex items-center gap-2 text-emerald-700 font-bold text-lg">
-                        <i class="fas fa-graduation-cap"></i> ড্যাশবোর্ড
+                        <i class="fas fa-graduation-cap"></i> <span id="header-title">ড্যাশবোর্ড</span>
                     </div>
                     <span class="text-xs text-gray-400 hidden sm:inline border-l pl-3">মদিনাতুল উলুম মাদ্রাসা বাঁশখালী</span>
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <!-- ফায়ারবেস স্ট্যাটাস ব্যাজ -->
+                    <!-- ফায়ারবেস স্ট্যাটাস ব্যাজ -->
                     <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium border border-emerald-100">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         Firebase Connected
@@ -93,94 +94,131 @@
                 </div>
             </header>
 
-            <!-- ড্যাশবোর্ড বডি -->
+            <!-- ড্যাশবোর্ড বডি / ট্যাব কন্টেন্ট -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 space-y-6">
                 
-                <!-- মাদ্রাসা ব্যানার কার্ড -->
-                <div class="bg-emerald-900 text-white rounded-2xl p-6 relative shadow-md flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
-                    
-                    <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
-                        <div class="w-20 h-20 bg-white rounded-2xl p-2 flex items-center justify-center shadow-inner shrink-0">
-                            <i class="fas fa-mosque text-4xl text-emerald-800"></i>
-                        </div>
-                        <div class="space-y-1">
-                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                                <h1 id="disp-name" class="text-xl md:text-2xl font-bold">মদিনাতুল উলুম মাদ্রাসা বাঁশখালী</h1>
-                                <span class="bg-amber-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">স্থাপিত: ۲۰۱৪ ইং</span>
+                <!-- ১. ড্যাশবোর্ড ট্যাব -->
+                <div id="tab-dashboard" class="space-y-6 tab-content">
+                    <!-- মাদ্রাসা ব্যানার কার্ড -->
+                    <div class="bg-emerald-900 text-white rounded-2xl p-6 relative shadow-md flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+                        <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
+                            <div class="w-20 h-20 bg-white rounded-2xl p-2 flex items-center justify-center shadow-inner shrink-0">
+                                <i class="fas fa-mosque text-4xl text-emerald-800"></i>
                             </div>
-                            <p id="disp-tagline" class="text-xs md:text-sm text-emerald-200">সুন্নতে নববীর আলোকে দ্বীনি শিক্ষায় সুপ্রতিষ্ঠিত একটি আদর্শ প্রতিষ্ঠান</p>
-                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-emerald-300 pt-1">
-                                <span><i class="fas fa-map-marker-alt text-amber-400 mr-1"></i> বাঁশখালী, চট্টগ্রাম</span>
-                                <span><i class="fas fa-phone-alt text-amber-400 mr-1"></i> ০১৮০০-০০০০০০</span>
-                                <span class="hidden sm:inline text-white font-medium">শুক্রবার, ১৪ আগস্ট, ২০২৬</span>
+                            <div class="space-y-1">
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                                    <h1 id="disp-name" class="text-xl md:text-2xl font-bold">মদিনাতুল উলুম মাদ্রাসা বাঁশখালী</h1>
+                                    <span class="bg-amber-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-medium">স্থাপিত: ۲۰۱۴ ইং</span>
+                                </div>
+                                <p id="disp-tagline" class="text-xs md:text-sm text-emerald-200">সুন্নতে নববীর আলোকে দ্বীনি শিক্ষায় সুপ্রতিষ্ঠিত একটি আদর্শ প্রতিষ্ঠান</p>
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-emerald-300 pt-1">
+                                    <span><i class="fas fa-map-marker-alt text-amber-400 mr-1"></i> বাঁশখালী, চট্টগ্রাম</span>
+                                    <span><i class="fas fa-phone-alt text-amber-400 mr-1"></i> ০১৮০০-০০০০০০</span>
+                                    <span class="hidden sm:inline text-white font-medium">শুক্রবার, ১৪ আগস্ট, ২০২৬</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="openBannerModal()" class="shrink-0 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 border border-emerald-600 transition shadow">
+                            <i class="fas fa-edit"></i> ব্যানার এডিট
+                        </button>
+                    </div>
+
+                    <!-- স্ট্যাটিস্টিকস কার্ডস -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium mb-1">মোট ছাত্র</p>
+                                <h3 class="text-2xl font-bold text-gray-800">১২৫</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium mb-1">আজকের উপস্থিতি</p>
+                                <h3 class="text-2xl font-bold text-gray-800">৯২%</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fas fa-id-badge"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium mb-1">মাসিক আয়</p>
+                                <h3 class="text-xl md:text-2xl font-bold text-emerald-700">৪৫,০০০ টাকা</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400 font-medium mb-1">মাসিক ব্যয়</p>
+                                <h3 class="text-xl md:text-2xl font-bold text-rose-600">৩২,০০০ টাকা</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
+                                <i class="fas fa-file-invoice-dollar"></i>
                             </div>
                         </div>
                     </div>
 
-                    <button onclick="openBannerModal()" class="shrink-0 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 border border-emerald-600 transition shadow">
-                        <i class="fas fa-edit"></i> ব্যানার এডিট
-                    </button>
+                    <!-- পঞ্জিকা / ক্যালেন্ডার বার -->
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 w-full md:w-auto">
+                            <div class="bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-center font-bold min-w-[70px]">
+                                <span class="block text-[10px] text-emerald-200">শুক্রবার</span>
+                                <span class="text-xl">১৪</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm md:text-base">আজকের তাৎক্ষণিক পঞ্জিকা</h4>
+                                <p class="text-xs text-gray-500">ইংরেজি: শুক্রবার, ১৪ আগস্ট, ২০২৬ | আরবী ও বাংলা পঞ্জিকা সক্রিয়</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('calendar')" class="w-full md:w-auto bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                            <i class="fas fa-calendar-alt text-amber-400"></i> বিস্তারিত ক্যালেন্ডার দেখুন
+                        </button>
+                    </div>
                 </div>
 
-                <!-- স্ট্যাটিস্টিকস কার্ডস (৪টি বক্স) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- মোট ছাত্র -->
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-gray-400 font-medium mb-1">মোট ছাত্র</p>
-                            <h3 class="text-2xl font-bold text-gray-800">১২৫</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                    </div>
-                    <!-- আজকের উপস্থিতি -->
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-gray-400 font-medium mb-1">আজকের উপস্থিতি</p>
-                            <h3 class="text-2xl font-bold text-gray-800">৯২%</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-xl">
-                            <i class="fas fa-id-badge"></i>
-                        </div>
-                    </div>
-                    <!-- মাসিক আয় -->
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-gray-400 font-medium mb-1">মাসিক আয়</p>
-                            <h3 class="text-xl md:text-2xl font-bold text-emerald-700">৪৫,০০০ টাকা</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
-                            <i class="fas fa-hand-holding-usd"></i>
-                        </div>
-                    </div>
-                    <!-- মাসিক ব্যয় -->
-                    <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-gray-400 font-medium mb-1">মাসিক ব্যয়</p>
-                            <h3 class="text-xl md:text-2xl font-bold text-rose-600">৩২,০০০ টাকা</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                        </div>
+                <!-- ২. ছাত্র তালিকা ট্যাব -->
+                <div id="tab-students" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ছাত্র তালিকা ব্যবস্থাপনা</h3>
+                        <p class="text-sm text-gray-500">এখানে মাদ্রাসার সকল ছাত্রের তালিকা দেখা এবং নতুন ছাত্র যোগ করা যাবে।</p>
                     </div>
                 </div>
 
-                <!-- পঞ্জিকা / ক্যালেন্ডার বার -->
-                <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-4 w-full md:w-auto">
-                        <div class="bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-center font-bold min-w-[70px]">
-                            <span class="block text-[10px] text-emerald-200">শুক্রবার</span>
-                            <span class="text-xl">১৪</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800 text-sm md:text-base">আজকের তাৎক্ষণিক পঞ্জিকা</h4>
-                            <p class="text-xs text-gray-500">ইংরেজি: শুক্রবার, ১৪ আগস্ট, ২০২৬ | আরবী ও বাংলা পঞ্জিকা সক্রিয়</p>
-                        </div>
+                <!-- ৩. উপস্থিতি ট্যাব -->
+                <div id="tab-attendance" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ছাত্রদের উপস্থিতি সেকশন</h3>
+                        <p class="text-sm text-gray-500">প্রতিদিনের উপস্থিতি গ্রহণ এবং পূর্বের উপস্থিতি রিপোর্ট দেখার ব্যবস্থা।</p>
                     </div>
-                    <button class="w-full md:w-auto bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
-                        <i class="fas fa-calendar-alt text-amber-400"></i> বিস্তারিত ক্যালেন্ডার দেখুন
-                    </button>
+                </div>
+
+                <!-- ৪. হিসাব-নিকাশ ট্যাব -->
+                <div id="tab-accounts" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">হিসাব-নিকাশ (আয় ও ব্যয়)</h3>
+                        <p class="text-sm text-gray-500">ছাত্রদের মাসিক বেতন, অনুদান এবং অন্যান্য খরচের হিসাব পরিচালনা করুন।</p>
+                    </div>
+                </div>
+
+                <!-- ৫. ফলাফল ট্যাব -->
+                <div id="tab-results" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">পরীক্ষার ফলাফল</h3>
+                        <p class="text-sm text-gray-500">বিভিন্ন পরীক্ষার নম্বর ও মার্কশিট তৈরি করার সেকশন।</p>
+                    </div>
+                </div>
+
+                <!-- ৬. ক্যালেন্ডার ট্যাব -->
+                <div id="tab-calendar" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">আরবি, বাংলা ও ইংরেজি ক্যালেন্ডার</h3>
+                        <p class="text-sm text-gray-500">মাদ্রাসার ছুটির তালিকা এবং বিভিন্ন তারিখ রূপান্তর করার টুল।</p>
+                    </div>
                 </div>
 
             </main>
@@ -219,6 +257,50 @@
             overlay.classList.toggle('hidden');
         }
 
+        // ট্যাব সুইচিং ফাংশন (সকল অপশন সচল করার জন্য)
+        function switchTab(tabName) {
+            // সকল ট্যাগের কন্টেন্ট হাইড করা
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            // কাঙ্ক্ষিত ট্যাবটি শো করা
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+            // সাইডবারের মেনু স্টাইল আপডেট করা
+            const navButtons = document.querySelectorAll('aside nav button');
+            navButtons.forEach(btn => {
+                btn.classList.remove('bg-emerald-700', 'text-white', 'shadow-sm');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-50');
+                const icon = btn.querySelector('i');
+                if(icon) icon.classList.add('text-gray-400');
+            });
+
+            // বর্তমান অ্যাক্টিভ বাটনের স্টাইল দেওয়া
+            const activeBtn = document.getElementById('nav-' + tabName);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-50');
+                activeBtn.classList.add('bg-emerald-700', 'text-white', 'shadow-sm');
+                const activeIcon = activeBtn.querySelector('i');
+                if(activeIcon) activeIcon.classList.remove('text-gray-400');
+            }
+
+            // হেডার টাইটেল পরিবর্তন
+            const titles = {
+                'dashboard': 'ড্যাশবোর্ড',
+                'students': 'ছাত্র তালিকা',
+                'attendance': 'উপস্থিতি',
+                'accounts': 'হিসাব-নিকাশ',
+                'results': 'ফলাফল',
+                'calendar': 'ক্যালেন্ডার'
+            };
+            document.getElementById('header-title').innerText = titles[tabName] || 'ম্যানেজমেন্ট সিস্টেম';
+
+            // ছোট স্ক্রিনে মেনুতে ক্লিক করলে সাইডবার অটো বন্ধ হয়ে যাবে
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+
         function openBannerModal(){
             document.getElementById('bannerModal').classList.remove('hidden');
             document.getElementById('bannerModal').classList.add('flex');
@@ -236,13 +318,13 @@
             document.getElementById('disp-name').innerText = document.getElementById('input-name').value;
             document.getElementById('disp-tagline').innerText = document.getElementById('input-tagline').value;
             closeBannerModal();
-            alert("ব্যানার আপডেট সফল হয়েছে!");
+            alert("ব্যানার আপডেট সফল হয়েছে!");
         }
 
-        // ফায়ারবেস কানেকশন টেস্ট
+        // ফায়ারবেস কানেকশন টেস্ট
         const firebaseConfig = { apiKey: "test", authDomain: "test", projectId: "test" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         console.log("⚠️ Not Logged In (Firebase Ready)");
     </script>
 </body>
-    </html>
+</html>

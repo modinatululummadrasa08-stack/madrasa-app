@@ -29,39 +29,165 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden" onclick="toggleSidebar()"></div>
 
         <!-- সাইডবার (Sidebar) -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto flex flex-col">
             
             <!-- সাইডবার লোগো সেকশন -->
-            <div class="p-4 border-b border-gray-100 flex items-center gap-3">
+            <div class="p-4 border-b border-gray-100 flex items-center gap-3 shrink-0">
                 <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
                 <div>
                     <h2 class="font-bold text-gray-800 text-sm">মাদ্রাসা ম্যানেজমেন্ট</h2>
-                    <p class="text-xs text-gray-400 cursor-pointer hover:text-emerald-600" onclick="openBannerModal()">লোগো পরিবর্তন</p>
+                    <p class="text-xs text-gray-400 cursor-pointer hover:text-emerald-600" onclick="switchTab('system-profile')">মাদ্রাসা প্রোফাইল</p>
                 </div>
             </div>
 
-            <!-- নেভিগেশন মেনু -->
+            <!-- নেভিগেশন মেনু (ড্রপডাউন সহ ১০টি ক্যাটাগরি) -->
             <nav class="p-3 space-y-1 overflow-y-auto flex-1 text-sm">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-700 text-white font-medium shadow-sm transition">
-                    <i class="fas fa-chart-pie w-5"></i> ড্যাশবোর্ড
+                
+                <!-- ১. ড্যাশবোর্ড -->
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-700 text-white font-medium shadow-sm transition">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-chart-pie w-5"></i> ড্যাশবোর্ড
+                    </div>
                 </button>
-                <button onclick="switchTab('students')" id="nav-students" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
-                    <i class="fas fa-user-graduate w-5 text-gray-400"></i> ছাত্র তালিকা
-                </button>
-                <button onclick="switchTab('attendance')" id="nav-attendance" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
-                    <i class="fas fa-calendar-check w-5 text-gray-400"></i> উপস্থিতি
-                </button>
-                <button onclick="switchTab('accounts')" id="nav-accounts" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
-                    <i class="fas fa-wallet w-5 text-gray-400"></i> হিসাব-নিকাশ
-                </button>
-                <button onclick="switchTab('results')" id="nav-results" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
-                    <i class="fas fa-award w-5 text-gray-400"></i> ফলাফল
-                </button>
-                <button onclick="switchTab('calendar')" id="nav-calendar" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
-                    <i class="fas fa-calendar-alt w-5 text-gray-400"></i> ক্যালেন্ডার (আরা/বাংলা/ইং)
-                </button>
+
+                <!-- ২. শিক্ষার্থী ব্যবস্থাপনা -->
+                <div>
+                    <button onclick="toggleDropdown('student-dropdown', 'arrow-student')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-user-graduate w-5 text-gray-400"></i> শিক্ষার্থী ব্যবস্থাপনা
+                        </div>
+                        <i id="arrow-student" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="student-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('student-profiles')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">শিক্ষার্থী প্রোফাইল</button>
+                        <button onclick="switchTab('student-admission')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">নতুন ভর্তি ফরম</button>
+                        <button onclick="switchTab('student-idcard')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">আইডি কার্ড ও প্রশংসাপত্র</button>
+                    </div>
+                </div>
+
+                <!-- ৩. একাডেমিক -->
+                <div>
+                    <button onclick="toggleDropdown('academic-dropdown', 'arrow-academic')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-book-open w-5 text-gray-400"></i> একাডেমিক
+                        </div>
+                        <i id="arrow-academic" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="academic-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('ac-classes')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">শ্রেণি ও শাখা</button>
+                        <button onclick="switchTab('ac-routine')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">ক্লাস রুটিন</button>
+                        <button onclick="switchTab('ac-syllabus')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">সিলেবাস ও লেসন প্ল্যান</button>
+                        <button onclick="switchTab('ac-hifz')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">হিফজ ডায়েরি</button>
+                    </div>
+                </div>
+
+                <!-- ৪. উপস্থিতি -->
+                <div>
+                    <button onclick="toggleDropdown('attendance-dropdown', 'arrow-attendance')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-calendar-check w-5 text-gray-400"></i> উপস্থিতি
+                        </div>
+                        <i id="arrow-attendance" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="attendance-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('att-student')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">শিক্ষার্থী উপস্থিতি</button>
+                        <button onclick="switchTab('att-staff')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">শিক্ষক ও স্টাফ উপস্থিতি</button>
+                        <button onclick="switchTab('att-report')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">অনুপস্থিতির রিপোর্ট ও SMS</button>
+                    </div>
+                </div>
+
+                <!-- ৫. হিসাব ও ফি -->
+                <div>
+                    <button onclick="toggleDropdown('accounts-dropdown', 'arrow-accounts')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-wallet w-5 text-gray-400"></i> হিসাব ও ফি
+                        </div>
+                        <i id="arrow-accounts" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="accounts-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('acc-collect')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">ফি কালেকশন</button>
+                        <button onclick="switchTab('acc-dues')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">বকেয়া তালিকা ও নোটিশ</button>
+                        <button onclick="switchTab('acc-income-expense')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">আয়-ব্যয়</button>
+                        <button onclick="switchTab('acc-reports')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">ফাইন্যান্সিয়াল রিপোর্ট</button>
+                    </div>
+                </div>
+
+                <!-- ৬. পরীক্ষা ও রেজাল্ট -->
+                <div>
+                    <button onclick="toggleDropdown('exam-dropdown', 'arrow-exam')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-award w-5 text-gray-400"></i> পরীক্ষা ও রেজাল্ট
+                        </div>
+                        <i id="arrow-exam" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="exam-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('exam-setup')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">পরীক্ষা ব্যবস্থাপনা</button>
+                        <button onclick="switchTab('exam-marks')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">মার্কস ইনপুট</button>
+                        <button onclick="switchTab('exam-results')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">রেজাল্ট কার্ড ও মেরিট লিস্ট</button>
+                    </div>
+                </div>
+
+                <!-- ৭. স্টাফ ও শিক্ষক (HR) -->
+                <div>
+                    <button onclick="toggleDropdown('hr-dropdown', 'arrow-hr')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-users-cog w-5 text-gray-400"></i> স্টাফ ও শিক্ষক (HR)
+                        </div>
+                        <i id="arrow-hr" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="hr-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('hr-directory')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">শিক্ষক ও স্টাফ তালিকা</button>
+                        <button onclick="switchTab('hr-payroll')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">বেতন ও পেরোল</button>
+                        <button onclick="switchTab('hr-leave')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">ছুটির আবেদন</button>
+                    </div>
+                </div>
+
+                <!-- ৮. আবাসন ও মেস -->
+                <div>
+                    <button onclick="toggleDropdown('hostel-dropdown', 'arrow-hostel')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-building w-5 text-gray-400"></i> আবাসন ও মেস
+                        </div>
+                        <i id="arrow-hostel" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="hostel-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('hostel-rooms')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">রুম ও সিট বুকিং</button>
+                        <button onclick="switchTab('hostel-meals')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">মেস ও মিল ট্র্যাকার</button>
+                    </div>
+                </div>
+
+                <!-- ৯. অন্যান্য মডিউল -->
+                <div>
+                    <button onclick="toggleDropdown('other-dropdown', 'arrow-other')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-cubes w-5 text-gray-400"></i> অন্যান্য মডিউল
+                        </div>
+                        <i id="arrow-other" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="other-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('module-library')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">লাইব্রেরি ম্যানেজমেন্ট</button>
+                        <button onclick="switchTab('module-notice')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">নোটিশ বোর্ড ও এসএমএস</button>
+                        <button onclick="switchTab('module-feedback')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">অভিযোগ ও মতামত</button>
+                    </div>
+                </div>
+
+                <!-- ১০. সিস্টেম ও সেটিং -->
+                <div>
+                    <button onclick="toggleDropdown('settings-dropdown', 'arrow-settings')" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-cogs w-5 text-gray-400"></i> সিস্টেম ও সেটিং
+                        </div>
+                        <i id="arrow-settings" class="fas fa-chevron-down text-xs transition-transform"></i>
+                    </button>
+                    <div id="settings-dropdown" class="hidden pl-8 pr-2 py-1 space-y-1 text-xs">
+                        <button onclick="switchTab('system-profile')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">মাদ্রাসা প্রোফাইল ও সেটআপ</button>
+                        <button onclick="switchTab('system-roles')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">ইউজার রোল ও পারমিশন</button>
+                        <button onclick="switchTab('system-app')" class="w-full text-left px-3 py-2 rounded-lg text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition">অ্যাপ সেটিং</button>
+                    </div>
+                </div>
+
             </nav>
         </aside>
 
@@ -69,7 +195,7 @@
         <div class="flex flex-col flex-1 h-full overflow-hidden">
             
             <!-- টপ হেডার (Top Navbar) -->
-            <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200 z-10">
+            <header class="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200 z-10 shrink-0">
                 <div class="flex items-center gap-3">
                     <button onclick="toggleSidebar()" class="text-gray-600 focus:outline-none md:hidden">
                         <i class="fas fa-bars text-xl"></i>
@@ -81,12 +207,10 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <!-- ফায়ারবেস স্ট্যাটাস ব্যাজ -->
                     <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium border border-emerald-100">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         Firebase Connected
                     </div>
-                    <!-- অ্যাডমিন প্রোফাইল -->
                     <div class="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-700">
                         <span>অ্যাডমিন</span>
                         <span class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px]">MU</span>
@@ -94,12 +218,11 @@
                 </div>
             </header>
 
-            <!-- ড্যাশবোর্ড বডি / ট্যাব কন্টেন্ট -->
+            <!-- ডায়নামিক মেইন প্যানেল কন্টেন্ট -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 space-y-6">
                 
-                <!-- ১. ড্যাশবোর্ড ট্যাব -->
+                <!-- ১. ড্যাশবোর্ড প্যানেল -->
                 <div id="tab-dashboard" class="space-y-6 tab-content">
-                    <!-- মাদ্রাসা ব্যানার কার্ড -->
                     <div class="bg-emerald-900 text-white rounded-2xl p-6 relative shadow-md flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
                         <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
                             <div class="w-20 h-20 bg-white rounded-2xl p-2 flex items-center justify-center shadow-inner shrink-0">
@@ -118,12 +241,11 @@
                                 </div>
                             </div>
                         </div>
-                        <button onclick="openBannerModal()" class="shrink-0 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 border border-emerald-600 transition shadow">
-                            <i class="fas fa-edit"></i> ব্যানার এডিট
+                        <button onclick="switchTab('system-profile')" class="shrink-0 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2 border border-emerald-600 transition shadow">
+                            <i class="fas fa-edit"></i> প্রোফাইল এডিট
                         </button>
                     </div>
 
-                    <!-- স্ট্যাটিস্টিকস কার্ডস -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
                             <div>
@@ -162,62 +284,246 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- পঞ্জিকা / ক্যালেন্ডার বার -->
-                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="flex items-center gap-4 w-full md:w-auto">
-                            <div class="bg-emerald-800 text-white px-4 py-2.5 rounded-xl text-center font-bold min-w-[70px]">
-                                <span class="block text-[10px] text-emerald-200">শুক্রবার</span>
-                                <span class="text-xl">১৪</span>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-sm md:text-base">আজকের তাৎক্ষণিক পঞ্জিকা</h4>
-                                <p class="text-xs text-gray-500">ইংরেজি: শুক্রবার, ১৪ আগস্ট, ২০২৬ | আরবী ও বাংলা পঞ্জিকা সক্রিয়</p>
-                            </div>
+                <!-- ২.১ শিক্ষার্থী প্রোফাইল প্যানেল -->
+                <div id="tab-student-profiles" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">সকল শিক্ষার্থীর তালিকা ও প্রোফাইল</h3>
+                            <button onclick="switchTab('student-admission')" class="bg-emerald-700 text-white text-xs px-4 py-2 rounded-xl">নতুন ভর্তি</button>
                         </div>
-                        <button onclick="switchTab('calendar')" class="w-full md:w-auto bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
-                            <i class="fas fa-calendar-alt text-amber-400"></i> বিস্তারিত ক্যালেন্ডার দেখুন
-                        </button>
+                        <p class="text-sm text-gray-500">এখানে সকল மாணব/ছাত্রের ডেটাসেট ও ডিটেইলস ব্রাউজ করা যাবে।</p>
                     </div>
                 </div>
 
-                <!-- ২. ছাত্র তালিকা ট্যাব -->
-                <div id="tab-students" class="space-y-4 tab-content hidden">
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">ছাত্র তালিকা ব্যবস্থাপনা</h3>
-                        <p class="text-sm text-gray-500">এখানে মাদ্রাসার সকল ছাত্রের তালিকা দেখা এবং নতুন ছাত্র যোগ করা যাবে।</p>
+                <!-- ২.২ নতুন ভর্তি প্যানেল -->
+                <div id="tab-student-admission" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm max-w-2xl">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">নতুন শিক্ষার্থীর ভর্তি ফরম</h3>
+                        <form onsubmit="handleFormSubmit(event, 'সফলভাবে নতুন শিক্ষার্থী ভর্তি সম্পন্ন হয়েছে!')" class="space-y-3 text-sm">
+                            <div><label class="block text-gray-600 mb-1">ছাত্রের নাম</label><input type="text" required class="w-full p-2.5 border rounded-xl"></div>
+                            <div><label class="block text-gray-600 mb-1">পিতার নাম</label><input type="text" required class="w-full p-2.5 border rounded-xl"></div>
+                            <div><label class="block text-gray-600 mb-1">শ্রেণি</label><select class="w-full p-2.5 border rounded-xl"><option>নাজেরা</option><option>হিফজুল কুরআন</option><option>কিতাব বিভাগ</option></select></div>
+                            <button type="submit" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-medium">ভর্তি নিশ্চিত করুন</button>
+                        </form>
                     </div>
                 </div>
 
-                <!-- ৩. উপস্থিতি ট্যাব -->
-                <div id="tab-attendance" class="space-y-4 tab-content hidden">
+                <!-- ২.৩ আইডি কার্ড ও প্রশংসাপত্র প্যানেল -->
+                <div id="tab-student-idcard" class="space-y-4 tab-content hidden">
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">ছাত্রদের উপস্থিতি সেকশন</h3>
-                        <p class="text-sm text-gray-500">প্রতিদিনের উপস্থিতি গ্রহণ এবং পূর্বের উপস্থিতি রিপোর্ট দেখার ব্যবস্থা।</p>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">আইডি কার্ড ও প্রশংসাপত্র জেনারেটর</h3>
+                        <p class="text-sm text-gray-500">সিলেক্টেড শিক্ষার্থীর আইডি কার্ড এবং ছাড়পত্র এক ক্লিকে প্রিন্ট করুন।</p>
                     </div>
                 </div>
 
-                <!-- ৪. হিসাব-নিকাশ ট্যাব -->
-                <div id="tab-accounts" class="space-y-4 tab-content hidden">
+                <!-- ৩.১ শ্রেণি ও শাখা প্যানেল -->
+                <div id="tab-ac-classes" class="space-y-4 tab-content hidden">
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">হিসাব-নিকাশ (আয় ও ব্যয়)</h3>
-                        <p class="text-sm text-gray-500">ছাত্রদের মাসিক বেতন, অনুদান এবং অন্যান্য খরচের হিসাব পরিচালনা করুন।</p>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">শ্রেণি ও শাখা সেটআপ</h3>
+                        <p class="text-sm text-gray-500">মাদ্রাসার বিভিন্ন বিভাগ ও ক্লাসের তালিকা নিয়ন্ত্রণ প্যানেল।</p>
                     </div>
                 </div>
 
-                <!-- ৫. ফলাফল ট্যাব -->
-                <div id="tab-results" class="space-y-4 tab-content hidden">
+                <!-- ৩.২ ক্লাস রুটিন প্যানেল -->
+                <div id="tab-ac-routine" class="space-y-4 tab-content hidden">
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">পরীক্ষার ফলাফল</h3>
-                        <p class="text-sm text-gray-500">বিভিন্ন পরীক্ষার নম্বর ও মার্কশিট তৈরি করার সেকশন।</p>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ক্লাস রুটিন ম্যানেজমেন্ট</h3>
+                        <p class="text-sm text-gray-500">প্রতিটি ক্লাসের পিরিয়ড ও সময়ের বিবরণী তৈরি করুন।</p>
                     </div>
                 </div>
 
-                <!-- ৬. ক্যালেন্ডার ট্যাব -->
-                <div id="tab-calendar" class="space-y-4 tab-content hidden">
+                <!-- ৩.৩ সিলেবাস ও লেসন প্ল্যান প্যানেল -->
+                <div id="tab-ac-syllabus" class="space-y-4 tab-content hidden">
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">আরবি, বাংলা ও ইংরেজি ক্যালেন্ডার</h3>
-                        <p class="text-sm text-gray-500">মাদ্রাসার ছুটির তালিকা এবং বিভিন্ন তারিখ রূপান্তর করার টুল।</p>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">সিলেবাস ও লেসন প্ল্যান</h3>
+                        <p class="text-sm text-gray-500">শিক্ষাবর্ষের পাঠ্যসূচি আপলোড ও বণ্টন।</p>
+                    </div>
+                </div>
+
+                <!-- ৩.৪ হিফজ ডায়েরি প্যানেল -->
+                <div id="tab-ac-hifz" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">হিফজ ও নাজেরা স্পেশাল ডায়েরি</h3>
+                        <p class="text-sm text-gray-500">সবক, সাব-সবক ও আমুখতার দৈনিক প্রোগ্রেস লগ ট্র্যাক করুন।</p>
+                    </div>
+                </div>
+
+                <!-- ৪.১ শিক্ষার্থী উপস্থিতি প্যানেল -->
+                <div id="tab-att-student" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">শিক্ষার্থী উপস্থিতি এন্ট্রি</h3>
+                        <p class="text-sm text-gray-500">উপস্থিত ও অনুপস্থিত ছাত্রদের তালিকা মার্ক করার ইন্টারফেস।</p>
+                    </div>
+                </div>
+
+                <!-- ৪.২ শিক্ষক ও স্টাফ উপস্থিতি প্যানেল -->
+                <div id="tab-att-staff" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">শিক্ষক ও স্টাফ উপস্থিতি</h3>
+                        <p class="text-sm text-gray-500">শিক্ষক ও কর্মচারীদের উপস্থিতি এবং হাজিরা খাতা।</p>
+                    </div>
+                </div>
+
+                <!-- ৪.৩ অনুপস্থিতির রিপোর্ট প্যানেল -->
+                <div id="tab-att-report" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">অনুপস্থিতির রিপোর্ট ও অটো এসএমএস</h3>
+                        <p class="text-sm text-gray-500">অনুপস্থিত ছাত্রদের অভিভাবকের কাছে স্বয়ংক্রিয় এসএমএস প্রেরণের সিস্টেম।</p>
+                    </div>
+                </div>
+
+                <!-- ৫.১ ফি কালেকশন প্যানেল -->
+                <div id="tab-acc-collect" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ফি কালেকশন কাউন্টার</h3>
+                        <form onsubmit="handleFormSubmit(event, 'ফি সফলভাবে গ্রহণ করা হয়েছে!')" class="space-y-3 text-sm max-w-md">
+                            <div><label class="block text-gray-600 mb-1">ছাত্রের আইডি / নাম</label><input type="text" required class="w-full p-2.5 border rounded-xl"></div>
+                            <div><label class="block text-gray-600 mb-1">বাবদ (মাসিক বেতন/অন্যান্য)</label><input type="text" required class="w-full p-2.5 border rounded-xl"></div>
+                            <div><label class="block text-gray-600 mb-1">টাকার পরিমাণ</label><input type="number" required class="w-full p-2.5 border rounded-xl"></div>
+                            <button type="submit" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-medium">রসিদ প্রিন্ট ও জমা</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ৫.২ বকেয়া তালিকা প্যানেল -->
+                <div id="tab-acc-dues" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">বকেয়া ফি তালিকা ও নোটিশ</h3>
+                        <p class="text-sm text-gray-500">যাদের ফি বকেয়া রয়েছে তাদের লিস্ট এবং রিমাইন্ডার পাঠানোর অপশন।</p>
+                    </div>
+                </div>
+
+                <!-- ৫.৩ আয়-ব্যয় প্যানেল -->
+                <div id="tab-acc-income-expense" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">দৈনিক ও মাসিক আয়-ব্যয় হিসাব</h3>
+                        <p class="text-sm text-gray-500">মাদ্রাসার ফান্ডে জমা ও খরচের বিস্তারিত হিসাব এন্ট্রি করার খাতা।</p>
+                    </div>
+                </div>
+
+                <!-- ৫.৪ ফাইন্যান্সিয়াল রিপোর্ট প্যানেল -->
+                <div id="tab-acc-reports" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ফাইন্যান্সিয়াল অডিট ও রিপোর্ট</h3>
+                        <p class="text-sm text-gray-500">নির্দিষ্ট সময়ের ব্যালেন্স শীট ও আর্থিক সারসংক্ষেপ রিপোর্ট।</p>
+                    </div>
+                </div>
+
+                <!-- ৬.১ পরীক্ষা ব্যবস্থাপনা প্যানেল -->
+                <div id="tab-exam-setup" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">পরীক্ষার রুটিন ও সেটআপ</h3>
+                        <p class="text-sm text-gray-500">সাময়িক বা বার্ষিক পরীক্ষার শিডিউল তৈরির প্যানেল।</p>
+                    </div>
+                </div>
+
+                <!-- ৬.২ মার্কস ইনপুট প্যানেল -->
+                <div id="tab-exam-marks" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">নম্বর বা মার্কস ইনপুট</h3>
+                        <p class="text-sm text-gray-500">শিক্ষার্থীদের বিভিন্ন বিষয়ের প্রাপ্ত নম্বর এন্ট্রি ফরম।</p>
+                    </div>
+                </div>
+
+                <!-- ৬.৩ রেজাল্ট কার্ড প্যানেল -->
+                <div id="tab-exam-results" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">রেজাল্ট কার্ড ও মেধাতালিকা (Merit List)</h3>
+                        <p class="text-sm text-gray-500">ট্যাবুলেশন শীট এবং প্রোগ্রেস রিপোর্ট কার্ড জেনারেটর।</p>
+                    </div>
+                </div>
+
+                <!-- ৭.১ শিক্ষক ও স্টাফ তালিকা প্যানেল -->
+                <div id="tab-hr-directory" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">শিক্ষক ও স্টাফ ডিরেক্টরি</h3>
+                        <p class="text-sm text-gray-500">মাদ্রাসার সমস্ত শিক্ষক ও কর্মচারীদের তালিকা ও তথ্য।</p>
+                    </div>
+                </div>
+
+                <!-- ৭.২ বেতন ও পেরোল প্যানেল -->
+                <div id="tab-hr-payroll" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">বেতন ও পেরোল ম্যানেজমেন্ট</h3>
+                        <p class="text-sm text-gray-500">মাসিক বেতন শিট ও পে-স্লিপ প্রস্তুতকরণ।</p>
+                    </div>
+                </div>
+
+                <!-- ৭.৩ ছুটির আবেদন প্যানেল -->
+                <div id="tab-hr-leave" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ছুটির আবেদন ও অনুমোদন</h3>
+                        <p class="text-sm text-gray-500">শিক্ষক ও স্টাফদের ছুটির দরখাস্ত অনুমোদন বা বাতিল করার অপশন।</p>
+                    </div>
+                </div>
+
+                <!-- ৮.১ রুম ও সিট বুকিং প্যানেল -->
+                <div id="tab-hostel-rooms" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">হোস্টেল রুম ও সিট অ্যালোকেশন</h3>
+                        <p class="text-sm text-gray-500">ছাত্রাবাসের রুমভিত্তিক সিট বণ্টন ম্যানেজমেন্ট।</p>
+                    </div>
+                </div>
+
+                <!-- ৮.২ মেস ও মিল ট্র্যাকার প্যানেল -->
+                <div id="tab-hostel-meals" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">মেস ও মিল ট্র্যাকার</h3>
+                        <p class="text-sm text-gray-500">দৈনিক মিল সংখ্যা, বাজার খরচ ও মিল রেট হিসাব।</p>
+                    </div>
+                </div>
+
+                <!-- ৯.১ লাইব্রেরি প্যানেল -->
+                <div id="tab-module-library" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">লাইব্রেরি ও কিতাব খানা</h3>
+                        <p class="text-sm text-gray-500">কিতাব ইস্যু, জমা নেওয়া এবং স্টক ক্যাটালগ।</p>
+                    </div>
+                </div>
+
+                <!-- ৯.২ নোটিশ বোর্ড প্যানেল -->
+                <div id="tab-module-notice" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">নোটিশ বোর্ড ও এসএমএস ব্রডকাস্ট</h3>
+                        <p class="text-sm text-gray-500">গুরুত্বপূর্ণ ঘোষণা নোটিশ এবং অভিভাবকদের মোবাইল এসএমএস পাঠানো।</p>
+                    </div>
+                </div>
+
+                <!-- ৯.৩ অভিযোগ ও মতামত প্যানেল -->
+                <div id="tab-module-feedback" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">অভিযোগ ও মতামত বক্স</h3>
+                        <p class="text-sm text-gray-500">অভিভাবক ও ছাত্রদের ফিডব্যাক ম্যানেজমেন্ট।</p>
+                    </div>
+                </div>
+
+                <!-- ১০.১ মাদ্রাসা প্রোফাইল প্যানেল -->
+                <div id="tab-system-profile" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm max-w-xl">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">মাদ্রাসা প্রোফাইল ও সেটিংস</h3>
+                        <form onsubmit="saveBannerInfo(event)" class="space-y-3 text-sm">
+                            <div><label class="block text-gray-600 mb-1">মাদ্রাসার নাম</label><input type="text" id="input-name" class="w-full p-2.5 border rounded-xl"></div>
+                            <div><label class="block text-gray-600 mb-1">ট্যাগলাইন</label><input type="text" id="input-tagline" class="w-full p-2.5 border rounded-xl"></div>
+                            <button type="submit" class="bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-medium">তথ্য সংরক্ষণ করুন</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ১০.২ ইউজার রোল প্যানেল -->
+                <div id="tab-system-roles" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">ইউজার রোল ও পারমিশন কন্ট্রোল</h3>
+                        <p class="text-sm text-gray-500">অ্যাডমিন, শিক্ষক বা হিসাবরক্ষকদের এক্সেস রাইটস ম্যানেজ করুন।</p>
+                    </div>
+                </div>
+
+                <!-- ১০.৩ অ্যাপ সেটিং প্যানেল -->
+                <div id="tab-system-app" class="space-y-4 tab-content hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">সিস্টেম অ্যাপ সেটিংস</h3>
+                        <p class="text-sm text-gray-500">থিম, ল্যাঙ্গুয়েজ এবং ব্যাকআপ সেটিংস।</p>
                     </div>
                 </div>
 
@@ -226,30 +532,9 @@
 
     </div>
 
-    <!-- ব্যানার এডিট মডাল -->
-    <div id="bannerModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">ব্যানার তথ্য পরিবর্তন করুন</h3>
-            <form onsubmit="saveBannerInfo(event)" class="space-y-3 text-sm">
-                <div>
-                    <label class="block text-gray-600 mb-1">মাদ্রাসার নাম</label>
-                    <input type="text" id="input-name" class="w-full p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-600">
-                </div>
-                <div>
-                    <label class="block text-gray-600 mb-1">ট্যাগলাইন</label>
-                    <input type="text" id="input-tagline" class="w-full p-2.5 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-600">
-                </div>
-                <div class="flex justify-end gap-2 mt-5">
-                    <button type="button" onclick="closeBannerModal()" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl font-medium">বাতিল</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-700 text-white rounded-xl font-medium">সংরক্ষণ</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- স্ক্রিপ্ট -->
+    <!-- জাভাস্ক্রিপ্ট লজিক -->
     <script>
-        // মোবাইল সাইডবার টগল ফাংশন
+        // মোবাইল সাইডবার টগল
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -257,74 +542,103 @@
             overlay.classList.toggle('hidden');
         }
 
-        // ট্যাব সুইচিং ফাংশন (সকল অপশন সচল করার জন্য)
+        // ড্রপডাউন টগল ফাংশন
+        function toggleDropdown(dropdownId, arrowId) {
+            const dropdown = document.getElementById(dropdownId);
+            const arrow = document.getElementById(arrowId);
+            dropdown.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        // ট্যাব সুইচিং ফাংশন (প্রতিটি অপশন সচল করার জন্য)
         function switchTab(tabName) {
-            // সকল ট্যাগের কন্টেন্ট হাইড করা
+            // সমস্ত ট্যাব কন্টেন্ট হাইড করা
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.add('hidden'));
 
-            // কাঙ্ক্ষিত ট্যাবটি শো করা
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-
-            // সাইডবারের মেনু স্টাইল আপডেট করা
-            const navButtons = document.querySelectorAll('aside nav button');
-            navButtons.forEach(btn => {
-                btn.classList.remove('bg-emerald-700', 'text-white', 'shadow-sm');
-                btn.classList.add('text-gray-600', 'hover:bg-gray-50');
-                const icon = btn.querySelector('i');
-                if(icon) icon.classList.add('text-gray-400');
-            });
-
-            // বর্তমান অ্যাক্টিভ বাটনের স্টাইল দেওয়া
-            const activeBtn = document.getElementById('nav-' + tabName);
-            if(activeBtn) {
-                activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-50');
-                activeBtn.classList.add('bg-emerald-700', 'text-white', 'shadow-sm');
-                const activeIcon = activeBtn.querySelector('i');
-                if(activeIcon) activeIcon.classList.remove('text-gray-400');
+            // কাঙ্ক্ষিত ট্যাব দেখানো
+            const targetTab = document.getElementById('tab-' + tabName);
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
             }
 
-            // হেডার টাইটেল পরিবর্তন
-            const titles = {
-                'dashboard': 'ড্যাশবোর্ড',
-                'students': 'ছাত্র তালিকা',
-                'attendance': 'উপস্থিতি',
-                'accounts': 'হিসাব-নিকাশ',
-                'results': 'ফলাফল',
-                'calendar': 'ক্যালেন্ডার'
-            };
-            document.getElementById('header-title').innerText = titles[tabName] || 'ম্যানেজমেন্ট সিস্টেম';
+            // মেনু অ্যাক্টিভ স্টাইল রিসেট করা
+            const navButtons = document.querySelectorAll('aside nav button');
+            navButtons.forEach(btn => {
+                if(!btn.id.includes('nav-')) {
+                    btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'font-medium');
+                }
+            });
 
-            // ছোট স্ক্রিনে মেনুতে ক্লিক করলে সাইডবার অটো বন্ধ হয়ে যাবে
+            // ড্যাশবোর্ড বা প্রধান বাটনের স্টাইল হ্যান্ডেল
+            const dashBtn = document.getElementById('nav-dashboard');
+            if(tabName === 'dashboard') {
+                dashBtn.className = "w-full flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-700 text-white font-medium shadow-sm transition";
+            } else {
+                dashBtn.className = "w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 transition";
+            }
+
+            // হেডার টাইটেল ডায়নামিক সেট করা
+            const titles = {
+                'dashboard': 'ড্যাশবোর্ড ওভারভিউ',
+                'student-profiles': 'শিক্ষার্থী প্রোফাইল তালিকা',
+                'student-admission': 'নতুন ভর্তি ফরম',
+                'student-idcard': 'আইডি কার্ড ও প্রশংসাপত্র',
+                'ac-classes': 'শ্রেণি ও শাখা',
+                'ac-routine': 'ক্লাস রুটিন',
+                'ac-syllabus': 'সিলেবাস ও লেসন প্ল্যান',
+                'ac-hifz': 'হিফজ ডায়েরি ট্র্যাকার',
+                'att-student': 'শিক্ষার্থী উপস্থিতি',
+                'att-staff': 'শিক্ষক ও স্টাফ উপস্থিতি',
+                'att-report': 'অনুপস্থিতির রিপোর্ট ও SMS',
+                'acc-collect': 'ফি কালেকশন কাউন্টার',
+                'acc-dues': 'বকেয়া তালিকা ও নোটিশ',
+                'acc-income-expense': 'আয়-ব্যয় হিসাব',
+                'acc-reports': 'ফাইন্যান্সিয়াল রিপোর্ট',
+                'exam-setup': 'পরীক্ষা ব্যবস্থাপনা',
+                'exam-marks': 'মার্কস ইনপুট',
+                'exam-results': 'রেজাল্ট কার্ড ও মেরিট লিস্ট',
+                'hr-directory': 'শিক্ষক ও স্টাফ তালিকা',
+                'hr-payroll': 'বেতন ও পেরোল',
+                'hr-leave': 'ছুটির আবেদন',
+                'hostel-rooms': 'রুম ও সিট বুকিং',
+                'hostel-meals': 'মেস ও মিল ট্র্যাকার',
+                'module-library': 'লাইব্রেরি ম্যানেজমেন্ট',
+                'module-notice': 'নোটিশ বোর্ড ও এসএমএস',
+                'module-feedback': 'অভিযোগ ও মতামত',
+                'system-profile': 'মাদ্রাসা প্রোফাইল ও সেটআপ',
+                'system-roles': 'ইউজার রোল ও পারমিশন',
+                'system-app': 'অ্যাপ সেটিং'
+            };
+            document.getElementById('header-title').innerText = titles[tabName] || 'মাদ্রাসা ম্যানেজমেন্ট সিস্টেম';
+
+            // মোবাইল স্ক্রিনে ক্লিক করলে সাইডবার অটো ক্লোজ হবে
             if (window.innerWidth < 768) {
                 toggleSidebar();
             }
         }
 
-        function openBannerModal(){
-            document.getElementById('bannerModal').classList.remove('hidden');
-            document.getElementById('bannerModal').classList.add('flex');
-            document.getElementById('input-name').value = document.getElementById('disp-name').innerText;
-            document.getElementById('input-tagline').value = document.getElementById('disp-tagline').innerText;
-        }
-
-        function closeBannerModal(){
-            document.getElementById('bannerModal').classList.add('hidden');
-            document.getElementById('bannerModal').classList.remove('flex');
-        }
-
-        function saveBannerInfo(e){
+        // সাধারণ ফর্ম সাবমিট অ্যালার্ট হ্যান্ডলার
+        function handleFormSubmit(e, successMsg) {
             e.preventDefault();
-            document.getElementById('disp-name').innerText = document.getElementById('input-name').value;
-            document.getElementById('disp-tagline').innerText = document.getElementById('input-tagline').value;
-            closeBannerModal();
-            alert("ব্যানার আপডেট সফল হয়েছে!");
+            alert(successMsg);
+            e.target.reset();
         }
 
-        // ফায়ারবেস কানেকশন টেস্ট
+        // মাদ্রাসা প্রোফাইল আপডেট ফাংশন
+        function saveBannerInfo(e) {
+            e.preventDefault();
+            const newName = document.getElementById('input-name').value;
+            const newTagline = document.getElementById('input-tagline').value;
+            if(newName) document.getElementById('disp-name').innerText = newName;
+            if(newTagline) document.getElementById('disp-tagline').innerText = newTagline;
+            alert("মাদ্রাসা প্রোফাইল সফলভাবে আপডেট করা হয়েছে!");
+        }
+
+        // ফায়ারবেস কানেকশন ইনিশিয়ালাইজেশন
         const firebaseConfig = { apiKey: "test", authDomain: "test", projectId: "test" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        console.log("⚠️ Not Logged In (Firebase Ready)");
+        console.log("⚠️ Firebase Ready");
     </script>
 </body>
 </html>

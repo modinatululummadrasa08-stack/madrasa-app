@@ -237,36 +237,34 @@
                             </div>
 
                             <div class="py-2 text-sm text-gray-700">
-                                <!-- ঠিক করা হয়েছে: switchTab এ সঠিক 'profile' পাঠানো হয়েছে -->
                                 <button onclick="switchTab('profile'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">👤</span> Admin Profile
                                 </button>
-                                
                                 <div class="border-t border-gray-100 my-1"></div>
-                                <a href="#users" class="flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                <button onclick="switchTab('admin-users'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">👥</span> Users & Permissions
-                                </a>
-                                <a href="#security" class="flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                </button>
+                                <button onclick="switchTab('admin-security'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">🔐</span> Security
-                                </a>
-                                <a href="#activity" class="flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                </button>
+                                <button onclick="switchTab('admin-activity'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">📋</span> Activity Log
-                                </a>
-                                <a href="#backup" class="flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                </button>
+                                <button onclick="switchTab('admin-backup'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">💾</span> Backup & Data
-                                </a>
-                                <a href="#notifications" class="flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                </button>
+                                <button onclick="switchTab('admin-notifications'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">🔔</span> Notifications
-                                </a>
-                                <a href="#settings" class="flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                </button>
+                                <button onclick="switchTab('admin-settings'); toggleAdminMenu();" class="w-full text-left flex items-center px-4 py-2.5 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
                                     <span class="mr-3 text-base">⚙️</span> System Settings
-                                </a>
+                                </button>
                             </div>
 
                             <div class="border-t border-gray-100 pt-2 mt-1">
-                                <a href="#logout" class="flex items-center px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors font-semibold">
+                                <button onclick="alert('লগআউট সফল হয়েছে!');" class="w-full text-left flex items-center px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors font-semibold">
                                     <span class="mr-3 text-base">🚪</span> Logout
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -416,18 +414,108 @@
                 <!-- Admin Profile Tab -->
                 <div id="tab-profile" class="tab-content hidden max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
                     <h2 class="text-xl font-semibold mb-4 text-emerald-800">Admin Profile</h2>
-                    
                     <div class="mb-4">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
                         <input type="text" class="w-full border rounded-xl px-4 py-2 focus:outline-none focus:border-emerald-500" placeholder="Phone">
                     </div>
-
                     <div class="mb-4">
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                         <input type="email" class="w-full border rounded-xl px-4 py-2 focus:outline-none focus:border-emerald-500" placeholder="Email">
                     </div>
-
                     <button class="w-full bg-emerald-600 text-white font-semibold py-2 rounded-xl hover:bg-emerald-700 transition">Update Profile</button>
+                </div>
+
+                <!-- Admin Users & Permissions Tab -->
+                <div id="tab-admin-users" class="tab-content hidden max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-emerald-800">Users & Permissions</h2>
+                    <p class="text-sm text-gray-600 mb-4">ম্যানেজমেন্ট প্যানেলের বিভিন্ন ইউজারের অ্যাক্সেস এবং রোল কনফিগার করুন।</p>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl border">
+                            <div>
+                                <p class="font-bold text-sm">মুহতামিম সাহেব (Super Admin)</p>
+                                <p class="text-xs text-gray-500">Full Access</p>
+                            </div>
+                            <span class="bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full font-semibold">Active</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-xl border">
+                            <div>
+                                <p class="font-bold text-sm">হিসাবরক্ষক (Accountant)</p>
+                                <p class="text-xs text-gray-500">Accounts & Dues Access</p>
+                            </div>
+                            <span class="bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-full font-semibold">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Security Tab -->
+                <div id="tab-admin-security" class="tab-content hidden max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-emerald-800">Security Settings</h2>
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Current Password</label>
+                        <input type="password" class="w-full border rounded-xl px-4 py-2 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">New Password</label>
+                        <input type="password" class="w-full border rounded-xl px-4 py-2 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <button onclick="alert('পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে!')" class="w-full bg-emerald-600 text-white font-semibold py-2 rounded-xl hover:bg-emerald-700 transition">Change Password</button>
+                </div>
+
+                <!-- Admin Activity Log Tab -->
+                <div id="tab-admin-activity" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-emerald-800">Activity Log</h2>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-3 bg-gray-50 rounded-lg border flex justify-between items-center">
+                            <span>অ্যাডমিন লগইন সফল হয়েছে।</span>
+                            <span class="text-gray-400">আজ, ০৮:৩০ AM</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg border flex justify-between items-center">
+                            <span>নতুন শিক্ষার্থী ভর্তি ফরম আপডেট করা হয়েছে।</span>
+                            <span class="text-gray-400">গতকাল, ০৩:১৫ PM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Backup & Data Tab -->
+                <div id="tab-admin-backup" class="tab-content hidden max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-emerald-800">Backup & Data</h2>
+                    <p class="text-sm text-gray-600 mb-4">আপনার সিস্টেমের ডাটা সুরক্ষিত রাখতে ব্যাকআপ ডাউনলোড করুন।</p>
+                    <button onclick="alert('ব্যাকআপ ফাইল সফলভাবে ডাউনলোড শুরু হয়েছে!')" class="w-full bg-emerald-700 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-800 transition mb-3">Download System Backup</button>
+                    <button onclick="alert('ডাটা সফলভাবে রিস্টোর করা হয়েছে!')" class="w-full bg-gray-800 text-white font-semibold py-2.5 rounded-xl hover:bg-gray-900 transition">Restore Data</button>
+                </div>
+
+                <!-- Admin Notifications Tab -->
+                <div id="tab-admin-notifications" class="tab-content hidden max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-emerald-800">Notifications Control</h2>
+                    <div class="space-y-3 text-sm">
+                        <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border cursor-pointer">
+                            <span>ইমেইল নোটিফিকেশন চালু রাখুন</span>
+                            <input type="checkbox" checked class="rounded text-emerald-700 w-4 h-4">
+                        </label>
+                        <label class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border cursor-pointer">
+                            <span>এসএমএস অ্যালার্ট সক্রিয় করুন</span>
+                            <input type="checkbox" checked class="rounded text-emerald-700 w-4 h-4">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Admin System Settings Tab -->
+                <div id="tab-admin-settings" class="tab-content hidden max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md mt-6 border border-gray-200">
+                    <h2 class="text-xl font-semibold mb-4 text-emerald-800">System Settings</h2>
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-700">সিস্টেমের ভাষা</label>
+                            <select class="w-full border rounded-xl px-3 py-2 bg-white">
+                                <option>বাংলা (Bangla)</option>
+                                <option>ইংরেজি (English)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-700">ডিফল্ট কারেন্সি</label>
+                            <input type="text" value="টাকা (BDT)" class="w-full border rounded-xl px-3 py-2">
+                        </div>
+                        <button onclick="alert('সেটিংস সফলভাবে সংরক্ষিত হয়েছে!')" class="w-full bg-emerald-600 text-white font-semibold py-2 rounded-xl hover:bg-emerald-700 transition">Save Settings</button>
+                    </div>
                 </div>
                 
                 <!-- অন্যান্য প্যানেলসমূহ -->
@@ -449,7 +537,7 @@
                                 </div>
                             </div>
 
-                            <form class="space-y-4 text-sm text-gray-800">
+                            <form class="space-y-4 text-sm text-gray-800" onsubmit="handleFormSubmit(event, 'ফরম সফলভাবে সংরক্ষণ করা হয়েছে!')">
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
                                     <div>
                                         <label class="block font-semibold mb-1">ফরম নং:</label>
